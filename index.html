@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Computer - Hantelstation</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #00e676;
+            --text-color: #ffffff;
+            --subtext-color: #b0bec5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            color: var(--accent-color);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 15px 0;
+        }
+
+        .result-value {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        .result-unit {
+            font-size: 1.2rem;
+            color: var(--subtext-color);
+        }
+
+        .control-group {
+            margin-top: 15px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            accent-color: var(--accent-color);
+            background: #333;
+            outline: none;
+        }
+
+        .drop-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .drop-item {
+            background: #2a2a2a;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .drop-item label {
+            font-size: 0.8rem;
+            color: var(--subtext-color);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .drop-item input {
+            width: 80%;
+            background: #121212;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .drop-result {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Board Computer</h1>
+
+    <!-- Haupt-Ergebnis Anzeige -->
+    <div class="card result-box">
+        <div class="result-unit">Effektiver Widerstand</div>
+        <div class="result-value" id="calc-result">17.5</div>
+        <div class="result-unit">kg</div>
+    </div>
+
+    <!-- Regler für Scheiben- und Standposition -->
+    <div class="card">
+        <div class="control-group">
+            <div class="control-header">
+                <span>Gewichtsscheiben Position</span>
+                <span id="val-weightPos">7</span>
+            </div>
+            <input type="range" id="slider-weight" min="1" max="32" value="7" oninput="updateCalc()">
+        </div>
+
+        <div class="control-group" style="margin-top: 25px;">
+            <div class="control-header">
+                <span>Stand- / Griffposition</span>
+                <span id="val-gripPos">15</span>
+            </div>
+            <input type="range" id="slider-grip" min="15" max="32" value="15" oninput="updateCalc()">
+        </div>
+    </div>
+
+    <!-- Drop-Set Rechner -->
+    <div class="card">
+        <h3 style="margin-top:0; font-size:1.1rem;">Drop-Set Rechner</h3>
+        <p style="font-size:0.85rem; color:var(--subtext-color); margin-bottom:15px;">
+            Berechnet die benötigte Griffposition bei gleicher Scheibenstellung:
+        </p>
+        
+        <div class="drop-grid">
+            <div class="drop-item">
+                <label for="drop-start-target">Start-Ziel (kg)</label>
+                <input type="number" id="drop-start-target" value="18" step="0.5" oninput="calculateDrop()">
+                <div class="drop-result" id="res-start-grip">Griff 15</div>
+            </div>
+            <div class="drop-item">
+                <label for="drop-end-target">Drop-Ziel (kg)</label>
+                <input type="number" id="drop-end-target" value="10" step="0.5" oninput="calculateDrop()">
+                <div class="drop-result" id="res-drop-grip">Griff 29</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let weightPos = 7;
+    let gripPos = 15;
+
+    function updateCalc() {
+        weightPos = parseInt(document.getElementById('slider-weight').value);
+        gripPos = parseInt(document.getElementById('slider-grip').value);
+
+        // Auf den Bereich 15-32 begrenzt
+        gripPos = Math.max(15, Math.min(32, gripPos));
+
+        // Empirisch eingeeichte Formel (<0.5 kg Toleranz)
+        let effectiveKg = 22.0 + (0.53 * weightPos) - (0.55 * gripPos);
+
+        document.getElementById('val-weightPos').innerText = weightPos;
+        document.getElementById('val-gripPos').innerText = gripPos;
+        document.getElementById('calc-result').innerText = Math.max(1.0, effectiveKg).toFixed(1);
+        
+        calculateDrop();
+    }
+
+    function calculateDrop() {
+        let startTarget = parseFloat(document.getElementById('drop-start-target').value) || 18;
+        let endTarget = parseFloat(document.getElementById('drop-end-target').value) || 10;
+        
+        // Umkehrformel für die Griffposition
+        let matchedStartGrip = Math.round((22.0 + (0.53 * weightPos) - startTarget) / 0.55);
+        let matchedEndGrip = Math.round((22.0 + (0.53 * weightPos) - endTarget) / 0.55);
+
+        // Begrenzung auf nutzbaren Bereich
+        let safeStartGrip = Math.max(15, Math.min(32, matchedStartGrip));
+        let safeEndGrip = Math.max(15, Math.min(32, matchedEndGrip));
+
+        document.getElementById('res-start-grip').innerText = `Griff ${safeStartGrip}`;
+        document.getElementById('res-drop-grip').innerText = `Griff ${safeEndGrip}`;
+    }
+
+    // Erstberechnung beim Laden
+    updateCalc();
+</script>
+
+</body>
+</html>
