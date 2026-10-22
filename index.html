@@ -36,7 +36,6 @@
             transition: background-color 0.8s ease;
         }
 
-        /* Pulsierende Hintergründe */
         @keyframes pulse-work {
             0% { background-color: #0b0e14; }
             50% { background-color: #2a0803; }
@@ -99,7 +98,6 @@
             gap: 8px;
         }
 
-        /* Haupt-Anzeige mit integriertem Slider */
         .result-box {
             text-align: center;
             padding: 20px 16px;
@@ -128,10 +126,7 @@
             margin-bottom: 12px;
         }
 
-        /* Controls */
-        .control-group {
-            margin-top: 16px;
-        }
+        .control-group { margin-top: 16px; }
 
         .control-header {
             display: flex;
@@ -165,7 +160,6 @@
             cursor: pointer;
         }
 
-        /* Text & Number Inputs */
         .input-text, .input-number {
             width: 100%;
             background: #121622;
@@ -179,16 +173,9 @@
             transition: border-color 0.2s;
         }
 
-        .input-number {
-            text-align: center;
-            font-size: 1.2rem;
-        }
+        .input-number { text-align: center; font-size: 1.2rem; }
+        .input-text:focus, .input-number:focus { border-color: var(--accent-cyan); }
 
-        .input-text:focus, .input-number:focus {
-            border-color: var(--accent-cyan);
-        }
-
-        /* Vorschlags-Karten Grid */
         .suggestions-grid {
             display: flex;
             flex-direction: column;
@@ -216,20 +203,8 @@
             color: var(--text-secondary);
         }
 
-        .suggestion-details {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #fff;
-        }
+        .suggestion-details { font-size: 0.95rem; font-weight: 700; color: #fff; }
 
-        .suggestion-error {
-            font-size: 0.85rem;
-            color: #ff5252;
-            text-align: center;
-            padding: 10px;
-        }
-
-        /* Drop Set Direkt-Display */
         .drop-display-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -253,17 +228,9 @@
             margin-bottom: 4px;
         }
 
-        .drop-box-value {
-            font-size: 1.5rem;
-            font-weight: 900;
-            color: var(--accent-cyan);
-        }
+        .drop-box-value { font-size: 1.5rem; font-weight: 900; color: var(--accent-cyan); }
 
-        /* Timer Block */
-        .timer-card {
-            text-align: center;
-            border: 1px solid rgba(255, 179, 0, 0.3);
-        }
+        .timer-card { text-align: center; border: 1px solid rgba(255, 179, 0, 0.3); }
 
         .timer-status {
             font-size: 1rem;
@@ -283,19 +250,15 @@
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
 
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
+        .btn-group { display: flex; gap: 10px; margin-top: 16px; }
 
         button {
             flex: 1;
             background: linear-gradient(135deg, var(--accent-color), #00b0ff);
             color: #000;
             border: none;
-            padding: 16px;
-            font-size: 1.1rem;
+            padding: 14px 16px;
+            font-size: 1rem;
             font-weight: 800;
             border-radius: 14px;
             cursor: pointer;
@@ -303,28 +266,13 @@
             transition: transform 0.1s, opacity 0.2s;
         }
 
-        button.secondary {
-            flex: 0.4;
-            background: #1e2538;
-            color: #fff;
-            box-shadow: none;
-            border: 1px solid var(--card-border);
-        }
+        button.secondary { background: #1e2538; color: #fff; box-shadow: none; border: 1px solid var(--card-border); }
+        button.action-btn { background: #121622; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); box-shadow: none; }
+        button.finish-workout { background: linear-gradient(135deg, #ff9800, #ff3d00); color: #fff; }
+        button.danger { background: #2a1215; color: #ff5252; border: 1px solid rgba(255, 82, 82, 0.3); box-shadow: none; font-size: 0.85rem; padding: 8px 12px; }
+        button:active { transform: scale(0.96); }
 
-        button.danger {
-            background: #2a1215;
-            color: #ff5252;
-            border: 1px solid rgba(255, 82, 82, 0.3);
-            box-shadow: none;
-            font-size: 0.85rem;
-            padding: 8px 12px;
-        }
-
-        button:active {
-            transform: scale(0.96);
-        }
-
-        /* LOGBUCH STYLES */
+        /* LOGBUCH & KALENDER STYLES */
         .log-exercise-block {
             background: #121622;
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -353,9 +301,7 @@
             gap: 10px;
         }
 
-        .log-set-row:last-child {
-            border-bottom: none;
-        }
+        .log-set-row:last-child { border-bottom: none; }
 
         .rpe-box {
             width: 52px;
@@ -370,8 +316,19 @@
             outline: none;
         }
 
-        .rpe-box:focus {
-            border-color: var(--ready-color);
+        .history-card {
+            background: #121622;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .history-date {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-bottom: 8px;
         }
     </style>
 </head>
@@ -382,16 +339,15 @@
         <h1>Board Computer</h1>
     </header>
 
-    <!-- HAUPTANZEIGE EFFEKTIVER WIDERSTAND MIT EIGENEM REGLER -->
+    <!-- HAUPTANZEIGE EFFEKTIVER WIDERSTAND -->
     <div class="card result-box">
         <div class="result-unit">Effektiver Widerstand</div>
         <div class="result-value" id="calc-result">17.5</div>
         <div class="result-unit" style="margin-bottom:16px;">Kilogramm</div>
-        
         <input type="range" id="slider-target-kg" min="5.0" max="30.5" step="0.5" value="17.5" oninput="onKgSliderChange()">
     </div>
 
-    <!-- MANUELLE REGLER FÜR SCHEIBE & GRIFF -->
+    <!-- MANUELLE REGLER -->
     <div class="card">
         <div class="card-title">⚙️ Manuelle Einstellung</div>
         <div class="control-group">
@@ -417,12 +373,10 @@
         <p style="font-size:0.8rem; color:var(--text-secondary); margin:0 0 10px 0;">
             Alternative Kombinationen für die aktuell gewählten Kilogramm:
         </p>
-        <div class="suggestions-grid" id="target-weight-suggestions">
-            <!-- Dynamisch generierte Vorschläge -->
-        </div>
+        <div class="suggestions-grid" id="target-weight-suggestions"></div>
     </div>
 
-    <!-- DIREKTER DROP-SET RECHNER -->
+    <!-- DROP-SET RECHNER -->
     <div class="card">
         <div class="card-title">🔥 Drop-Set Rechner (Feste Scheibe: Position <span id="drop-current-wpos" style="color:var(--accent-cyan);">7</span>)</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
@@ -448,7 +402,7 @@
         </div>
     </div>
 
-    <!-- PRO-WORKFLOW TIMER -->
+    <!-- WORKFLOW TIMER -->
     <div class="card timer-card">
         <div class="timer-status" id="timer-status">Bereit für Satz</div>
         <div class="timer-display" id="timer-display">00:45</div>
@@ -473,25 +427,46 @@
         </div>
     </div>
 
-    <!-- EINGABE AKTUELLE ÜBUNG (SEPARATER BLOCK) -->
+    <!-- ÜBUNG STEUERUNG -->
     <div class="card">
-        <div class="card-title">📝 Aktuelle Übung</div>
-        <div>
-            <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Name der Übung für den nächsten Satz</label>
-            <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Latziehen, Brustpresse..." value="Brustpresse">
+        <div class="card-title">📝 Aktuelle Übung Steuerung</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Name der Übung</label>
+                <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Brustpresse, Latzug..." value="Brustpresse">
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button class="action-btn" onclick="addManualSet()">➕ Satz manuell (+)</button>
+                <button class="secondary" onclick="finishCurrentExercise()">✓ Übung beenden</button>
+            </div>
         </div>
     </div>
 
-    <!-- AUTOMATISCHES LOGBUCH (SEPARATER BLOCK MIT DIREKTER RPE-BEARBEITUNG) -->
+    <!-- AKTUELLES TAGES-LOGBUCH & WORKOUT ABSCHLUSS -->
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div class="card-title" style="margin:0;">📋 Trainings-Logbuch</div>
-            <button class="danger" onclick="clearLogbook()">Log Leeren</button>
+            <div class="card-title" style="margin:0;">📋 Aktuelles Training</div>
+            <button class="danger" onclick="clearLogbook()">Verwerfen</button>
         </div>
 
         <div id="logbook-container">
             <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">
-                Noch keine Sätze absolviert. Starte deinen ersten Satz oben am Timer!
+                Noch keine Sätze im aktuellen Training.
+            </div>
+        </div>
+
+        <div style="margin-top:16px;">
+            <button class="finish-workout" onclick="finishWorkoutSession()">🏁 TRAINING BEENDEN & SPEICHERN</button>
+        </div>
+    </div>
+
+    <!-- KALENDER / TRAININGS-HISTORIE -->
+    <div class="card">
+        <div class="card-title">📅 Absolvierte Workouts (Historie)</div>
+        <div id="history-container">
+            <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">
+                Bisher noch keine Workouts abgeschlossen.
             </div>
         </div>
     </div>
@@ -506,7 +481,6 @@
     function onPositionSlidersChange() {
         weightPos = parseInt(document.getElementById('slider-weight').value);
         gripPos = parseInt(document.getElementById('slider-grip').value);
-
         gripPos = Math.max(15, Math.min(32, gripPos));
 
         let effectiveKg = 22.0 + (0.53 * weightPos) - (0.55 * gripPos);
@@ -559,60 +533,48 @@
         }
     }
 
-    // --- POSITIONIERUNGS-OPTIONEN ---
     function suggestTargetWeight(targetKg) {
         let target = targetKg || currentEffectiveKg;
         let container = document.getElementById('target-weight-suggestions');
         container.innerHTML = '';
 
         let validOptions = [];
-
         for (let w = 1; w <= 32; w++) {
             for (let g = 15; g <= 32; g++) {
                 let kg = 22.0 + (0.53 * w) - (0.55 * g);
                 let diff = Math.abs(kg - target);
-                if (diff <= 0.4) {
-                    validOptions.push({ weightPos: w, gripPos: g, calculatedKg: kg, diff: diff });
-                }
+                if (diff <= 0.4) validOptions.push({ weightPos: w, gripPos: g, calculatedKg: kg, diff: diff });
             }
         }
 
         if (validOptions.length === 0) {
-            container.innerHTML = '<div class="suggestion-error">Keine exakte Kombination im Bereich 15-32 gefunden.</div>';
+            container.innerHTML = '<div style="font-size:0.85rem; color:#ff5252; text-align:center;">Keine Kombination im Bereich 15-32.</div>';
             return;
         }
 
         validOptions.sort((a, b) => a.diff - b.diff);
-
         let picks = [];
         if (validOptions.length > 0) picks.push({ tag: "Option A", ...validOptions[0] });
         if (validOptions.length > 2) picks.push({ tag: "Option B", ...validOptions[Math.floor(validOptions.length / 2)] });
         if (validOptions.length > 4) picks.push({ tag: "Option C", ...validOptions[validOptions.length - 1] });
 
-        if (picks.length === 1 && validOptions[1]) picks.push({ tag: "Option B", ...validOptions[1] });
-        if (picks.length === 2 && validOptions[2]) picks.push({ tag: "Option C", ...validOptions[2] });
-
         picks.forEach(opt => {
-            let html = `
+            container.innerHTML += `
                 <div class="suggestion-item">
                     <span class="suggestion-tag">${opt.tag}</span>
                     <div class="suggestion-details">Scheibe <strong>${opt.weightPos}</strong> | Griff <strong>${opt.gripPos}</strong></div>
                     <span style="font-size:0.85rem; color:var(--accent-color); font-weight:700;">~${opt.calculatedKg.toFixed(1)} kg</span>
                 </div>
             `;
-            container.innerHTML += html;
         });
     }
 
-    // --- DIREKTER DROP-SET RECHNER ---
     function calculateDirectDrop() {
         let startTarget = currentEffectiveKg;
         let dropTarget = parseFloat(document.getElementById('drop-target-input').value) || 12.0;
 
-        let currentW = weightPos;
-
-        let matchedStartGrip = Math.round((22.0 + (0.53 * currentW) - startTarget) / 0.55);
-        let matchedDropGrip = Math.round((22.0 + (0.53 * currentW) - dropTarget) / 0.55);
+        let matchedStartGrip = Math.round((22.0 + (0.53 * weightPos) - startTarget) / 0.55);
+        let matchedDropGrip = Math.round((22.0 + (0.53 * weightPos) - dropTarget) / 0.55);
 
         let safeStartGrip = Math.max(15, Math.min(32, matchedStartGrip));
         let safeDropGrip = Math.max(15, Math.min(32, matchedDropGrip));
@@ -623,13 +585,7 @@
 
     // --- AUDIO SYSTEM ---
     let audioCtx = null;
-
-    function initAudio() {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-    }
-
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
     function playBeep(freq, duration, type = 'sine') {
         try {
             initAudio();
@@ -651,50 +607,91 @@
     function playToneStart() { playBeep(880.00, 0.4, 'triangle'); }
     function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
 
-    // --- LOGBUCH SPEICHER LOGIK ---
-    let workoutLog = JSON.parse(localStorage.getItem('board_computer_log') || '[]');
+    // --- LOGBUCH & HISTORIE SPEICHER LOGIK ---
+    let activeSessionLog = JSON.parse(localStorage.getItem('board_computer_active_session') || '[]');
+    let workoutHistory = JSON.parse(localStorage.getItem('board_computer_history') || '[]');
 
-    function saveSetToLog() {
+    function addSetToActiveSession() {
         let exerciseName = document.getElementById('exercise-name-input').value.trim() || 'Übung';
         let now = new Date();
         let timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
         let setEntry = {
-            id: Date.now(), // Eindeutige ID zum Bearbeiten der RPE
+            id: Date.now(),
             exercise: exerciseName,
             kg: currentEffectiveKg.toFixed(1),
             weightPos: weightPos,
             gripPos: gripPos,
-            rpe: '', // Standardmäßig leer in der Pause ausfüllbar
+            rpe: '',
             time: timeStr
         };
 
-        workoutLog.push(setEntry);
-        localStorage.setItem('board_computer_log', JSON.stringify(workoutLog));
-        renderLogbook();
+        activeSessionLog.push(setEntry);
+        localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+        renderActiveLogbook();
     }
 
-    // RPE direkt im Log-Eintrag aktualisieren
+    function addManualSet() {
+        addSetToActiveSession();
+    }
+
     function updateSetRpe(setId, val) {
-        let item = workoutLog.find(s => s.id === setId);
+        let item = activeSessionLog.find(s => s.id === setId);
         if (item) {
             item.rpe = val;
-            localStorage.setItem('board_computer_log', JSON.stringify(workoutLog));
+            localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
         }
     }
 
-    function renderLogbook() {
+    function deleteSet(setId) {
+        activeSessionLog = activeSessionLog.filter(s => s.id !== setId);
+        localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+        renderActiveLogbook();
+    }
+
+    function finishCurrentExercise() {
+        document.getElementById('exercise-name-input').value = '';
+        document.getElementById('exercise-name-input').placeholder = 'Nächste Übung eingeben...';
+    }
+
+    function finishWorkoutSession() {
+        if (activeSessionLog.length === 0) {
+            alert("Es wurden noch keine Sätze im aktuellen Training absolviert!");
+            return;
+        }
+
+        let now = new Date();
+        let dateStr = String(now.getDate()).padStart(2, '0') + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + now.getFullYear();
+
+        let workoutRecord = {
+            id: Date.now(),
+            date: dateStr,
+            time: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
+            sets: [...activeSessionLog]
+        };
+
+        workoutHistory.unshift(workoutRecord);
+        localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+
+        // Aktuelles Log zurücksetzen
+        activeSessionLog = [];
+        localStorage.removeItem('board_computer_active_session');
+        
+        renderActiveLogbook();
+        renderHistory();
+        alert("Workout erfolgreich am " + dateStr + " im Kalender abgespeichert!");
+    }
+
+    function renderActiveLogbook() {
         let container = document.getElementById('logbook-container');
-        if (workoutLog.length === 0) {
-            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">Noch keine Sätze absolviert. Starte deinen ersten Satz oben am Timer!</div>';
+        if (activeSessionLog.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">Noch keine Sätze im aktuellen Training.</div>';
             return;
         }
 
         container.innerHTML = '';
-
-        // Gruppiere Sätze nach Übungs-Name
         let grouped = {};
-        workoutLog.forEach(item => {
+        activeSessionLog.forEach(item => {
             if (!grouped[item.exercise]) grouped[item.exercise] = [];
             grouped[item.exercise].push(item);
         });
@@ -704,7 +701,7 @@
             let blockHtml = `<div class="log-exercise-block">
                 <div class="log-exercise-title">
                     <span>🏋️ ${exName}</span>
-                    <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:normal;">${sets.length} Satz/Sätze</span>
+                    <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:normal;">${sets.length} Sätze</span>
                 </div>`;
 
             sets.forEach((s, idx) => {
@@ -717,9 +714,10 @@
                         </div>
                         <div style="display:flex; align-items:center; gap:8px;">
                             <div style="text-align:center;">
-                                <span style="font-size:0.65rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE (1-10)</span>
+                                <span style="font-size:0.65rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
                                 <input type="number" class="rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetRpe(${s.id}, this.value)">
                             </div>
+                            <button class="danger" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteSet(${s.id})">✕</button>
                         </div>
                     </div>
                 `;
@@ -730,11 +728,46 @@
         }
     }
 
+    function renderHistory() {
+        let container = document.getElementById('history-container');
+        if (workoutHistory.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">Bisher noch keine Workouts abgeschlossen.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        workoutHistory.forEach(session => {
+            let itemHtml = `<div class="history-card">
+                <div class="history-date">📅 Workout vom ${session.date} (${session.time} Uhr)</div>`;
+
+            let grouped = {};
+            session.sets.forEach(item => {
+                if (!grouped[item.exercise]) grouped[item.exercise] = [];
+                grouped[item.exercise].push(item);
+            });
+
+            for (let exName in grouped) {
+                let sets = grouped[exName];
+                itemHtml += `<div style="font-size:0.85rem; font-weight:700; color:var(--accent-cyan); margin-top:6px;">${exName}</div>`;
+                sets.forEach((s, idx) => {
+                    itemHtml += `
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px;">
+                            • Satz ${idx + 1}: ${s.kg} kg (Scheibe ${s.weightPos}/Griff ${s.gripPos}) ${s.rpe ? '| RPE ' + s.rpe : ''}
+                        </div>
+                    `;
+                });
+            }
+
+            itemHtml += `</div>`;
+            container.innerHTML += itemHtml;
+        });
+    }
+
     function clearLogbook() {
-        if (confirm("Möchtest du das gesamte Tages-Logbuch wirklich leeren?")) {
-            workoutLog = [];
-            localStorage.removeItem('board_computer_log');
-            renderLogbook();
+        if (confirm("Möchtest du das aktuelle ungespeicherte Training verwerfen?")) {
+            activeSessionLog = [];
+            localStorage.removeItem('board_computer_active_session');
+            renderActiveLogbook();
         }
     }
 
@@ -783,7 +816,7 @@
             else if (currentPhase === 'work') {
                 if (currentTimeLeft <= 0) {
                     // SATZ BEENDET: Automatisch ins Logbuch eintragen!
-                    saveSetToLog();
+                    addSetToActiveSession();
 
                     currentPhase = 'rest';
                     currentTimeLeft = restDuration;
@@ -839,7 +872,8 @@
 
     // Init
     onPositionSlidersChange();
-    renderLogbook();
+    renderActiveLogbook();
+    renderHistory();
     updateDisplay();
 </script>
 
