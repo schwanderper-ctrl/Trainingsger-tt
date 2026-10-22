@@ -249,6 +249,17 @@
         button.danger { background: #261717; color: var(--work-color); border: 1px solid rgba(217, 119, 113, 0.3); box-shadow: none; font-size: 0.8rem; padding: 8px 12px; }
         button:active { transform: scale(0.97); }
 
+        .icon-btn-compact {
+            width: 38px;
+            height: 42px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex: none;
+        }
+
         .preset-btn {
             background: #1a202c;
             color: var(--text-secondary);
@@ -463,11 +474,11 @@
         </div>
     </div>
 
-    <!-- WUNSCH-GEWICHT OPTIONEN (EINKLAPPBAR) -->
-    <div class="card" id="card-options">
+    <!-- WUNSCH-GEWICHT OPTIONEN (DEZENT & STANDARDMÄSSIG EINGEKLAPPT) -->
+    <div class="card collapsed" id="card-options">
         <div class="card-title" onclick="toggleCard('card-options')">
-            <span>🎯 Positionierungs-Optionen</span>
-            <span class="collapse-icon" id="icon-options">▼ Verstecken</span>
+            <span>🎯 Positionierungs-Alternativen</span>
+            <span class="collapse-icon" id="icon-options">▶ Einblenden</span>
         </div>
         <div class="card-content">
             <p style="font-size:0.8rem; color:var(--text-secondary); margin:0 0 4px 0;">
@@ -534,20 +545,19 @@
         <div class="card-title" style="cursor:default; margin-bottom:14px;">📝 Aktuelle Übung & Training</div>
         <div class="card-content" style="gap:14px;">
             <div>
-                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Übung wählen oder eingeben</label>
-                <div style="display:flex; gap:8px; align-items:flex-start;">
+                <div style="display:flex; gap:6px; align-items:center;">
                     <!-- Eingabefeld mit echtem Dropdown-Pfeil -->
                     <div class="dropdown-container">
                         <div style="position:relative;">
-                            <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Brustpresse..." value="Brustpresse" oninput="checkLastTimeWorkout()" style="padding-right: 36px;">
-                            <span onclick="toggleSavedDropdown(event)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.8rem; padding: 4px;">▼</span>
+                            <input type="text" id="exercise-name-input" class="input-text" placeholder="Brustpresse, Squats..." value="Brustpresse" oninput="checkLastTimeWorkout()" style="padding-right: 32px;">
+                            <span onclick="toggleSavedDropdown(event)" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.75rem; padding: 4px;">▼</span>
                         </div>
                         <div id="saved-dropdown-list" class="dropdown-list"></div>
                     </div>
-                    <!-- Speichern Button nur mit Symbol -->
-                    <button class="secondary" style="width: auto; padding: 12px 14px; font-size: 1.1rem;" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
-                    <!-- Notiz Button mit Symbol -->
-                    <button class="secondary" style="width: auto; padding: 12px 14px; font-size: 1.1rem;" title="Notiz hinzufügen" onclick="toggleNoteField()">✏️</button>
+                    <!-- Speichern Button dezent & klein -->
+                    <button class="secondary icon-btn-compact" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
+                    <!-- Notiz Button dezent & klein -->
+                    <button class="secondary icon-btn-compact" title="Notiz hinzufügen" onclick="toggleNoteField()">✏️</button>
                 </div>
 
                 <!-- Diskretes Notizfeld (Standardmäßig versteckt) -->
@@ -836,7 +846,6 @@
         }
     }
 
-    // Schließe Dropdown bei Klick außerhalb
     window.addEventListener('click', function() {
         let listEl = document.getElementById('saved-dropdown-list');
         if (listEl) listEl.style.display = 'none';
@@ -943,7 +952,7 @@
         document.getElementById('exercise-name-input').value = '';
         document.getElementById('exercise-note-input').value = '';
         document.getElementById('note-field-container').style.display = 'none';
-        document.getElementById('exercise-name-input').placeholder = 'Nächste Übung wählen/eingeben...';
+        document.getElementById('exercise-name-input').placeholder = 'Nächste Übung...';
         document.getElementById('last-time-container').style.display = 'none';
     }
 
