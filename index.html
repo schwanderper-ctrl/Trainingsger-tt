@@ -348,23 +348,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
-            font-size: 0.88rem;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            gap: 10px;
         }
 
         .log-set-row:last-child {
             border-bottom: none;
         }
 
-        .log-rpe-badge {
-            background: rgba(255, 179, 0, 0.15);
+        .rpe-box {
+            width: 52px;
+            background: #0b0e14;
+            border: 1px solid #2a344a;
             color: var(--ready-color);
-            border: 1px solid rgba(255, 179, 0, 0.3);
-            padding: 2px 6px;
-            border-radius: 6px;
-            font-size: 0.75rem;
             font-weight: 800;
+            text-align: center;
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .rpe-box:focus {
+            border-color: var(--ready-color);
         }
     </style>
 </head>
@@ -381,7 +388,6 @@
         <div class="result-value" id="calc-result">17.5</div>
         <div class="result-unit" style="margin-bottom:16px;">Kilogramm</div>
         
-        <!-- KILO-REGLER: MIN 5.0 kg, MAX 30.5 kg -->
         <input type="range" id="slider-target-kg" min="5.0" max="30.5" step="0.5" value="17.5" oninput="onKgSliderChange()">
     </div>
 
@@ -467,25 +473,16 @@
         </div>
     </div>
 
-    <!-- EINGABE ÜBUNG & RPE INTENSITÄT (LEER VOREINGESTELLT) -->
+    <!-- EINGABE AKTUELLE ÜBUNG (SEPARATER BLOCK) -->
     <div class="card">
-        <div class="card-title">📝 Aktuelle Übung & Intensität</div>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-            <div>
-                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Name der Übung</label>
-                <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Latziehen, Brustpresse..." value="Brustpresse">
-            </div>
-            <div style="display:flex; align-items:center; justify-content:space-between; background:#121622; padding:10px 14px; border-radius:12px; border:1px solid #2a344a;">
-                <div>
-                    <span style="font-size:0.85rem; font-weight:700; display:block;">Intensität / RPE (1–10)</span>
-                    <span style="font-size:0.75rem; color:var(--text-secondary);">Optional (leer lassen oder 1–10)</span>
-                </div>
-                <input type="number" id="rpe-input" class="input-number" style="width:70px;" value="" placeholder="-" min="1" max="10">
-            </div>
+        <div class="card-title">📝 Aktuelle Übung</div>
+        <div>
+            <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Name der Übung für den nächsten Satz</label>
+            <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Latziehen, Brustpresse..." value="Brustpresse">
         </div>
     </div>
 
-    <!-- AUTOMATISCHES LOGBUCH -->
+    <!-- AUTOMATISCHES LOGBUCH (SEPARATER BLOCK MIT DIREKTER RPE-BEARBEITUNG) -->
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <div class="card-title" style="margin:0;">📋 Trainings-Logbuch</div>
@@ -493,7 +490,7 @@
         </div>
 
         <div id="logbook-container">
-            <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;" id="logbook-empty-msg">
+            <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">
                 Noch keine Sätze absolviert. Starte deinen ersten Satz oben am Timer!
             </div>
         </div>
@@ -659,25 +656,31 @@
 
     function saveSetToLog() {
         let exerciseName = document.getElementById('exercise-name-input').value.trim() || 'Übung';
-        let rpeInputVal = document.getElementById('rpe-input').value.trim();
-        let rpeVal = (rpeInputVal !== '' && !isNaN(rpeInputVal)) ? rpeInputVal : '-';
-        
         let now = new Date();
         let timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
         let setEntry = {
+            id: Date.now(), // Eindeutige ID zum Bearbeiten der RPE
             exercise: exerciseName,
             kg: currentEffectiveKg.toFixed(1),
             weightPos: weightPos,
             gripPos: gripPos,
-            workSecs: workDuration,
-            rpe: rpeVal,
+            rpe: '', // Standardmäßig leer in der Pause ausfüllbar
             time: timeStr
         };
 
         workoutLog.push(setEntry);
         localStorage.setItem('board_computer_log', JSON.stringify(workoutLog));
         renderLogbook();
+    }
+
+    // RPE direkt im Log-Eintrag aktualisieren
+    function updateSetRpe(setId, val) {
+        let item = workoutLog.find(s => s.id === setId);
+        if (item) {
+            item.rpe = val;
+            localStorage.setItem('board_computer_log', JSON.stringify(workoutLog));
+        }
     }
 
     function renderLogbook() {
@@ -707,13 +710,16 @@
             sets.forEach((s, idx) => {
                 blockHtml += `
                     <div class="log-set-row">
-                        <div>
-                            <strong>Satz ${idx + 1}:</strong> <span style="color:var(--accent-color); font-weight:800;">${s.kg} kg</span> 
-                            <span style="color:var(--text-secondary); font-size:0.8rem;">(Scheibe ${s.weightPos} / Griff ${s.gripPos})</span>
+                        <div style="flex: 1;">
+                            <strong style="font-size:0.9rem;">Satz ${idx + 1}</strong><br>
+                            <span style="color:var(--accent-color); font-weight:800; font-size:1rem;">${s.kg} kg</span> 
+                            <span style="color:var(--text-secondary); font-size:0.75rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
                         </div>
                         <div style="display:flex; align-items:center; gap:8px;">
-                            ${s.rpe !== '-' ? `<span class="log-rpe-badge">RPE ${s.rpe}/10</span>` : ''}
-                            <span style="color:var(--text-secondary); font-size:0.75rem;">${s.time}</span>
+                            <div style="text-align:center;">
+                                <span style="font-size:0.65rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE (1-10)</span>
+                                <input type="number" class="rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetRpe(${s.id}, this.value)">
+                            </div>
                         </div>
                     </div>
                 `;
