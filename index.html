@@ -6,16 +6,17 @@
     <title>Board Computer - Performance Gym Console</title>
     <style>
         :root {
-            --bg-color: #0b0e14;
-            --card-bg: rgba(22, 27, 38, 0.85);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --accent-color: #00e676;
-            --accent-cyan: #00e5ff;
-            --text-primary: #ffffff;
-            --text-secondary: #90a4ae;
-            --work-color: #ff3d00;
-            --rest-color: #00e676;
-            --ready-color: #ffb300;
+            --bg-color: #12151c;
+            --card-bg: rgba(22, 27, 36, 0.85);
+            --card-border: rgba(255, 255, 255, 0.06);
+            --accent-color: #81b29a; /* Sanftes Pastell-Salbei / Mint */
+            --accent-cyan: #74a6b2;  /* Gedämpftes Pastell-Blau */
+            --text-primary: #f0f4f8;
+            --text-secondary: #8c9ba5;
+            --work-color: #d97771;   /* Sanftes Pastell-Terracotta */
+            --rest-color: #81b29a;   /* Sanftes Pastell-Salbei */
+            --ready-color: #e5b567;  /* Warmes Pastell-Sandgelb */
+            --font-mono: 'SF Pro Rounded', 'SF Mono', Menlo, Monaco, Consolas, monospace;
         }
 
         * {
@@ -37,15 +38,15 @@
         }
 
         @keyframes pulse-work {
-            0% { background-color: #0b0e14; }
-            50% { background-color: #2a0803; }
-            100% { background-color: #0b0e14; }
+            0% { background-color: #12151c; }
+            50% { background-color: #241616; }
+            100% { background-color: #12151c; }
         }
 
         @keyframes pulse-rest {
-            0% { background-color: #0b0e14; }
-            50% { background-color: #032012; }
-            100% { background-color: #0b0e14; }
+            0% { background-color: #12151c; }
+            50% { background-color: #14221c; }
+            100% { background-color: #12151c; }
         }
 
         body.phase-work { animation: pulse-work 2.5s infinite ease-in-out; }
@@ -66,126 +67,147 @@
         }
 
         header h1 {
-            font-size: 1.25rem;
-            font-weight: 800;
+            font-size: 1.2rem;
+            font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            background: linear-gradient(135deg, var(--accent-color), var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--text-primary);
             margin: 0;
+            opacity: 0.9;
         }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             backdrop-filter: blur(12px);
-            border-radius: 20px;
+            border-radius: 18px;
             padding: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
         }
 
         .card-title {
             font-size: 0.85rem;
-            font-weight: 700;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-secondary);
             margin-top: 0;
             margin-bottom: 14px;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            cursor: pointer;
+            user-select: none;
         }
 
+        .card-title span.collapse-icon {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            font-weight: normal;
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .collapsed .card-content {
+            display: none;
+        }
+
+        /* HAUPT-WIDERSTAND ANZEIGE */
         .result-box {
             text-align: center;
-            padding: 20px 16px;
-            background: linear-gradient(180deg, rgba(0,230,118,0.05) 0%, rgba(0,0,0,0) 100%);
-            border: 1px solid rgba(0, 230, 118, 0.2);
-            position: relative;
-            overflow: hidden;
+            padding: 22px 16px;
+            background: linear-gradient(180deg, rgba(129, 178, 154, 0.04) 0%, rgba(0,0,0,0) 100%);
+            border: 1px solid rgba(129, 178, 154, 0.15);
         }
 
-        .result-value {
-            font-size: 3.8rem;
-            font-weight: 900;
+        .result-input-field {
+            font-size: 3.2rem;
+            font-weight: 800;
             color: var(--accent-color);
             line-height: 1;
-            text-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
-            font-variant-numeric: tabular-nums;
+            font-family: var(--font-mono);
+            background: transparent;
+            border: none;
+            text-align: center;
+            width: 100%;
+            outline: none;
         }
 
         .result-unit {
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.8rem;
+            font-weight: 500;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-top: 4px;
+            margin-top: 6px;
             margin-bottom: 12px;
         }
 
-        .control-group { margin-top: 16px; }
+        .control-group { margin-top: 4px; }
 
         .control-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.85rem;
+            font-weight: 500;
             margin-bottom: 8px;
+            color: var(--text-secondary);
         }
 
         .control-header span:last-child {
-            color: var(--accent-cyan);
-            font-weight: 800;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-family: var(--font-mono);
         }
 
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 10px;
-            border-radius: 5px;
-            background: #1e2538;
+            height: 8px;
+            border-radius: 4px;
+            background: #1a202c;
             outline: none;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             background: var(--accent-color);
-            box-shadow: 0 0 12px rgba(0, 230, 118, 0.8);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
             cursor: pointer;
         }
 
-        .input-text, .input-number {
+        .input-text, .input-number, select.input-text {
             width: 100%;
-            background: #121622;
-            border: 1px solid #2a344a;
-            color: #fff;
+            background: #171d26;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
             padding: 12px;
             border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 0.95rem;
+            font-weight: 600;
             outline: none;
             transition: border-color 0.2s;
         }
 
-        .input-number { text-align: center; font-size: 1.2rem; }
+        .input-number { text-align: center; font-family: var(--font-mono); }
         .input-text:focus, .input-number:focus { border-color: var(--accent-cyan); }
 
         .suggestions-grid {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-top: 10px;
         }
 
         .suggestion-item {
-            background: #121622;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: #171d26;
+            border: 1px solid rgba(255, 255, 255, 0.04);
             padding: 12px 16px;
             border-radius: 12px;
             display: flex;
@@ -194,160 +216,199 @@
         }
 
         .suggestion-tag {
-            font-size: 0.75rem;
-            font-weight: 700;
+            font-size: 0.7rem;
+            font-weight: 600;
             text-transform: uppercase;
             padding: 4px 8px;
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.06);
             color: var(--text-secondary);
         }
 
-        .suggestion-details { font-size: 0.95rem; font-weight: 700; color: #fff; }
+        .suggestion-details { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
 
-        .drop-display-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .drop-box {
-            background: #121622;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            border-radius: 14px;
-            padding: 14px;
-            text-align: center;
-        }
-
-        .drop-box-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .drop-box-value { font-size: 1.5rem; font-weight: 900; color: var(--accent-cyan); }
-
-        .timer-card { text-align: center; border: 1px solid rgba(255, 179, 0, 0.3); }
+        .timer-card { text-align: center; border: 1px solid rgba(229, 181, 103, 0.2); }
 
         .timer-status {
-            font-size: 1rem;
-            font-weight: 800;
+            font-size: 0.9rem;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: var(--ready-color);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .timer-display {
-            font-size: 3.8rem;
-            font-weight: 900;
-            font-variant-numeric: tabular-nums;
-            color: #fff;
+            font-size: 3.5rem;
+            font-weight: 800;
+            font-family: var(--font-mono);
+            color: var(--text-primary);
             margin: 0 0 16px 0;
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
 
         .btn-group { display: flex; gap: 10px; margin-top: 16px; }
 
         button {
             flex: 1;
-            background: linear-gradient(135deg, var(--accent-color), #00b0ff);
-            color: #000;
+            background: var(--accent-color);
+            color: #12151c;
             border: none;
             padding: 14px 16px;
-            font-size: 1rem;
-            font-weight: 800;
-            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 230, 118, 0.3);
+            box-shadow: 0 4px 12px rgba(129, 178, 154, 0.25);
             transition: transform 0.1s, opacity 0.2s;
         }
 
-        button.secondary { background: #1e2538; color: #fff; box-shadow: none; border: 1px solid var(--card-border); }
-        button.action-btn { background: #121622; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); box-shadow: none; }
-        button.finish-workout { background: linear-gradient(135deg, #ff9800, #ff3d00); color: #fff; }
-        button.danger { background: #2a1215; color: #ff5252; border: 1px solid rgba(255, 82, 82, 0.3); box-shadow: none; font-size: 0.85rem; padding: 8px 12px; }
-        button:active { transform: scale(0.96); }
+        button.secondary { background: #1a202c; color: var(--text-primary); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.08); }
+        button.action-btn { background: #171d26; color: var(--accent-cyan); border: 1px solid rgba(116, 166, 178, 0.3); box-shadow: none; }
+        button.finish-workout { background: #e5b567; color: #12151c; }
+        button.danger { background: #261717; color: var(--work-color); border: 1px solid rgba(217, 119, 113, 0.3); box-shadow: none; font-size: 0.8rem; padding: 8px 12px; }
+        button:active { transform: scale(0.97); }
+
+        .preset-btn {
+            background: #1a202c;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 8px;
+            box-shadow: none;
+            flex: 1;
+        }
+        .preset-btn.active {
+            background: var(--accent-cyan);
+            color: #12151c;
+            border-color: var(--accent-cyan);
+            font-weight: 700;
+        }
 
         /* LOGBUCH & STYLES */
         .log-exercise-block {
-            background: #121622;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
+            background: #171d26;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
             padding: 14px;
             margin-top: 12px;
         }
 
         .log-exercise-title {
-            font-size: 1rem;
-            font-weight: 800;
+            font-size: 0.95rem;
+            font-weight: 700;
             color: var(--accent-cyan);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             padding-bottom: 6px;
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
         }
 
+        .log-exercise-note-display {
+            font-size: 0.8rem;
+            color: var(--ready-color);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .log-set-wrapper {
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+            padding: 8px 0;
+        }
+        .log-set-wrapper:last-child { border-bottom: none; }
+
         .log-set-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
             gap: 8px;
         }
 
-        .log-set-row:last-child { border-bottom: none; }
+        .ds-details-box {
+            margin-top: 6px;
+            background: #12151c;
+            border: 1px solid rgba(129, 178, 154, 0.3);
+            border-radius: 8px;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ds-details-box label {
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            white-space: nowrap;
+        }
 
         .small-box {
             width: 46px;
-            background: #0b0e14;
-            border: 1px solid #2a344a;
-            color: #fff;
-            font-weight: 800;
+            background: #12151c;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            font-weight: 700;
+            font-family: var(--font-mono);
             text-align: center;
             padding: 6px;
             border-radius: 8px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             outline: none;
         }
 
         .small-box:focus { border-color: var(--accent-cyan); }
-        .rpe-box { color: var(--ready-color); border-color: rgba(255, 179, 0, 0.3); }
+        .rpe-box { color: var(--ready-color); border-color: rgba(229, 181, 103, 0.3); }
 
         .ds-checkbox {
-            width: 36px;
-            height: 36px;
-            background: #0b0e14;
-            border: 1px solid #2a344a;
+            width: 34px;
+            height: 34px;
+            background: #12151c;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
-            font-weight: 900;
+            font-size: 1rem;
+            font-weight: 700;
             color: var(--accent-color);
             cursor: pointer;
             user-select: none;
         }
 
         .history-card {
-            background: #121622;
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            border-radius: 14px;
+            background: #171d26;
+            border: 1px solid rgba(116, 166, 178, 0.15);
+            border-radius: 12px;
             padding: 14px;
             margin-bottom: 12px;
         }
 
-        .history-date {
-            font-size: 0.9rem;
-            font-weight: 800;
-            color: var(--accent-color);
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 8px;
+        }
+
+        .history-date {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        .last-time-box {
+            background: rgba(116, 166, 178, 0.06);
+            border: 1px solid rgba(116, 166, 178, 0.2);
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
     </style>
 </head>
@@ -358,66 +419,52 @@
         <h1>Board Computer</h1>
     </header>
 
-    <!-- HAUPTANZEIGE -->
+    <!-- HAUPTANZEIGE EFFEKTIVER GESAMT-WIDERSTAND -->
     <div class="card result-box">
-        <div class="result-unit">Effektiver Widerstand</div>
-        <div class="result-value" id="calc-result">17.5</div>
-        <div class="result-unit" style="margin-bottom:16px;">Kilogramm</div>
-        <input type="range" id="slider-target-kg" min="5.0" max="30.5" step="0.5" value="17.5" oninput="onKgSliderChange()">
+        <div class="result-unit">Effektiver Gesamtwiderstand (Beide Seiten)</div>
+        <div style="display:flex; justify-content:center; align-items:center;">
+            <input type="number" id="calc-result-input" class="result-input-field" value="35.0" step="1.0" min="10.0" max="61.0" oninput="onManualKgInput()">
+        </div>
+        <div class="result-unit" style="margin-bottom:16px;">Kilogramm (Total)</div>
+        <input type="range" id="slider-target-kg" min="10.0" max="61.0" step="1.0" value="35.0" oninput="onKgSliderChange()">
     </div>
 
-    <!-- MANUELLE REGLER -->
-    <div class="card">
-        <div class="card-title">⚙️ Manuelle Einstellung</div>
-        <div class="control-group">
-            <div class="control-header">
-                <span>Gewichtsscheiben Position</span>
-                <span id="val-weightPos">7</span>
-            </div>
-            <input type="range" id="slider-weight" min="1" max="32" value="7" oninput="onPositionSlidersChange()">
+    <!-- MANUELLE REGLER (EINKLAPPBAR) -->
+    <div class="card" id="card-manual">
+        <div class="card-title" onclick="toggleCard('card-manual')">
+            <span>⚙️ Manuelle Einstellung</span>
+            <span class="collapse-icon" id="icon-manual">▼ Verstecken</span>
         </div>
-
-        <div class="control-group" style="margin-top: 20px;">
-            <div class="control-header">
-                <span>Stand- / Griffposition</span>
-                <span id="val-gripPos">15</span>
+        <div class="card-content">
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Gewichtsscheiben Position</span>
+                    <span id="val-weightPos">7</span>
+                </div>
+                <input type="range" id="slider-weight" min="1" max="32" value="7" oninput="onPositionSlidersChange()">
             </div>
-            <input type="range" id="slider-grip" min="15" max="32" value="15" oninput="onPositionSlidersChange()">
+
+            <div class="control-group" style="margin-top: 12px;">
+                <div class="control-header">
+                    <span>Stand- / Griffposition</span>
+                    <span id="val-gripPos">15</span>
+                </div>
+                <input type="range" id="slider-grip" min="15" max="32" value="15" oninput="onPositionSlidersChange()">
+            </div>
         </div>
     </div>
 
-    <!-- WUNSCH-GEWICHT OPTIONEN -->
-    <div class="card">
-        <div class="card-title" style="margin-bottom: 6px;">🎯 Positionierungs-Optionen</div>
-        <p style="font-size:0.8rem; color:var(--text-secondary); margin:0 0 10px 0;">
-            Alternative Kombinationen für die aktuell gewählten Kilogramm:
-        </p>
-        <div class="suggestions-grid" id="target-weight-suggestions"></div>
-    </div>
-
-    <!-- DROP-SET RECHNER -->
-    <div class="card">
-        <div class="card-title">🔥 Drop-Set Rechner (Feste Scheibe: Position <span id="drop-current-wpos" style="color:var(--accent-cyan);">7</span>)</div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div>
-                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Startgewicht (kg)</label>
-                <input type="text" id="drop-start-display" class="input-number" value="17.5 kg" readonly style="color: var(--accent-color); background: #0b0e14;">
-            </div>
-            <div>
-                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Drop-Ziel (kg)</label>
-                <input type="number" id="drop-target-input" class="input-number" value="12.0" step="0.5" min="5.0" max="30.5" oninput="calculateDirectDrop()">
-            </div>
+    <!-- WUNSCH-GEWICHT OPTIONEN (EINKLAPPBAR) -->
+    <div class="card" id="card-options">
+        <div class="card-title" onclick="toggleCard('card-options')">
+            <span>🎯 Positionierungs-Optionen</span>
+            <span class="collapse-icon" id="icon-options">▼ Verstecken</span>
         </div>
-
-        <div class="drop-display-container">
-            <div class="drop-box">
-                <div class="drop-box-label">Aktueller Griff</div>
-                <div class="drop-box-value" id="res-start-grip">Griff 15</div>
-            </div>
-            <div class="drop-box" style="border-color: var(--accent-color);">
-                <div class="drop-box-label" style="color:var(--accent-color);">Drop-Griff</div>
-                <div class="drop-box-value" id="res-drop-grip" style="color:var(--accent-color);">Griff 24</div>
-            </div>
+        <div class="card-content">
+            <p style="font-size:0.8rem; color:var(--text-secondary); margin:0 0 4px 0;">
+                Reale Stand-Optionen für die gewählten Gesamtkilogramm:
+            </p>
+            <div class="suggestions-grid" id="target-weight-suggestions"></div>
         </div>
     </div>
 
@@ -426,18 +473,26 @@
         <div class="timer-status" id="timer-status">Bereit für Satz</div>
         <div class="timer-display" id="timer-display">00:45</div>
         
-        <div style="text-align: left; background: #121622; padding: 14px; border-radius: 12px;">
+        <div style="text-align: left; background: #171d26; padding: 14px; border-radius: 12px;">
             <div class="control-header" style="margin:0;">
                 <span style="color:var(--text-secondary);">Muskelarbeitzeit</span>
-                <span id="val-workTime" style="color:#fff;">45s</span>
+                <span id="val-workTime" style="color:var(--text-primary);">45s</span>
             </div>
-            <input type="range" id="slider-work" min="10" max="120" step="5" value="45" oninput="updateTimerSettings()" style="margin-top:8px;">
+            <input type="range" id="slider-work" min="10" max="120" step="5" value="45" oninput="updateTimerSettings()" style="margin-top:6px;">
 
-            <div class="control-header" style="margin-top:14px;">
+            <div class="control-header" style="margin-top:12px;">
                 <span style="color:var(--text-secondary);">Pausenzeit</span>
-                <span id="val-restTime" style="color:#fff;">120s</span>
+                <span id="val-restTime" style="color:var(--text-primary);">120s</span>
             </div>
-            <input type="range" id="slider-rest" min="10" max="300" step="5" value="120" oninput="updateTimerSettings()" style="margin-top:8px;">
+            <input type="range" id="slider-rest" min="10" max="300" step="5" value="120" oninput="updateTimerSettings()" style="margin-top:6px;">
+
+            <!-- Pausen-Schnellwahl (60s, 90s, 120s, 180s) -->
+            <div style="display:flex; gap:6px; margin-top:10px;">
+                <button class="preset-btn" onclick="setRestPreset(60, this)">60s</button>
+                <button class="preset-btn" onclick="setRestPreset(90, this)">90s</button>
+                <button class="preset-btn active" onclick="setRestPreset(120, this)">120s</button>
+                <button class="preset-btn" onclick="setRestPreset(180, this)">180s</button>
+            </div>
         </div>
 
         <div class="btn-group">
@@ -446,18 +501,35 @@
         </div>
     </div>
 
-    <!-- ÜBUNG STEUERUNG -->
+    <!-- ÜBUNG STEUERUNG MIT NOTIZFELD & "LETZTES MAL" ANZEIGE -->
     <div class="card">
-        <div class="card-title">📝 Aktuelle Übung Steuerung</div>
-        <div style="display:flex; flex-direction:column; gap:12px;">
+        <div class="card-title" style="cursor:default;">📝 Aktuelle Übung Steuerung</div>
+        <div class="card-content">
             <div>
-                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Name der Übung</label>
-                <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Brustpresse, Latzug..." value="Brustpresse">
+                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Übung wählen oder eingeben</label>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Brustpresse, Squats..." value="Brustpresse" oninput="checkLastTimeWorkout()">
+                    <select id="saved-exercises-select" class="input-text" style="width: auto; flex: 0.4;" onchange="selectSavedExercise(this.value)">
+                        <option value="">▼ Vorlagen</option>
+                    </select>
+                </div>
+
+                <!-- LIVE-ANZEIGE: LETZTES MAL -->
+                <div id="last-time-container" style="display:none;" class="last-time-box">
+                    <span>📈</span>
+                    <span id="last-time-text">Letztes Mal: -</span>
+                </div>
             </div>
 
-            <div style="display:flex; gap:10px;">
-                <button class="action-btn" onclick="addManualSet()">➕ Satz manuell (+)</button>
-                <button class="secondary" onclick="finishCurrentExercise()">✓ Übung beenden</button>
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Notiz zur Übung (optional)</label>
+                <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px;" placeholder="z. B. Oberkörper 90° geneigt, Sitzhöhe 3...">
+            </div>
+
+            <div style="display:flex; gap:8px;">
+                <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="saveCurrentExerciseName()">💾 Speichern</button>
+                <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz (+)</button>
+                <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Beenden</button>
             </div>
         </div>
     </div>
@@ -465,7 +537,7 @@
     <!-- AKTUELLES TAGES-LOGBUCH -->
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div class="card-title" style="margin:0;">📋 Aktuelles Training</div>
+            <div class="card-title" style="margin:0; cursor:default;">📋 Aktuelles Training</div>
             <button class="danger" onclick="clearLogbook()">Verwerfen</button>
         </div>
 
@@ -480,9 +552,14 @@
         </div>
     </div>
 
-    <!-- KALENDER / HISTORIE -->
+    <!-- KALENDER / HISTORIE & BACKUP -->
     <div class="card">
-        <div class="card-title">📅 Absolvierte Workouts (Historie)</div>
+        <div class="card-title" style="cursor:default;">📅 Absolvierte Workouts (Historie)</div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <button class="secondary" style="font-size:0.8rem; padding:8px;" onclick="exportBackup()">💾 Daten Sichern</button>
+            <button class="secondary" style="font-size:0.8rem; padding:8px;" onclick="document.getElementById('import-file').click()">📂 Wiederherstellen</button>
+            <input type="file" id="import-file" style="display:none" accept=".json" onchange="importBackup(event)">
+        </div>
         <div id="history-container">
             <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">
                 Bisher noch keine Workouts abgeschlossen.
@@ -492,42 +569,79 @@
 </div>
 
 <script>
+    // --- WAKE LOCK API ---
+    let wakeLock = null;
+    async function requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+            }
+        } catch (err) {}
+    }
+    document.addEventListener('visibilitychange', () => {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+            requestWakeLock();
+        }
+    });
+    requestWakeLock();
+
+    // --- EINKLAPPBARE SEKTIONEN (ACCORDION) ---
+    function toggleCard(cardId) {
+        let card = document.getElementById(cardId);
+        let icon = document.getElementById(cardId === 'card-manual' ? 'icon-manual' : 'icon-options');
+        card.classList.toggle('collapsed');
+        if (card.classList.contains('collapsed')) {
+            icon.innerText = "▶ Einblenden";
+        } else {
+            icon.innerText = "▼ Verstecken";
+        }
+    }
+
     // --- MATHEMATISCHES MODELL ---
     let weightPos = 7;
     let gripPos = 15;
-    let currentEffectiveKg = 17.5;
+    let currentTotalKg = 35.0;
 
     function onPositionSlidersChange() {
         weightPos = parseInt(document.getElementById('slider-weight').value);
         gripPos = parseInt(document.getElementById('slider-grip').value);
         gripPos = Math.max(15, Math.min(32, gripPos));
 
-        let effectiveKg = 22.0 + (0.53 * weightPos) - (0.55 * gripPos);
-        currentEffectiveKg = Math.max(4.93, effectiveKg);
+        let singleKg = 22.0 + (0.53 * weightPos) - (0.55 * gripPos);
+        currentTotalKg = Math.max(9.86, singleKg * 2);
 
         document.getElementById('val-weightPos').innerText = weightPos;
         document.getElementById('val-gripPos').innerText = gripPos;
-        document.getElementById('calc-result').innerText = currentEffectiveKg.toFixed(1);
-        document.getElementById('slider-target-kg').value = currentEffectiveKg.toFixed(1);
+        document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
+        document.getElementById('slider-target-kg').value = currentTotalKg.toFixed(1);
 
-        document.getElementById('drop-current-wpos').innerText = weightPos;
-        document.getElementById('drop-start-display').value = currentEffectiveKg.toFixed(1) + ' kg';
-        
-        suggestTargetWeight(currentEffectiveKg);
-        calculateDirectDrop();
+        suggestTargetWeight(currentTotalKg);
     }
 
     function onKgSliderChange() {
-        currentEffectiveKg = parseFloat(document.getElementById('slider-target-kg').value);
-        document.getElementById('calc-result').innerText = currentEffectiveKg.toFixed(1);
+        currentTotalKg = parseFloat(document.getElementById('slider-target-kg').value);
+        document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
+        syncPositionToKg(currentTotalKg);
+    }
 
+    function onManualKgInput() {
+        let val = parseFloat(document.getElementById('calc-result-input').value);
+        if (!isNaN(val) && val >= 9.86 && val <= 61.0) {
+            currentTotalKg = val;
+            document.getElementById('slider-target-kg').value = val;
+            syncPositionToKg(val);
+        }
+    }
+
+    function syncPositionToKg(targetTotalKg) {
+        let targetSingleKg = targetTotalKg / 2;
         let bestMatch = null;
         let minDiff = 999;
 
         for (let w = 1; w <= 32; w++) {
             for (let g = 15; g <= 32; g++) {
-                let calcKg = 22.0 + (0.53 * w) - (0.55 * g);
-                let diff = Math.abs(calcKg - currentEffectiveKg);
+                let calcSingleKg = 22.0 + (0.53 * w) - (0.55 * g);
+                let diff = Math.abs(calcSingleKg - targetSingleKg);
                 if (diff < minDiff) {
                     minDiff = diff;
                     bestMatch = { weightPos: w, gripPos: g };
@@ -544,62 +658,57 @@
             document.getElementById('val-weightPos').innerText = weightPos;
             document.getElementById('val-gripPos').innerText = gripPos;
 
-            document.getElementById('drop-current-wpos').innerText = weightPos;
-            document.getElementById('drop-start-display').value = currentEffectiveKg.toFixed(1) + ' kg';
-            
-            suggestTargetWeight(currentEffectiveKg);
-            calculateDirectDrop();
+            suggestTargetWeight(targetTotalKg);
         }
     }
 
-    function suggestTargetWeight(targetKg) {
-        let target = targetKg || currentEffectiveKg;
+    function suggestTargetWeight(targetTotalKg) {
+        let target = targetTotalKg || currentTotalKg;
         let container = document.getElementById('target-weight-suggestions');
         container.innerHTML = '';
 
         let validOptions = [];
         for (let w = 1; w <= 32; w++) {
             for (let g = 15; g <= 32; g++) {
-                let kg = 22.0 + (0.53 * w) - (0.55 * g);
-                let diff = Math.abs(kg - target);
-                if (diff <= 0.4) validOptions.push({ weightPos: w, gripPos: g, calculatedKg: kg, diff: diff });
+                let singleKg = 22.0 + (0.53 * w) - (0.55 * g);
+                let totalKg = singleKg * 2;
+                let diff = Math.abs(totalKg - target);
+                if (diff <= 0.9) {
+                    validOptions.push({ weightPos: w, gripPos: g, calculatedTotalKg: totalKg, diff: diff });
+                }
             }
         }
 
         if (validOptions.length === 0) {
-            container.innerHTML = '<div style="font-size:0.85rem; color:#ff5252; text-align:center;">Keine Kombination im Bereich 15-32.</div>';
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--work-color); text-align:center; padding:6px;">Keine physikalisch mögliche Kombination im Korridor.</div>';
             return;
         }
 
-        validOptions.sort((a, b) => a.diff - b.diff);
+        let zoneEng = validOptions.filter(o => o.gripPos >= 15 && o.gripPos <= 20).sort((a,b) => a.diff - b.diff);
+        let zoneMittel = validOptions.filter(o => o.gripPos >= 21 && o.gripPos <= 26).sort((a,b) => a.diff - b.diff);
+        let zoneWeit = validOptions.filter(o => o.gripPos >= 27 && o.gripPos <= 32).sort((a,b) => a.diff - b.diff);
+
         let picks = [];
-        if (validOptions.length > 0) picks.push({ tag: "Option A", ...validOptions[0] });
-        if (validOptions.length > 2) picks.push({ tag: "Option B", ...validOptions[Math.floor(validOptions.length / 2)] });
-        if (validOptions.length > 4) picks.push({ tag: "Option C", ...validOptions[validOptions.length - 1] });
+        if (zoneEng.length > 0) picks.push({ tag: "Option A (Vorne)", ...zoneEng[0] });
+        if (zoneMittel.length > 0) picks.push({ tag: "Option B (Mitte)", ...zoneMittel[0] });
+        if (zoneWeit.length > 0) picks.push({ tag: "Option C (Hinten)", ...zoneWeit[0] });
+
+        if (picks.length === 0) {
+            validOptions.sort((a,b) => a.diff - b.diff);
+            validOptions.slice(0, 3).forEach((opt, idx) => {
+                picks.push({ tag: `Option ${String.fromCharCode(65 + idx)}`, ...opt });
+            });
+        }
 
         picks.forEach(opt => {
             container.innerHTML += `
                 <div class="suggestion-item">
                     <span class="suggestion-tag">${opt.tag}</span>
                     <div class="suggestion-details">Scheibe <strong>${opt.weightPos}</strong> | Griff <strong>${opt.gripPos}</strong></div>
-                    <span style="font-size:0.85rem; color:var(--accent-color); font-weight:700;">~${opt.calculatedKg.toFixed(1)} kg</span>
+                    <span style="font-size:0.85rem; color:var(--accent-color); font-weight:700;">~${opt.calculatedTotalKg.toFixed(1)} kg</span>
                 </div>
             `;
         });
-    }
-
-    function calculateDirectDrop() {
-        let startTarget = currentEffectiveKg;
-        let dropTarget = parseFloat(document.getElementById('drop-target-input').value) || 12.0;
-
-        let matchedStartGrip = Math.round((22.0 + (0.53 * weightPos) - startTarget) / 0.55);
-        let matchedDropGrip = Math.round((22.0 + (0.53 * weightPos) - dropTarget) / 0.55);
-
-        let safeStartGrip = Math.max(15, Math.min(32, matchedStartGrip));
-        let safeDropGrip = Math.max(15, Math.min(32, matchedDropGrip));
-
-        document.getElementById('res-start-grip').innerText = `Griff ${safeStartGrip}`;
-        document.getElementById('res-drop-grip').innerText = `Griff ${safeDropGrip}`;
     }
 
     // --- AUDIO SYSTEM ---
@@ -626,30 +735,97 @@
     function playToneStart() { playBeep(880.00, 0.4, 'triangle'); }
     function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
 
-    // --- LOGBUCH & HISTORIE ---
+    // --- GESPEICHERTE ÜBUNGEN & LOGBUCH LOGIK ---
+    let savedExerciseList = JSON.parse(localStorage.getItem('board_computer_saved_exercises') || '["Brustpresse", "Squats", "Deadlifts", "Latzug", "Low Row"]');
     let activeSessionLog = JSON.parse(localStorage.getItem('board_computer_active_session') || '[]');
     let workoutHistory = JSON.parse(localStorage.getItem('board_computer_history') || '[]');
 
+    function renderSavedExercisesDropdown() {
+        let selectEl = document.getElementById('saved-exercises-select');
+        selectEl.innerHTML = '<option value="">▼ Vorlagen</option>';
+        savedExerciseList.forEach(ex => {
+            selectEl.innerHTML += `<option value="${ex}">${ex}</option>`;
+        });
+    }
+
+    function selectSavedExercise(val) {
+        if (val) {
+            document.getElementById('exercise-name-input').value = val;
+            checkLastTimeWorkout();
+        }
+    }
+
+    function checkLastTimeWorkout() {
+        let name = document.getElementById('exercise-name-input').value.trim();
+        let container = document.getElementById('last-time-container');
+        let textEl = document.getElementById('last-time-text');
+
+        if (!name || workoutHistory.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        let lastSet = null;
+        let lastDate = '';
+
+        for (let session of workoutHistory) {
+            let found = session.sets.filter(s => s.exercise.toLowerCase() === name.toLowerCase());
+            if (found.length > 0) {
+                lastSet = found[found.length - 1];
+                lastDate = session.date;
+                break;
+            }
+        }
+
+        if (lastSet) {
+            let wdhStr = lastSet.wdh ? ` | ${lastSet.wdh} WDH` : '';
+            textEl.innerText = `Letztes Mal (${lastDate}): ${lastSet.kg} kg Total (Scheibe ${lastSet.weightPos}/Griff ${lastSet.gripPos})${wdhStr}`;
+            container.style.display = 'flex';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    function saveCurrentExerciseName() {
+        let val = document.getElementById('exercise-name-input').value.trim();
+        if (!val) {
+            alert("Bitte zuerst einen Namen eintragen.");
+            return;
+        }
+        if (!savedExerciseList.includes(val)) {
+            savedExerciseList.push(val);
+            localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+            renderSavedExercisesDropdown();
+            alert(`Übung "${val}" wurde dauerhaft als Vorlage gespeichert!`);
+        } else {
+            alert("Diese Übung ist bereits in deinen Vorlagen vorhanden.");
+        }
+    }
+
     function addSetToActiveSession() {
         let exerciseName = document.getElementById('exercise-name-input').value.trim() || 'Übung';
+        let exerciseNote = document.getElementById('exercise-note-input').value.trim();
         let now = new Date();
         let timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
         let setEntry = {
             id: Date.now(),
             exercise: exerciseName,
-            kg: currentEffectiveKg.toFixed(1),
+            note: exerciseNote,
+            kg: currentTotalKg.toFixed(1),
             weightPos: weightPos,
             gripPos: gripPos,
             wdh: '',
             rpe: '',
             ds: false,
+            dsDetails: '',
             time: timeStr
         };
 
         activeSessionLog.push(setEntry);
         localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
         renderActiveLogbook();
+        checkLastTimeWorkout();
     }
 
     function addManualSet() { addSetToActiveSession(); }
@@ -679,7 +855,9 @@
 
     function finishCurrentExercise() {
         document.getElementById('exercise-name-input').value = '';
-        document.getElementById('exercise-name-input').placeholder = 'Nächste Übung eingeben...';
+        document.getElementById('exercise-note-input').value = '';
+        document.getElementById('exercise-name-input').placeholder = 'Nächste Übung wählen/eingeben...';
+        document.getElementById('last-time-container').style.display = 'none';
     }
 
     function finishWorkoutSession() {
@@ -706,7 +884,61 @@
         
         renderActiveLogbook();
         renderHistory();
+        checkLastTimeWorkout();
         alert("Workout erfolgreich am " + dateStr + " im Kalender abgespeichert!");
+    }
+
+    function deleteWorkoutHistoryItem(workoutId) {
+        if (confirm("Möchtest du dieses gespeicherte Workout wirklich aus der Historie löschen?")) {
+            workoutHistory = workoutHistory.filter(w => w.id !== workoutId);
+            localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+            renderHistory();
+            checkLastTimeWorkout();
+        }
+    }
+
+    // --- BACKUP EXPORT & IMPORT ---
+    function exportBackup() {
+        let backupData = {
+            history: workoutHistory,
+            savedExercises: savedExerciseList,
+            version: "1.0",
+            date: new Date().toISOString()
+        };
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "board_computer_backup_" + new Date().toISOString().slice(0,10) + ".json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function importBackup(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let imported = JSON.parse(e.target.result);
+                if (imported.history && imported.savedExercises) {
+                    if (confirm("Möchtest du die Daten wirklich importieren? Vorhandene Historie wird überschrieben.")) {
+                        workoutHistory = imported.history;
+                        savedExerciseList = imported.savedExercises;
+                        localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+                        localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+                        renderSavedExercisesDropdown();
+                        renderHistory();
+                        alert("Backup erfolgreich wiederhergestellt!");
+                    }
+                } else {
+                    alert("Ungültiges Backup-Format!");
+                }
+            } catch (err) {
+                alert("Fehler beim Lesen der JSON-Datei.");
+            }
+        };
+        reader.readAsText(file);
     }
 
     function renderActiveLogbook() {
@@ -725,36 +957,53 @@
 
         for (let exName in grouped) {
             let sets = grouped[exName];
+            let firstNote = sets[0].note || '';
+
             let blockHtml = `<div class="log-exercise-block">
                 <div class="log-exercise-title">
                     <span>🏋️ ${exName}</span>
                     <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:normal;">${sets.length} Sätze</span>
                 </div>`;
 
+            if (firstNote) {
+                blockHtml += `<div class="log-exercise-note-display">📌 ${firstNote}</div>`;
+            }
+
             sets.forEach((s, idx) => {
                 let dsSymbol = s.ds ? '✓' : '';
                 blockHtml += `
-                    <div class="log-set-row">
-                        <div style="flex: 1; min-width: 90px;">
-                            <strong style="font-size:0.85rem;">Satz ${idx + 1}</strong><br>
-                            <span style="color:var(--accent-color); font-weight:800; font-size:0.95rem;">${s.kg} kg</span> 
-                            <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                    <div class="log-set-wrapper">
+                        <div class="log-set-row">
+                            <div style="flex: 1; min-width: 90px;">
+                                <strong style="font-size:0.85rem;">Satz ${idx + 1}</strong><br>
+                                <span style="color:var(--accent-color); font-weight:700; font-family:var(--font-mono); font-size:0.95rem;">${s.kg} kg</span> 
+                                <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
+                                    <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
+                                    <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">DS</span>
+                                    <div class="ds-checkbox" onclick="toggleDropSet(${s.id})">${dsSymbol}</div>
+                                </div>
+                                <button class="danger" style="padding:6px 8px; font-size:0.75rem; margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
+                            </div>
                         </div>
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <div style="text-align:center;">
-                                <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
-                                <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+
+                        ${s.ds ? `
+                            <div class="ds-details-box">
+                                <label>↳ Drop-Details:</label>
+                                <input type="text" class="input-text" style="padding:4px 8px; font-size:0.8rem; background:#12151c;" 
+                                    placeholder="z. B. 25 kg / 6 WDH..." value="${s.dsDetails || ''}" 
+                                    oninput="updateSetField(${s.id}, 'dsDetails', this.value)">
                             </div>
-                            <div style="text-align:center;">
-                                <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
-                                <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
-                            </div>
-                            <div style="text-align:center;">
-                                <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">DS</span>
-                                <div class="ds-checkbox" onclick="toggleDropSet(${s.id})">${dsSymbol}</div>
-                            </div>
-                            <button class="danger" style="padding:6px 8px; font-size:0.75rem; margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
-                        </div>
+                        ` : ''}
                     </div>
                 `;
             });
@@ -774,7 +1023,10 @@
         container.innerHTML = '';
         workoutHistory.forEach(session => {
             let itemHtml = `<div class="history-card">
-                <div class="history-date">📅 Workout vom ${session.date} (${session.time} Uhr)</div>`;
+                <div class="history-header">
+                    <div class="history-date">📅 Workout vom ${session.date} (${session.time} Uhr)</div>
+                    <button class="danger" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteWorkoutHistoryItem(${session.id})">✕ Löschen</button>
+                </div>`;
 
             let grouped = {};
             session.sets.forEach(item => {
@@ -784,13 +1036,15 @@
 
             for (let exName in grouped) {
                 let sets = grouped[exName];
-                itemHtml += `<div style="font-size:0.85rem; font-weight:700; color:var(--accent-cyan); margin-top:6px;">${exName}</div>`;
+                let firstNote = sets[0].note ? ` <span style="font-size:0.75rem; color:var(--ready-color); font-style:italic;">(📌 ${sets[0].note})</span>` : '';
+
+                itemHtml += `<div style="font-size:0.85rem; font-weight:700; color:var(--accent-cyan); margin-top:6px;">${exName}${firstNote}</div>`;
                 sets.forEach((s, idx) => {
                     let wdhText = s.wdh ? s.wdh + ' WDH' : '';
                     let rpeText = s.rpe ? 'RPE ' + s.rpe : '';
-                    let dsText = s.ds ? '[Drop-Set]' : '';
+                    let dsText = s.ds ? `[Drop-Set${s.dsDetails ? ': ' + s.dsDetails : ''}]` : '';
                     itemHtml += `
-                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px;">
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">
                             • Satz ${idx + 1}: ${s.kg} kg (Scheibe ${s.weightPos}/Griff ${s.gripPos}) ${wdhText} ${rpeText} ${dsText}
                         </div>
                     `;
@@ -826,6 +1080,30 @@
         document.getElementById('val-workTime').innerText = workDuration + 's';
         document.getElementById('val-restTime').innerText = restDuration + 's';
 
+        let buttons = document.querySelectorAll('.preset-btn');
+        buttons.forEach(btn => {
+            if (parseInt(btn.innerText) === restDuration) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
+        }
+    }
+
+    function setRestPreset(secs, btnElement) {
+        restDuration = secs;
+        document.getElementById('slider-rest').value = secs;
+        document.getElementById('val-restTime').innerText = secs + 's';
+
+        let buttons = document.querySelectorAll('.preset-btn');
+        buttons.forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
         if (currentPhase === 'idle') {
             currentTimeLeft = workDuration;
             updateDisplay();
@@ -834,6 +1112,7 @@
 
     function startSetWorkflow() {
         initAudio();
+        requestWakeLock();
         if (timerInterval) clearInterval(timerInterval);
 
         currentPhase = 'ready';
@@ -909,8 +1188,10 @@
 
     // Init
     onPositionSlidersChange();
+    renderSavedExercisesDropdown();
     renderActiveLogbook();
     renderHistory();
+    checkLastTimeWorkout();
     updateDisplay();
 </script>
 
