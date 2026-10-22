@@ -9,13 +9,13 @@
             --bg-color: #12151c;
             --card-bg: rgba(22, 27, 36, 0.85);
             --card-border: rgba(255, 255, 255, 0.06);
-            --accent-color: #81b29a; /* Sanftes Pastell-Salbei / Mint */
-            --accent-cyan: #74a6b2;  /* Gedämpftes Pastell-Blau */
+            --accent-color: #81b29a;
+            --accent-cyan: #74a6b2;
             --text-primary: #f0f4f8;
             --text-secondary: #8c9ba5;
-            --work-color: #d97771;   /* Sanftes Pastell-Terracotta */
-            --rest-color: #81b29a;   /* Sanftes Pastell-Salbei */
-            --ready-color: #e5b567;  /* Warmes Pastell-Sandgelb */
+            --work-color: #d97771;
+            --rest-color: #81b29a;
+            --ready-color: #e5b567;
             --font-mono: 'SF Pro Rounded', 'SF Mono', Menlo, Monaco, Consolas, monospace;
         }
 
@@ -61,11 +61,7 @@
             padding-bottom: 30px;
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 4px;
-        }
-
+        header { text-align: center; margin-bottom: 4px; }
         header h1 {
             font-size: 1.2rem;
             font-weight: 700;
@@ -106,17 +102,9 @@
             font-weight: normal;
         }
 
-        .card-content {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .card-content { display: flex; flex-direction: column; gap: 12px; }
+        .collapsed .card-content { display: none; }
 
-        .collapsed .card-content {
-            display: none;
-        }
-
-        /* HAUPT-WIDERSTAND ANZEIGE */
         .result-box {
             text-align: center;
             padding: 22px 16px;
@@ -148,7 +136,6 @@
         }
 
         .control-group { margin-top: 4px; }
-
         .control-header {
             display: flex;
             justify-content: space-between;
@@ -183,7 +170,7 @@
             cursor: pointer;
         }
 
-        .input-text, .input-number, select.input-text {
+        .input-text, .input-number {
             width: 100%;
             background: #171d26;
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -199,12 +186,7 @@
         .input-number { text-align: center; font-family: var(--font-mono); }
         .input-text:focus, .input-number:focus { border-color: var(--accent-cyan); }
 
-        .suggestions-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
+        .suggestions-grid { display: flex; flex-direction: column; gap: 8px; }
         .suggestion-item {
             background: #171d26;
             border: 1px solid rgba(255, 255, 255, 0.04);
@@ -228,7 +210,6 @@
         .suggestion-details { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
 
         .timer-card { text-align: center; border: 1px solid rgba(229, 181, 103, 0.2); }
-
         .timer-status {
             font-size: 0.9rem;
             font-weight: 700;
@@ -286,13 +267,12 @@
             font-weight: 700;
         }
 
-        /* LOGBUCH & STYLES */
         .log-exercise-block {
             background: #171d26;
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 12px;
             padding: 14px;
-            margin-top: 12px;
+            margin-bottom: 12px;
         }
 
         .log-exercise-title {
@@ -423,10 +403,10 @@
     <div class="card result-box">
         <div class="result-unit">Effektiver Gesamtwiderstand (Beide Seiten)</div>
         <div style="display:flex; justify-content:center; align-items:center;">
-            <input type="number" id="calc-result-input" class="result-input-field" value="35.0" step="1.0" min="10.0" max="61.0" oninput="onManualKgInput()">
+            <input type="number" id="calc-result-input" class="result-input-field" value="27.0" step="0.5" min="14.0" max="60.0" oninput="onManualKgInput()">
         </div>
         <div class="result-unit" style="margin-bottom:16px;">Kilogramm (Total)</div>
-        <input type="range" id="slider-target-kg" min="10.0" max="61.0" step="1.0" value="35.0" oninput="onKgSliderChange()">
+        <input type="range" id="slider-target-kg" min="14.0" max="60.0" step="0.5" value="27.0" oninput="onKgSliderChange()">
     </div>
 
     <!-- MANUELLE REGLER (EINKLAPPBAR) -->
@@ -474,24 +454,43 @@
         <div class="timer-display" id="timer-display">00:45</div>
         
         <div style="text-align: left; background: #171d26; padding: 14px; border-radius: 12px;">
-            <div class="control-header" style="margin:0;">
-                <span style="color:var(--text-secondary);">Muskelarbeitzeit</span>
-                <span id="val-workTime" style="color:var(--text-primary);">45s</span>
+            <!-- Muskelarbeit Schnellwahl -->
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">Muskelarbeit:</div>
+            <div style="display:flex; gap:6px; margin-bottom:12px;">
+                <button class="preset-btn work-preset active" onclick="setWorkPreset(45, this)">45s</button>
+                <button class="preset-btn work-preset" onclick="setWorkPreset(50, this)">50s</button>
+                <button class="preset-btn work-preset" onclick="setWorkPreset(60, this)">60s</button>
+                <button class="preset-btn work-preset" onclick="setWorkPreset(70, this)">70s</button>
             </div>
-            <input type="range" id="slider-work" min="10" max="120" step="5" value="45" oninput="updateTimerSettings()" style="margin-top:6px;">
 
-            <div class="control-header" style="margin-top:12px;">
-                <span style="color:var(--text-secondary);">Pausenzeit</span>
-                <span id="val-restTime" style="color:var(--text-primary);">120s</span>
+            <!-- Pausenzeit Schnellwahl -->
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">Pausenzeit:</div>
+            <div style="display:flex; gap:6px;">
+                <button class="preset-btn rest-preset" onclick="setRestPreset(60, this)">60s</button>
+                <button class="preset-btn rest-preset" onclick="setRestPreset(90, this)">90s</button>
+                <button class="preset-btn rest-preset active" onclick="setRestPreset(120, this)">120s</button>
+                <button class="preset-btn rest-preset" onclick="setRestPreset(180, this)">180s</button>
             </div>
-            <input type="range" id="slider-rest" min="10" max="300" step="5" value="120" oninput="updateTimerSettings()" style="margin-top:6px;">
 
-            <!-- Pausen-Schnellwahl (60s, 90s, 120s, 180s) -->
-            <div style="display:flex; gap:6px; margin-top:10px;">
-                <button class="preset-btn" onclick="setRestPreset(60, this)">60s</button>
-                <button class="preset-btn" onclick="setRestPreset(90, this)">90s</button>
-                <button class="preset-btn active" onclick="setRestPreset(120, this)">120s</button>
-                <button class="preset-btn" onclick="setRestPreset(180, this)">180s</button>
+            <!-- Manuell einstellen Dropdown/Accordion -->
+            <div style="margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
+                <div style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer; user-select: none; display:flex; justify-content:space-between;" onclick="toggleTimerManual()">
+                    <span>⚙️ Manuell feineinstellen</span>
+                    <span id="icon-timer-manual">▶ Einblenden</span>
+                </div>
+                <div id="timer-manual-controls" style="display: none; margin-top: 10px;">
+                    <div class="control-header" style="margin:0;">
+                        <span style="color:var(--text-secondary);">Muskelarbeitzeit</span>
+                        <span id="val-workTime" style="color:var(--text-primary);">45s</span>
+                    </div>
+                    <input type="range" id="slider-work" min="10" max="120" step="5" value="45" oninput="updateTimerFromSliders()" style="margin-top:6px;">
+
+                    <div class="control-header" style="margin-top:10px;">
+                        <span style="color:var(--text-secondary);">Pausenzeit</span>
+                        <span id="val-restTime" style="color:var(--text-primary);">120s</span>
+                    </div>
+                    <input type="range" id="slider-rest" min="10" max="300" step="5" value="120" oninput="updateTimerFromSliders()" style="margin-top:6px;">
+                </div>
             </div>
         </div>
 
@@ -501,20 +500,20 @@
         </div>
     </div>
 
-    <!-- ÜBUNG STEUERUNG MIT NOTIZFELD & "LETZTES MAL" ANZEIGE -->
+    <!-- ÜBUNG STEUERUNG (INTEGRIERTES DROPDOWN IM NAMEN) -->
     <div class="card">
         <div class="card-title" style="cursor:default;">📝 Aktuelle Übung Steuerung</div>
         <div class="card-content">
             <div>
                 <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Übung wählen oder eingeben</label>
                 <div style="display:flex; gap:8px;">
-                    <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Brustpresse, Squats..." value="Brustpresse" oninput="checkLastTimeWorkout()">
-                    <select id="saved-exercises-select" class="input-text" style="width: auto; flex: 0.4;" onchange="selectSavedExercise(this.value)">
-                        <option value="">▼ Vorlagen</option>
-                    </select>
+                    <!-- Eingabefeld mit integrierter Datalist (Vorlagen ploppen im Feld auf) -->
+                    <input type="text" id="exercise-name-input" list="saved-exercises-list" class="input-text" placeholder="z. B. Brustpresse, Squats..." value="Brustpresse" oninput="checkLastTimeWorkout()">
+                    <datalist id="saved-exercises-list"></datalist>
+                    <!-- Speichern Button nur mit Symbol -->
+                    <button class="secondary" style="width: auto; padding: 12px 16px; font-size: 1.1rem;" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
                 </div>
 
-                <!-- LIVE-ANZEIGE: LETZTES MAL -->
                 <div id="last-time-container" style="display:none;" class="last-time-box">
                     <span>📈</span>
                     <span id="last-time-text">Letztes Mal: -</span>
@@ -527,14 +526,13 @@
             </div>
 
             <div style="display:flex; gap:8px;">
-                <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="saveCurrentExerciseName()">💾 Speichern</button>
                 <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz (+)</button>
-                <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Beenden</button>
+                <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
             </div>
         </div>
     </div>
 
-    <!-- AKTUELLES TAGES-LOGBUCH -->
+    <!-- AKTUELLES TAGES-LOGBUCH (EINTRÄGE OBEN) -->
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <div class="card-title" style="margin:0; cursor:default;">📋 Aktuelles Training</div>
@@ -597,18 +595,52 @@
         }
     }
 
-    // --- MATHEMATISCHES MODELL ---
+    function toggleTimerManual() {
+        let el = document.getElementById('timer-manual-controls');
+        let icon = document.getElementById('icon-timer-manual');
+        if (el.style.display === 'none') {
+            el.style.display = 'block';
+            icon.innerText = '▼ Verstecken';
+        } else {
+            el.style.display = 'none';
+            icon.innerText = '▶ Einblenden';
+        }
+    }
+
+    // --- EMPIRISCHE STÜTZSTELLEN-TABELLE ---
+    const measuredPoints = {
+        "1_32": 7.4,
+        "1_27": 8.4,
+        "1_15": 12.7,
+        "7_17": 16.1,
+        "7_21": 13.8,
+        "13_18": 19.3,
+        "13_29": 13.5
+    };
+
+    function getSingleSideKg(w, g) {
+        let key = `${w}_${g}`;
+        if (measuredPoints[key] !== undefined) {
+            return measuredPoints[key];
+        }
+        let base = 12.0 + (0.75 * w) - (0.32 * g);
+        if (g > 22) {
+            base -= (g - 22) * 0.08;
+        }
+        return Math.max(4.0, Math.min(30.0, base));
+    }
+
     let weightPos = 7;
     let gripPos = 15;
-    let currentTotalKg = 35.0;
+    let currentTotalKg = 25.4;
 
     function onPositionSlidersChange() {
         weightPos = parseInt(document.getElementById('slider-weight').value);
         gripPos = parseInt(document.getElementById('slider-grip').value);
         gripPos = Math.max(15, Math.min(32, gripPos));
 
-        let singleKg = 22.0 + (0.53 * weightPos) - (0.55 * gripPos);
-        currentTotalKg = Math.max(9.86, singleKg * 2);
+        let singleKg = getSingleSideKg(weightPos, gripPos);
+        currentTotalKg = singleKg * 2;
 
         document.getElementById('val-weightPos').innerText = weightPos;
         document.getElementById('val-gripPos').innerText = gripPos;
@@ -626,7 +658,7 @@
 
     function onManualKgInput() {
         let val = parseFloat(document.getElementById('calc-result-input').value);
-        if (!isNaN(val) && val >= 9.86 && val <= 61.0) {
+        if (!isNaN(val) && val >= 8.0 && val <= 60.0) {
             currentTotalKg = val;
             document.getElementById('slider-target-kg').value = val;
             syncPositionToKg(val);
@@ -640,7 +672,7 @@
 
         for (let w = 1; w <= 32; w++) {
             for (let g = 15; g <= 32; g++) {
-                let calcSingleKg = 22.0 + (0.53 * w) - (0.55 * g);
+                let calcSingleKg = getSingleSideKg(w, g);
                 let diff = Math.abs(calcSingleKg - targetSingleKg);
                 if (diff < minDiff) {
                     minDiff = diff;
@@ -670,10 +702,10 @@
         let validOptions = [];
         for (let w = 1; w <= 32; w++) {
             for (let g = 15; g <= 32; g++) {
-                let singleKg = 22.0 + (0.53 * w) - (0.55 * g);
+                let singleKg = getSingleSideKg(w, g);
                 let totalKg = singleKg * 2;
                 let diff = Math.abs(totalKg - target);
-                if (diff <= 0.9) {
+                if (diff <= 0.8) {
                     validOptions.push({ weightPos: w, gripPos: g, calculatedTotalKg: totalKg, diff: diff });
                 }
             }
@@ -741,18 +773,11 @@
     let workoutHistory = JSON.parse(localStorage.getItem('board_computer_history') || '[]');
 
     function renderSavedExercisesDropdown() {
-        let selectEl = document.getElementById('saved-exercises-select');
-        selectEl.innerHTML = '<option value="">▼ Vorlagen</option>';
+        let datalistEl = document.getElementById('saved-exercises-list');
+        datalistEl.innerHTML = '';
         savedExerciseList.forEach(ex => {
-            selectEl.innerHTML += `<option value="${ex}">${ex}</option>`;
+            datalistEl.innerHTML += `<option value="${ex}">`;
         });
-    }
-
-    function selectSavedExercise(val) {
-        if (val) {
-            document.getElementById('exercise-name-input').value = val;
-            checkLastTimeWorkout();
-        }
     }
 
     function checkLastTimeWorkout() {
@@ -771,7 +796,7 @@
         for (let session of workoutHistory) {
             let found = session.sets.filter(s => s.exercise.toLowerCase() === name.toLowerCase());
             if (found.length > 0) {
-                lastSet = found[found.length - 1];
+                lastSet = found[0]; // Letzter Satz dieser Übung
                 lastDate = session.date;
                 break;
             }
@@ -796,12 +821,13 @@
             savedExerciseList.push(val);
             localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
             renderSavedExercisesDropdown();
-            alert(`Übung "${val}" wurde dauerhaft als Vorlage gespeichert!`);
+            alert(`Übung "${val}" wurde als Vorlage gespeichert!`);
         } else {
             alert("Diese Übung ist bereits in deinen Vorlagen vorhanden.");
         }
     }
 
+    // NEUE ÜBUNG/SATZ WIRD AB SOFORT OBEN ANGEFÜGT (UNSHIFT)
     function addSetToActiveSession() {
         let exerciseName = document.getElementById('exercise-name-input').value.trim() || 'Übung';
         let exerciseNote = document.getElementById('exercise-note-input').value.trim();
@@ -822,7 +848,7 @@
             time: timeStr
         };
 
-        activeSessionLog.push(setEntry);
+        activeSessionLog.unshift(setEntry); // Ganz oben einfügen
         localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
         renderActiveLogbook();
         checkLastTimeWorkout();
@@ -950,12 +976,18 @@
 
         container.innerHTML = '';
         let grouped = {};
+        let order = [];
+        
+        // Reihenfolge der Übungen beibehalten (neueste oben)
         activeSessionLog.forEach(item => {
-            if (!grouped[item.exercise]) grouped[item.exercise] = [];
+            if (!grouped[item.exercise]) {
+                grouped[item.exercise] = [];
+                order.push(item.exercise);
+            }
             grouped[item.exercise].push(item);
         });
 
-        for (let exName in grouped) {
+        order.forEach(exName => {
             let sets = grouped[exName];
             let firstNote = sets[0].note || '';
 
@@ -975,7 +1007,7 @@
                     <div class="log-set-wrapper">
                         <div class="log-set-row">
                             <div style="flex: 1; min-width: 90px;">
-                                <strong style="font-size:0.85rem;">Satz ${idx + 1}</strong><br>
+                                <strong style="font-size:0.85rem;">Satz ${sets.length - idx}</strong><br>
                                 <span style="color:var(--accent-color); font-weight:700; font-family:var(--font-mono); font-size:0.95rem;">${s.kg} kg</span> 
                                 <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
                             </div>
@@ -1010,7 +1042,7 @@
 
             blockHtml += `</div>`;
             container.innerHTML += blockHtml;
-        }
+        });
     }
 
     function renderHistory() {
@@ -1073,21 +1105,13 @@
     let workDuration = 45;
     let restDuration = 120;
 
-    function updateTimerSettings() {
-        workDuration = parseInt(document.getElementById('slider-work').value);
-        restDuration = parseInt(document.getElementById('slider-rest').value);
+    function setWorkPreset(secs, btnElement) {
+        workDuration = secs;
+        document.getElementById('slider-work').value = secs;
+        document.getElementById('val-workTime').innerText = secs + 's';
 
-        document.getElementById('val-workTime').innerText = workDuration + 's';
-        document.getElementById('val-restTime').innerText = restDuration + 's';
-
-        let buttons = document.querySelectorAll('.preset-btn');
-        buttons.forEach(btn => {
-            if (parseInt(btn.innerText) === restDuration) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
+        document.querySelectorAll('.work-preset').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
 
         if (currentPhase === 'idle') {
             currentTimeLeft = workDuration;
@@ -1100,9 +1124,28 @@
         document.getElementById('slider-rest').value = secs;
         document.getElementById('val-restTime').innerText = secs + 's';
 
-        let buttons = document.querySelectorAll('.preset-btn');
-        buttons.forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.rest-preset').forEach(b => b.classList.remove('active'));
         btnElement.classList.add('active');
+
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
+        }
+    }
+
+    function updateTimerFromSliders() {
+        workDuration = parseInt(document.getElementById('slider-work').value);
+        restDuration = parseInt(document.getElementById('slider-rest').value);
+
+        document.getElementById('val-workTime').innerText = workDuration + 's';
+        document.getElementById('val-restTime').innerText = restDuration + 's';
+
+        document.querySelectorAll('.work-preset').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.innerText) === workDuration);
+        });
+        document.querySelectorAll('.rest-preset').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.innerText) === restDuration);
+        });
 
         if (currentPhase === 'idle') {
             currentTimeLeft = workDuration;
