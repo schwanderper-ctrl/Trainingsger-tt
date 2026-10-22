@@ -2,179 +2,332 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Board Computer - Hantelstation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Board Computer - Performance Gym Console</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
+            --bg-color: #0b0e14;
+            --card-bg: rgba(22, 27, 38, 0.85);
+            --card-border: rgba(255, 255, 255, 0.08);
             --accent-color: #00e676;
-            --text-color: #ffffff;
-            --subtext-color: #b0bec5;
-            --timer-bg: #2a2a2a;
+            --accent-cyan: #00e5ff;
+            --text-primary: #ffffff;
+            --text-secondary: #90a4ae;
+            --work-color: #ff3d00;
+            --rest-color: #00e676;
+            --ready-color: #ffb300;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.8s ease;
         }
+
+        /* Pulsierende Hintergründe */
+        @keyframes pulse-work {
+            0% { background-color: #0b0e14; }
+            50% { background-color: #2a0803; }
+            100% { background-color: #0b0e14; }
+        }
+
+        @keyframes pulse-rest {
+            0% { background-color: #0b0e14; }
+            50% { background-color: #032012; }
+            100% { background-color: #0b0e14; }
+        }
+
+        body.phase-work { animation: pulse-work 2.5s infinite ease-in-out; }
+        body.phase-rest { animation: pulse-rest 3.5s infinite ease-in-out; }
 
         .container {
             width: 100%;
             max-width: 480px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
+            padding-bottom: 30px;
         }
 
-        h1 {
+        header {
             text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-            color: var(--accent-color);
+            margin-bottom: 4px;
+        }
+
+        header h1 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
         }
 
         .card {
-            background-color: var(--card-bg);
-            border-radius: 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
             padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-top: 0;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Haupt-Anzeige */
         .result-box {
             text-align: center;
-            padding: 15px 0;
+            padding: 24px 10px;
+            background: linear-gradient(180deg, rgba(0,230,118,0.05) 0%, rgba(0,0,0,0) 100%);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
         .result-value {
-            font-size: 3.5rem;
-            font-weight: bold;
+            font-size: 4rem;
+            font-weight: 900;
             color: var(--accent-color);
             line-height: 1;
+            text-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+            font-variant-numeric: tabular-nums;
         }
 
         .result-unit {
-            font-size: 1.2rem;
-            color: var(--subtext-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 6px;
         }
 
+        /* Controls */
         .control-group {
-            margin-top: 15px;
+            margin-top: 16px;
         }
 
         .control-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .control-header span:last-child {
+            color: var(--accent-cyan);
+            font-weight: 800;
         }
 
         input[type="range"] {
+            -webkit-appearance: none;
             width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            accent-color: var(--accent-color);
-            background: #333;
+            height: 10px;
+            border-radius: 5px;
+            background: #1e2538;
             outline: none;
         }
 
-        .drop-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .drop-item {
-            background: #2a2a2a;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .drop-item label {
-            font-size: 0.8rem;
-            color: var(--subtext-color);
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .drop-item input {
-            width: 80%;
-            background: #121212;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 6px;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 1rem;
-        }
-
-        .drop-result {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            margin-top: 5px;
-        }
-
-        /* Timer Styles */
-        .timer-card {
-            text-align: center;
-            background: var(--timer-bg);
-            border: 2px solid #333;
-        }
-
-        .timer-display {
-            font-size: 2.8rem;
-            font-weight: bold;
-            font-variant-numeric: tabular-nums;
-            color: #ff9800;
-            margin: 10px 0;
-        }
-
-        .timer-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        }
-
-        button {
-            background-color: var(--accent-color);
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 8px;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            box-shadow: 0 0 12px rgba(0, 230, 118, 0.8);
             cursor: pointer;
         }
 
-        button.secondary {
-            background-color: #444;
+        /* Number Inputs */
+        .input-number {
+            width: 100%;
+            background: #121622;
+            border: 1px solid #2a344a;
             color: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-number:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        /* Vorschlags-Karten Grid */
+        .suggestions-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .suggestion-item {
+            background: #121622;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suggestion-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+        }
+
+        .suggestion-details {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .suggestion-error {
+            font-size: 0.85rem;
+            color: #ff5252;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* Drop Set Direkt-Display */
+        .drop-display-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .drop-box {
+            background: #121622;
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 14px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .drop-box-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .drop-box-value {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent-cyan);
+        }
+
+        /* Timer Block */
+        .timer-card {
+            text-align: center;
+            border: 1px solid rgba(255, 179, 0, 0.3);
+        }
+
+        .timer-status {
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--ready-color);
+            margin-bottom: 4px;
+        }
+
+        .timer-display {
+            font-size: 3.8rem;
+            font-weight: 900;
+            font-variant-numeric: tabular-nums;
+            color: #fff;
+            margin: 0 0 16px 0;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        button {
+            flex: 1;
+            background: linear-gradient(135deg, var(--accent-color), #00b0ff);
+            color: #000;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 230, 118, 0.3);
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button.secondary {
+            flex: 0.4;
+            background: #1e2538;
+            color: #fff;
+            box-shadow: none;
+            border: 1px solid var(--card-border);
+        }
+
+        button:active {
+            transform: scale(0.96);
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Board Computer</h1>
+    <header>
+        <h1>Board Computer</h1>
+    </header>
 
-    <!-- Haupt-Ergebnis Anzeige -->
+    <!-- HAUPTANZEIGE EFFEKTIVER WIDERSTAND -->
     <div class="card result-box">
         <div class="result-unit">Effektiver Widerstand</div>
         <div class="result-value" id="calc-result">17.5</div>
-        <div class="result-unit">kg</div>
+        <div class="result-unit">Kilogramm</div>
     </div>
 
-    <!-- Regler für Scheiben- und Standposition -->
+    <!-- MANUELLE REGLER -->
     <div class="card">
+        <div class="card-title">⚙️ Manuelle Einstellung</div>
         <div class="control-group">
             <div class="control-header">
                 <span>Gewichtsscheiben Position</span>
@@ -183,7 +336,7 @@
             <input type="range" id="slider-weight" min="1" max="32" value="7" oninput="updateCalc()">
         </div>
 
-        <div class="control-group" style="margin-top: 25px;">
+        <div class="control-group" style="margin-top: 20px;">
             <div class="control-header">
                 <span>Stand- / Griffposition</span>
                 <span id="val-gripPos">15</span>
@@ -192,39 +345,72 @@
         </div>
     </div>
 
-    <!-- Pausen-Timer -->
-    <div class="card timer-card">
-        <div style="font-size: 0.9rem; color: var(--subtext-color);">Satzpause / Timer</div>
-        <div class="timer-display" id="timer-display">00:00</div>
-        <div class="timer-buttons">
-            <button onclick="startTimer()">Start Pause</button>
-            <button class="secondary" onclick="resetTimer()">Reset</button>
+    <!-- WUNSCH-GEWICHT RECHNER (3 VORSCHLÄGE) -->
+    <div class="card">
+        <div class="card-title">🎯 Wunsch-Gewicht Finder</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:0.9rem; color:var(--text-secondary); flex:1;">Ziel-Gewicht (kg):</span>
+            <input type="number" id="target-weight-input" class="input-number" style="width:120px;" value="20.0" step="0.5" oninput="suggestTargetWeight()">
+        </div>
+        <div class="suggestions-grid" id="target-weight-suggestions">
+            <!-- Dynamisch generierte Vorschläge -->
         </div>
     </div>
 
-    <!-- Drop-Set Rechner -->
+    <!-- DIREKTER DROP-SET RECHNER -->
     <div class="card">
-        <h3 style="margin-top:0; font-size:1.1rem;">Drop-Set Rechner</h3>
-        <p style="font-size:0.85rem; color:var(--subtext-color); margin-bottom:15px;">
-            Griffposition bei gleicher Scheibenstellung:
-        </p>
+        <div class="card-title">🔥 Drop-Set Rechner (Feste Scheibe: Position <span id="drop-current-wpos" style="color:var(--accent-cyan);">7</span>)</div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Start-Ziel (kg)</label>
+                <input type="number" id="drop-start-input" class="input-number" value="20.0" step="0.5" oninput="calculateDirectDrop()">
+            </div>
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Drop-Ziel (kg)</label>
+                <input type="number" id="drop-target-input" class="input-number" value="15.0" step="0.5" oninput="calculateDirectDrop()">
+            </div>
+        </div>
+
+        <div class="drop-display-container">
+            <div class="drop-box">
+                <div class="drop-box-label">1. Hauptsatz</div>
+                <div class="drop-box-value" id="res-start-grip">Griff 15</div>
+            </div>
+            <div class="drop-box" style="border-color: var(--accent-color);">
+                <div class="drop-box-label" style="color:var(--accent-color);">2. Drop-Satz</div>
+                <div class="drop-box-value" id="res-drop-grip" style="color:var(--accent-color);">Griff 24</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRO-WORKFLOW TIMER -->
+    <div class="card timer-card">
+        <div class="timer-status" id="timer-status">Bereit für Satz</div>
+        <div class="timer-display" id="timer-display">00:45</div>
         
-        <div class="drop-grid">
-            <div class="drop-item">
-                <label for="drop-start-target">Start-Ziel (kg)</label>
-                <input type="number" id="drop-start-target" value="18" step="0.5" oninput="calculateDrop()">
-                <div class="drop-result" id="res-start-grip">Griff 15</div>
+        <div style="text-align: left; background: #121622; padding: 14px; border-radius: 12px;">
+            <div class="control-header" style="margin:0;">
+                <span style="color:var(--text-secondary);">Muskelarbeitzeit</span>
+                <span id="val-workTime" style="color:#fff;">45s</span>
             </div>
-            <div class="drop-item">
-                <label for="drop-end-target">Drop-Ziel (kg)</label>
-                <input type="number" id="drop-end-target" value="10" step="0.5" oninput="calculateDrop()">
-                <div class="drop-result" id="res-drop-grip">Griff 29</div>
+            <input type="range" id="slider-work" min="10" max="120" step="5" value="45" oninput="updateTimerSettings()" style="margin-top:8px;">
+
+            <div class="control-header" style="margin-top:14px;">
+                <span style="color:var(--text-secondary);">Pausenzeit</span>
+                <span id="val-restTime" style="color:#fff;">120s</span>
             </div>
+            <input type="range" id="slider-rest" min="10" max="300" step="5" value="120" oninput="updateTimerSettings()" style="margin-top:8px;">
+        </div>
+
+        <div class="btn-group">
+            <button id="btn-start" onclick="startSetWorkflow()">▶ SATZ STARTEN</button>
+            <button class="secondary" onclick="resetTimerWorkflow()">RESET</button>
         </div>
     </div>
 </div>
 
 <script>
+    // --- MATHEMATISCHES MODELL (EINGEEICHT) ---
     let weightPos = 7;
     let gripPos = 15;
 
@@ -234,58 +420,210 @@
 
         gripPos = Math.max(15, Math.min(32, gripPos));
 
-        // Kalibrierte Formel
         let effectiveKg = 22.0 + (0.53 * weightPos) - (0.55 * gripPos);
 
         document.getElementById('val-weightPos').innerText = weightPos;
         document.getElementById('val-gripPos').innerText = gripPos;
         document.getElementById('calc-result').innerText = Math.max(1.0, effectiveKg).toFixed(1);
-        
-        calculateDrop();
+
+        // Aktualisiere Scheiben-Info im Drop-Set Rechner
+        document.getElementById('drop-current-wpos').innerText = weightPos;
+        calculateDirectDrop();
     }
 
-    function calculateDrop() {
-        let startTarget = parseFloat(document.getElementById('drop-start-target').value) || 18;
-        let endTarget = parseFloat(document.getElementById('drop-end-target').value) || 10;
-        
-        let matchedStartGrip = Math.round((22.0 + (0.53 * weightPos) - startTarget) / 0.55);
-        let matchedEndGrip = Math.round((22.0 + (0.53 * weightPos) - endTarget) / 0.55);
+    // --- WUNSCHGEWICHT RECHNER (3 VORSCHLÄGE FUER HAUPTSATZ) ---
+    function suggestTargetWeight() {
+        let target = parseFloat(document.getElementById('target-weight-input').value) || 20.0;
+        let container = document.getElementById('target-weight-suggestions');
+        container.innerHTML = '';
+
+        let validOptions = [];
+
+        for (let w = 1; w <= 32; w++) {
+            for (let g = 15; g <= 32; g++) {
+                let kg = 22.0 + (0.53 * w) - (0.55 * g);
+                let diff = Math.abs(kg - target);
+                if (diff <= 0.4) {
+                    validOptions.push({ weightPos: w, gripPos: g, calculatedKg: kg, diff: diff });
+                }
+            }
+        }
+
+        if (validOptions.length === 0) {
+            container.innerHTML = '<div class="suggestion-error">Keine exakte Kombination im Bereich 15-32 gefunden.</div>';
+            return;
+        }
+
+        validOptions.sort((a, b) => a.diff - b.diff);
+
+        let picks = [];
+        if (validOptions.length > 0) picks.push({ tag: "Option A", ...validOptions[0] });
+        if (validOptions.length > 2) picks.push({ tag: "Option B", ...validOptions[Math.floor(validOptions.length / 2)] });
+        if (validOptions.length > 4) picks.push({ tag: "Option C", ...validOptions[validOptions.length - 1] });
+
+        if (picks.length === 1 && validOptions[1]) picks.push({ tag: "Option B", ...validOptions[1] });
+        if (picks.length === 2 && validOptions[2]) picks.push({ tag: "Option C", ...validOptions[2] });
+
+        picks.forEach(opt => {
+            let html = `
+                <div class="suggestion-item">
+                    <span class="suggestion-tag">${opt.tag}</span>
+                    <div class="suggestion-details">Scheibe <strong>${opt.weightPos}</strong> | Griff <strong>${opt.gripPos}</strong></div>
+                    <span style="font-size:0.85rem; color:var(--accent-color); font-weight:700;">~${opt.calculatedKg.toFixed(1)} kg</span>
+                </div>
+            `;
+            container.innerHTML += html;
+        });
+    }
+
+    // --- DIREKTER DROP-SET RECHNER (Basiert auf aktueller Scheibenposition) ---
+    function calculateDirectDrop() {
+        let startTarget = parseFloat(document.getElementById('drop-start-input').value) || 20.0;
+        let dropTarget = parseFloat(document.getElementById('drop-target-input').value) || 15.0;
+
+        // Nutze die aktuell gewählte Scheibenposition
+        let currentW = weightPos;
+
+        let matchedStartGrip = Math.round((22.0 + (0.53 * currentW) - startTarget) / 0.55);
+        let matchedDropGrip = Math.round((22.0 + (0.53 * currentW) - dropTarget) / 0.55);
 
         let safeStartGrip = Math.max(15, Math.min(32, matchedStartGrip));
-        let safeEndGrip = Math.max(15, Math.min(32, matchedEndGrip));
+        let safeDropGrip = Math.max(15, Math.min(32, matchedDropGrip));
 
         document.getElementById('res-start-grip').innerText = `Griff ${safeStartGrip}`;
-        document.getElementById('res-drop-grip').innerText = `Griff ${safeEndGrip}`;
+        document.getElementById('res-drop-grip').innerText = `Griff ${safeDropGrip}`;
     }
 
-    // Timer Logik
-    let timerInterval = null;
-    let secondsElapsed = 0;
+    // --- AUDIO SYSTEM ---
+    let audioCtx = null;
 
-    function startTimer() {
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    function playBeep(freq, duration, type = 'sine') {
+        try {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {}
+    }
+
+    function playToneReady() { playBeep(523.25, 0.15); }
+    function playToneStart() { playBeep(880.00, 0.4, 'triangle'); }
+    function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
+
+    // --- WORKFLOW TIMER ---
+    let timerInterval = null;
+    let currentTimeLeft = 45;
+    let currentPhase = 'idle';
+
+    let prepDuration = 10;
+    let workDuration = 45;
+    let restDuration = 120;
+
+    function updateTimerSettings() {
+        workDuration = parseInt(document.getElementById('slider-work').value);
+        restDuration = parseInt(document.getElementById('slider-rest').value);
+
+        document.getElementById('val-workTime').innerText = workDuration + 's';
+        document.getElementById('val-restTime').innerText = restDuration + 's';
+
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
+        }
+    }
+
+    function startSetWorkflow() {
+        initAudio();
         if (timerInterval) clearInterval(timerInterval);
-        secondsElapsed = 0;
-        updateTimerDisplay();
+
+        currentPhase = 'ready';
+        currentTimeLeft = prepDuration;
+        playToneReady();
+        updateDisplay();
+
         timerInterval = setInterval(() => {
-            secondsElapsed++;
-            updateTimerDisplay();
+            currentTimeLeft--;
+
+            if (currentPhase === 'ready') {
+                if (currentTimeLeft <= 3 && currentTimeLeft > 0) playToneReady();
+                if (currentTimeLeft <= 0) {
+                    currentPhase = 'work';
+                    currentTimeLeft = workDuration;
+                    playToneStart();
+                }
+            } 
+            else if (currentPhase === 'work') {
+                if (currentTimeLeft <= 0) {
+                    currentPhase = 'rest';
+                    currentTimeLeft = restDuration;
+                    playToneRest();
+                }
+            } 
+            else if (currentPhase === 'rest') {
+                if (currentTimeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    currentPhase = 'idle';
+                    currentTimeLeft = workDuration;
+                    playToneStart();
+                }
+            }
+
+            updateDisplay();
         }, 1000);
     }
 
-    function resetTimer() {
+    function resetTimerWorkflow() {
         if (timerInterval) clearInterval(timerInterval);
-        secondsElapsed = 0;
-        updateTimerDisplay();
+        currentPhase = 'idle';
+        currentTimeLeft = workDuration;
+        updateDisplay();
     }
 
-    function updateTimerDisplay() {
-        let mins = Math.floor(secondsElapsed / 60);
-        let secs = secondsElapsed % 60;
+    function updateDisplay() {
+        let mins = Math.floor(currentTimeLeft / 60);
+        let secs = currentTimeLeft % 60;
         document.getElementById('timer-display').innerText = 
             String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+        let statusEl = document.getElementById('timer-status');
+        let bodyEl = document.body;
+        bodyEl.className = '';
+
+        if (currentPhase === 'idle') {
+            statusEl.innerText = "Bereit für Satz";
+            statusEl.style.color = "var(--ready-color)";
+        } else if (currentPhase === 'ready') {
+            statusEl.innerText = "⌛ Positionieren (" + currentTimeLeft + "s)";
+            statusEl.style.color = "var(--ready-color)";
+        } else if (currentPhase === 'work') {
+            statusEl.innerText = "⚡ Muskelarbeit";
+            statusEl.style.color = "var(--work-color)";
+            bodyEl.classList.add('phase-work');
+        } else if (currentPhase === 'rest') {
+            statusEl.innerText = "☕ Pause";
+            statusEl.style.color = "var(--rest-color)";
+            bodyEl.classList.add('phase-rest');
+        }
     }
 
+    // Init
     updateCalc();
+    suggestTargetWeight();
+    updateDisplay();
 </script>
 
 </body>
