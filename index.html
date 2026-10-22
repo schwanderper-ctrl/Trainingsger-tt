@@ -495,4 +495,798 @@
             <!-- Pausenzeit Schnellwahl -->
             <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">Pausenzeit:</div>
             <div style="display:flex; gap:6px;">
-                <button class="preset-btn rest-preset" onclick="setRestPreset(60
+                <button class="preset-btn rest-preset" onclick="setRestPreset(60, this)">60s</button>
+                <button class="preset-btn rest-preset" onclick="setRestPreset(90, this)">90s</button>
+                <button class="preset-btn rest-preset active" onclick="setRestPreset(120, this)">120s</button>
+                <button class="preset-btn rest-preset" onclick="setRestPreset(180, this)">180s</button>
+            </div>
+
+            <!-- Manuell einstellen Dropdown/Accordion -->
+            <div style="margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
+                <div style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer; user-select: none; display:flex; justify-content:space-between;" onclick="toggleTimerManual()">
+                    <span>⚙️ Manuell feineinstellen</span>
+                    <span id="icon-timer-manual">▶ Einblenden</span>
+                </div>
+                <div id="timer-manual-controls" style="display: none; margin-top: 10px;">
+                    <div class="control-header" style="margin:0;">
+                        <span style="color:var(--text-secondary);">Muskelarbeitzeit</span>
+                        <span id="val-workTime" style="color:var(--text-primary);">45s</span>
+                    </div>
+                    <input type="range" id="slider-work" min="10" max="120" step="5" value="45" oninput="updateTimerFromSliders()" style="margin-top:6px;">
+
+                    <div class="control-header" style="margin-top:10px;">
+                        <span style="color:var(--text-secondary);">Pausenzeit</span>
+                        <span id="val-restTime" style="color:var(--text-primary);">120s</span>
+                    </div>
+                    <input type="range" id="slider-rest" min="10" max="300" step="5" value="120" oninput="updateTimerFromSliders()" style="margin-top:6px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button id="btn-start" onclick="startSetWorkflow()">▶ SATZ STARTEN</button>
+            <button class="secondary" onclick="resetTimerWorkflow()">RESET</button>
+        </div>
+    </div>
+
+    <!-- ZUSAMMENGEFÜGTER BLOCK: AKTUELLE ÜBUNG & LOGBUCH -->
+    <div class="card">
+        <div class="card-title" style="cursor:default; margin-bottom:14px;">📝 Aktuelle Übung & Training</div>
+        <div class="card-content" style="gap:14px;">
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Übung wählen oder eingeben</label>
+                <div style="display:flex; gap:8px; align-items:flex-start;">
+                    <!-- Eingabefeld mit echtem Dropdown-Pfeil -->
+                    <div class="dropdown-container">
+                        <div style="position:relative;">
+                            <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Brustpresse..." value="Brustpresse" oninput="checkLastTimeWorkout()" style="padding-right: 36px;">
+                            <span onclick="toggleSavedDropdown(event)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.8rem; padding: 4px;">▼</span>
+                        </div>
+                        <div id="saved-dropdown-list" class="dropdown-list"></div>
+                    </div>
+                    <!-- Speichern Button nur mit Symbol -->
+                    <button class="secondary" style="width: auto; padding: 12px 14px; font-size: 1.1rem;" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
+                    <!-- Notiz Button mit Symbol -->
+                    <button class="secondary" style="width: auto; padding: 12px 14px; font-size: 1.1rem;" title="Notiz hinzufügen" onclick="toggleNoteField()">✏️</button>
+                </div>
+
+                <!-- Diskretes Notizfeld (Standardmäßig versteckt) -->
+                <div id="note-field-container" style="display:none; margin-top:8px;">
+                    <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#12151c;" placeholder="Notiz (z. B. Sitzhöhe 3, 90° geneigt)...">
+                </div>
+
+                <div id="last-time-container" style="display:none;" class="last-time-box">
+                    <span>📈</span>
+                    <span id="last-time-text">Letztes Mal: -</span>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+                <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz (+)</button>
+                <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
+            </div>
+
+            <!-- Trenner -->
+            <div style="border-top: 1px solid rgba(255,255,255,0.06); margin: 4px 0;"></div>
+
+            <!-- Aktuelles Tages-Logbuch -->
+            <div>
+                <div style="font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); margin-bottom:10px;">
+                    Aktuelle Sätze
+                </div>
+                <div id="logbook-container">
+                    <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">
+                        Noch keine Sätze im aktuellen Training.
+                    </div>
+                </div>
+
+                <div style="margin-top:16px;">
+                    <button class="finish-workout" onclick="finishWorkoutSession()">🏁 TRAINING BEENDEN & SPEICHERN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KALENDER / HISTORIE & BACKUP -->
+    <div class="card">
+        <div class="card-title" style="cursor:default;">📅 Absolvierte Workouts (Historie)</div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <button class="secondary" style="font-size:0.8rem; padding:8px;" onclick="exportBackup()">💾 Daten Sichern</button>
+            <button class="secondary" style="font-size:0.8rem; padding:8px;" onclick="document.getElementById('import-file').click()">📂 Wiederherstellen</button>
+            <input type="file" id="import-file" style="display:none" accept=".json" onchange="importBackup(event)">
+        </div>
+        <div id="history-container">
+            <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">
+                Bisher noch keine Workouts abgeschlossen.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- WAKE LOCK API ---
+    let wakeLock = null;
+    async function requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+            }
+        } catch (err) {}
+    }
+    document.addEventListener('visibilitychange', () => {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+            requestWakeLock();
+        }
+    });
+    requestWakeLock();
+
+    // --- EINKLAPPBARE SEKTIONEN (ACCORDION) ---
+    function toggleCard(cardId) {
+        let card = document.getElementById(cardId);
+        let icon = document.getElementById(cardId === 'card-manual' ? 'icon-manual' : 'icon-options');
+        card.classList.toggle('collapsed');
+        if (card.classList.contains('collapsed')) {
+            icon.innerText = "▶ Einblenden";
+        } else {
+            icon.innerText = "▼ Verstecken";
+        }
+    }
+
+    function toggleTimerManual() {
+        let el = document.getElementById('timer-manual-controls');
+        let icon = document.getElementById('icon-timer-manual');
+        if (el.style.display === 'none') {
+            el.style.display = 'block';
+            icon.innerText = '▼ Verstecken';
+        } else {
+            el.style.display = 'none';
+            icon.innerText = '▶ Einblenden';
+        }
+    }
+
+    function toggleNoteField() {
+        let container = document.getElementById('note-field-container');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // --- EMPIRISCHE STÜTZSTELLEN-TABELLE ---
+    const measuredPoints = {
+        "1_32": 7.4,
+        "1_27": 8.4,
+        "1_15": 12.7,
+        "7_17": 16.1,
+        "7_21": 13.8,
+        "13_18": 19.3,
+        "13_29": 13.5
+    };
+
+    function getSingleSideKg(w, g) {
+        let key = `${w}_${g}`;
+        if (measuredPoints[key] !== undefined) {
+            return measuredPoints[key];
+        }
+        let base = 12.0 + (0.75 * w) - (0.32 * g);
+        if (g > 22) {
+            base -= (g - 22) * 0.08;
+        }
+        return Math.max(4.0, Math.min(30.0, base));
+    }
+
+    let weightPos = 7;
+    let gripPos = 15;
+    let currentTotalKg = 25.4;
+
+    function onPositionSlidersChange() {
+        weightPos = parseInt(document.getElementById('slider-weight').value);
+        gripPos = parseInt(document.getElementById('slider-grip').value);
+        gripPos = Math.max(15, Math.min(32, gripPos));
+
+        let singleKg = getSingleSideKg(weightPos, gripPos);
+        currentTotalKg = singleKg * 2;
+
+        document.getElementById('val-weightPos').innerText = weightPos;
+        document.getElementById('val-gripPos').innerText = gripPos;
+        document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
+        document.getElementById('slider-target-kg').value = currentTotalKg.toFixed(1);
+
+        suggestTargetWeight(currentTotalKg);
+    }
+
+    function onKgSliderChange() {
+        currentTotalKg = parseFloat(document.getElementById('slider-target-kg').value);
+        document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
+        syncPositionToKg(currentTotalKg);
+    }
+
+    function onManualKgInput() {
+        let val = parseFloat(document.getElementById('calc-result-input').value);
+        if (!isNaN(val) && val >= 8.0 && val <= 60.0) {
+            currentTotalKg = val;
+            document.getElementById('slider-target-kg').value = val;
+            syncPositionToKg(val);
+        }
+    }
+
+    function syncPositionToKg(targetTotalKg) {
+        let targetSingleKg = targetTotalKg / 2;
+        let bestMatch = null;
+        let minDiff = 999;
+
+        for (let w = 1; w <= 32; w++) {
+            for (let g = 15; g <= 32; g++) {
+                let calcSingleKg = getSingleSideKg(w, g);
+                let diff = Math.abs(calcSingleKg - targetSingleKg);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestMatch = { weightPos: w, gripPos: g };
+                }
+            }
+        }
+
+        if (bestMatch) {
+            weightPos = bestMatch.weightPos;
+            gripPos = bestMatch.gripPos;
+
+            document.getElementById('slider-weight').value = weightPos;
+            document.getElementById('slider-grip').value = gripPos;
+            document.getElementById('val-weightPos').innerText = weightPos;
+            document.getElementById('val-gripPos').innerText = gripPos;
+
+            suggestTargetWeight(targetTotalKg);
+        }
+    }
+
+    function suggestTargetWeight(targetTotalKg) {
+        let target = targetTotalKg || currentTotalKg;
+        let container = document.getElementById('target-weight-suggestions');
+        container.innerHTML = '';
+
+        let validOptions = [];
+        for (let w = 1; w <= 32; w++) {
+            for (let g = 15; g <= 32; g++) {
+                let singleKg = getSingleSideKg(w, g);
+                let totalKg = singleKg * 2;
+                let diff = Math.abs(totalKg - target);
+                if (diff <= 0.8) {
+                    validOptions.push({ weightPos: w, gripPos: g, calculatedTotalKg: totalKg, diff: diff });
+                }
+            }
+        }
+
+        if (validOptions.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--work-color); text-align:center; padding:6px;">Keine physikalisch mögliche Kombination im Korridor.</div>';
+            return;
+        }
+
+        let zoneEng = validOptions.filter(o => o.gripPos >= 15 && o.gripPos <= 20).sort((a,b) => a.diff - b.diff);
+        let zoneMittel = validOptions.filter(o => o.gripPos >= 21 && o.gripPos <= 26).sort((a,b) => a.diff - b.diff);
+        let zoneWeit = validOptions.filter(o => o.gripPos >= 27 && o.gripPos <= 32).sort((a,b) => a.diff - b.diff);
+
+        let picks = [];
+        if (zoneEng.length > 0) picks.push({ tag: "Option A (Vorne)", ...zoneEng[0] });
+        if (zoneMittel.length > 0) picks.push({ tag: "Option B (Mitte)", ...zoneMittel[0] });
+        if (zoneWeit.length > 0) picks.push({ tag: "Option C (Hinten)", ...zoneWeit[0] });
+
+        if (picks.length === 0) {
+            validOptions.sort((a,b) => a.diff - b.diff);
+            validOptions.slice(0, 3).forEach((opt, idx) => {
+                picks.push({ tag: `Option ${String.fromCharCode(65 + idx)}`, ...opt });
+            });
+        }
+
+        picks.forEach(opt => {
+            container.innerHTML += `
+                <div class="suggestion-item">
+                    <span class="suggestion-tag">${opt.tag}</span>
+                    <div class="suggestion-details">Scheibe <strong>${opt.weightPos}</strong> | Griff <strong>${opt.gripPos}</strong></div>
+                    <span style="font-size:0.85rem; color:var(--accent-color); font-weight:700;">~${opt.calculatedTotalKg.toFixed(1)} kg</span>
+                </div>
+            `;
+        });
+    }
+
+    // --- AUDIO SYSTEM ---
+    let audioCtx = null;
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playBeep(freq, duration, type = 'sine') {
+        try {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {}
+    }
+
+    function playToneReady() { playBeep(523.25, 0.15); }
+    function playToneStart() { playBeep(880.00, 0.4, 'triangle'); }
+    function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
+
+    // --- GESPEICHERTE ÜBUNGEN & LOGBUCH LOGIK ---
+    let savedExerciseList = JSON.parse(localStorage.getItem('board_computer_saved_exercises') || '["Brustpresse", "Squats", "Deadlifts", "Latzug", "Low Row"]');
+    let activeSessionLog = JSON.parse(localStorage.getItem('board_computer_active_session') || '[]');
+    let workoutHistory = JSON.parse(localStorage.getItem('board_computer_history') || '[]');
+
+    function toggleSavedDropdown(event) {
+        event.stopPropagation();
+        let listEl = document.getElementById('saved-dropdown-list');
+        if (listEl.style.display === 'block') {
+            listEl.style.display = 'none';
+        } else {
+            listEl.innerHTML = '';
+            savedExerciseList.forEach(ex => {
+                let item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.innerText = ex;
+                item.onclick = function() {
+                    document.getElementById('exercise-name-input').value = ex;
+                    listEl.style.display = 'none';
+                    checkLastTimeWorkout();
+                };
+                listEl.appendChild(item);
+            });
+            listEl.style.display = 'block';
+        }
+    }
+
+    // Schließe Dropdown bei Klick außerhalb
+    window.addEventListener('click', function() {
+        let listEl = document.getElementById('saved-dropdown-list');
+        if (listEl) listEl.style.display = 'none';
+    });
+
+    function checkLastTimeWorkout() {
+        let name = document.getElementById('exercise-name-input').value.trim();
+        let container = document.getElementById('last-time-container');
+        let textEl = document.getElementById('last-time-text');
+
+        if (!name || workoutHistory.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        let lastSet = null;
+        let lastDate = '';
+
+        for (let session of workoutHistory) {
+            let found = session.sets.filter(s => s.exercise.toLowerCase() === name.toLowerCase());
+            if (found.length > 0) {
+                lastSet = found[0];
+                lastDate = session.date;
+                break;
+            }
+        }
+
+        if (lastSet) {
+            let wdhStr = lastSet.wdh ? ` | ${lastSet.wdh} WDH` : '';
+            textEl.innerText = `Letztes Mal (${lastDate}): ${lastSet.kg} kg Total (Scheibe ${lastSet.weightPos}/Griff ${lastSet.gripPos})${wdhStr}`;
+            container.style.display = 'flex';
+        } else {
+            container.style.display = 'none';
+        }
+    }
+
+    function saveCurrentExerciseName() {
+        let val = document.getElementById('exercise-name-input').value.trim();
+        if (!val) {
+            alert("Bitte zuerst einen Namen eintragen.");
+            return;
+        }
+        if (!savedExerciseList.includes(val)) {
+            savedExerciseList.push(val);
+            localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+            alert(`Übung "${val}" wurde als Vorlage gespeichert!`);
+        } else {
+            alert("Diese Übung ist bereits in deinen Vorlagen vorhanden.");
+        }
+    }
+
+    function addSetToActiveSession() {
+        let exerciseName = document.getElementById('exercise-name-input').value.trim() || 'Übung';
+        let exerciseNote = document.getElementById('exercise-note-input').value.trim();
+        let now = new Date();
+        let timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+        let setEntry = {
+            id: Date.now(),
+            exercise: exerciseName,
+            note: exerciseNote,
+            kg: currentTotalKg.toFixed(1),
+            weightPos: weightPos,
+            gripPos: gripPos,
+            wdh: '',
+            rpe: '',
+            ds: false,
+            dsDetails: '',
+            time: timeStr
+        };
+
+        activeSessionLog.unshift(setEntry);
+        localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+        renderActiveLogbook();
+        checkLastTimeWorkout();
+    }
+
+    function addManualSet() { addSetToActiveSession(); }
+
+    function updateSetField(setId, field, val) {
+        let item = activeSessionLog.find(s => s.id === setId);
+        if (item) {
+            item[field] = val;
+            localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+        }
+    }
+
+    function toggleDropSet(setId) {
+        let item = activeSessionLog.find(s => s.id === setId);
+        if (item) {
+            item.ds = !item.ds;
+            localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+            renderActiveLogbook();
+        }
+    }
+
+    function deleteSet(setId) {
+        activeSessionLog = activeSessionLog.filter(s => s.id !== setId);
+        localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+        renderActiveLogbook();
+    }
+
+    function finishCurrentExercise() {
+        document.getElementById('exercise-name-input').value = '';
+        document.getElementById('exercise-note-input').value = '';
+        document.getElementById('note-field-container').style.display = 'none';
+        document.getElementById('exercise-name-input').placeholder = 'Nächste Übung wählen/eingeben...';
+        document.getElementById('last-time-container').style.display = 'none';
+    }
+
+    function finishWorkoutSession() {
+        if (activeSessionLog.length === 0) {
+            alert("Es wurden noch keine Sätze im aktuellen Training absolviert!");
+            return;
+        }
+
+        let now = new Date();
+        let dateStr = String(now.getDate()).padStart(2, '0') + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + now.getFullYear();
+
+        let workoutRecord = {
+            id: Date.now(),
+            date: dateStr,
+            time: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
+            sets: [...activeSessionLog]
+        };
+
+        workoutHistory.unshift(workoutRecord);
+        localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+
+        activeSessionLog = [];
+        localStorage.removeItem('board_computer_active_session');
+        
+        renderActiveLogbook();
+        renderHistory();
+        checkLastTimeWorkout();
+        alert("Workout erfolgreich am " + dateStr + " im Kalender abgespeichert!");
+    }
+
+    function deleteWorkoutHistoryItem(workoutId) {
+        if (confirm("Möchtest du dieses gespeicherte Workout wirklich aus der Historie löschen?")) {
+            workoutHistory = workoutHistory.filter(w => w.id !== workoutId);
+            localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+            renderHistory();
+            checkLastTimeWorkout();
+        }
+    }
+
+    // --- BACKUP EXPORT & IMPORT ---
+    function exportBackup() {
+        let backupData = {
+            history: workoutHistory,
+            savedExercises: savedExerciseList,
+            version: "1.0",
+            date: new Date().toISOString()
+        };
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "board_computer_backup_" + new Date().toISOString().slice(0,10) + ".json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function importBackup(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let imported = JSON.parse(e.target.result);
+                if (imported.history && imported.savedExercises) {
+                    if (confirm("Möchtest du die Daten wirklich importieren? Vorhandene Historie wird überschrieben.")) {
+                        workoutHistory = imported.history;
+                        savedExerciseList = imported.savedExercises;
+                        localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+                        localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+                        renderHistory();
+                        alert("Backup erfolgreich wiederhergestellt!");
+                    }
+                } else {
+                    alert("Ungültiges Backup-Format!");
+                }
+            } catch (err) {
+                alert("Fehler beim Lesen der JSON-Datei.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function renderActiveLogbook() {
+        let container = document.getElementById('logbook-container');
+        if (activeSessionLog.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">Noch keine Sätze im aktuellen Training.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        let grouped = {};
+        let order = [];
+        
+        activeSessionLog.forEach(item => {
+            if (!grouped[item.exercise]) {
+                grouped[item.exercise] = [];
+                order.push(item.exercise);
+            }
+            grouped[item.exercise].push(item);
+        });
+
+        order.forEach(exName => {
+            let sets = grouped[exName];
+            let firstNote = sets[0].note || '';
+
+            let blockHtml = `<div class="log-exercise-block">
+                <div class="log-exercise-title">
+                    <span>🏋️ ${exName}</span>
+                    <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:normal;">${sets.length} Sätze</span>
+                </div>`;
+
+            if (firstNote) {
+                blockHtml += `<div class="log-exercise-note-display" style="font-size:0.8rem; color:var(--ready-color); margin-bottom:8px; font-style:italic;" title="${firstNote}">✏️ ${firstNote}</div>`;
+            }
+
+            sets.forEach((s, idx) => {
+                let dsSymbol = s.ds ? '✓' : '';
+                blockHtml += `
+                    <div class="log-set-wrapper">
+                        <div class="log-set-row">
+                            <div style="flex: 1; min-width: 90px;">
+                                <strong style="font-size:0.85rem;">Satz ${sets.length - idx}</strong><br>
+                                <span style="color:var(--accent-color); font-weight:700; font-family:var(--font-mono); font-size:0.95rem;">${s.kg} kg</span> 
+                                <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
+                                    <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
+                                    <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">DS</span>
+                                    <div class="ds-checkbox" onclick="toggleDropSet(${s.id})">${dsSymbol}</div>
+                                </div>
+                                <button class="danger" style="padding:6px 8px; font-size:0.75rem; margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
+                            </div>
+                        </div>
+
+                        ${s.ds ? `
+                            <div class="ds-details-box">
+                                <label>↳ Drop-Details:</label>
+                                <input type="text" class="input-text" style="padding:4px 8px; font-size:0.8rem; background:#12151c;" 
+                                    placeholder="z. B. 25 kg / 6 WDH..." value="${s.dsDetails || ''}" 
+                                    oninput="updateSetField(${s.id}, 'dsDetails', this.value)">
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+
+            blockHtml += `</div>`;
+            container.innerHTML += blockHtml;
+        });
+    }
+
+    function renderHistory() {
+        let container = document.getElementById('history-container');
+        if (workoutHistory.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">Bisher noch keine Workouts abgeschlossen.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        workoutHistory.forEach(session => {
+            let itemHtml = `<div class="history-card">
+                <div class="history-header">
+                    <div class="history-date">📅 Workout vom ${session.date} (${session.time} Uhr)</div>
+                    <button class="danger" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteWorkoutHistoryItem(${session.id})">✕ Löschen</button>
+                </div>`;
+
+            let grouped = {};
+            session.sets.forEach(item => {
+                if (!grouped[item.exercise]) grouped[item.exercise] = [];
+                grouped[item.exercise].push(item);
+            });
+
+            for (let exName in grouped) {
+                let sets = grouped[exName];
+                let firstNote = sets[0].note ? ` <span style="font-size:0.75rem; color:var(--ready-color); font-style:italic;">(📌 ${sets[0].note})</span>` : '';
+
+                itemHtml += `<div style="font-size:0.85rem; font-weight:700; color:var(--accent-cyan); margin-top:6px;">${exName}${firstNote}</div>`;
+                sets.forEach((s, idx) => {
+                    let wdhText = s.wdh ? s.wdh + ' WDH' : '';
+                    let rpeText = s.rpe ? 'RPE ' + s.rpe : '';
+                    let dsText = s.ds ? `[Drop-Set${s.dsDetails ? ': ' + s.dsDetails : ''}]` : '';
+                    itemHtml += `
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">
+                            • Satz ${idx + 1}: ${s.kg} kg (Scheibe ${s.weightPos}/Griff ${s.gripPos}) ${wdhText} ${rpeText} ${dsText}
+                        </div>
+                    `;
+                });
+            }
+
+            itemHtml += `</div>`;
+            container.innerHTML += itemHtml;
+        });
+    }
+
+    // --- WORKFLOW TIMER ---
+    let timerInterval = null;
+    let currentTimeLeft = 45;
+    let currentPhase = 'idle';
+
+    let prepDuration = 10;
+    let workDuration = 45;
+    let restDuration = 120;
+
+    function setWorkPreset(secs, btnElement) {
+        workDuration = secs;
+        document.getElementById('slider-work').value = secs;
+        document.getElementById('val-workTime').innerText = secs + 's';
+
+        document.querySelectorAll('.work-preset').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
+        }
+    }
+
+    function setRestPreset(secs, btnElement) {
+        restDuration = secs;
+        document.getElementById('slider-rest').value = secs;
+        document.getElementById('val-restTime').innerText = secs + 's';
+
+        document.querySelectorAll('.rest-preset').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
+        }
+    }
+
+    function updateTimerFromSliders() {
+        workDuration = parseInt(document.getElementById('slider-work').value);
+        restDuration = parseInt(document.getElementById('slider-rest').value);
+
+        document.getElementById('val-workTime').innerText = workDuration + 's';
+        document.getElementById('val-restTime').innerText = restDuration + 's';
+
+        document.querySelectorAll('.work-preset').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.innerText) === workDuration);
+        });
+        document.querySelectorAll('.rest-preset').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.innerText) === restDuration);
+        });
+
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
+        }
+    }
+
+    function startSetWorkflow() {
+        initAudio();
+        requestWakeLock();
+        if (timerInterval) clearInterval(timerInterval);
+
+        currentPhase = 'ready';
+        currentTimeLeft = prepDuration;
+        playToneReady();
+        updateDisplay();
+
+        timerInterval = setInterval(() => {
+            currentTimeLeft--;
+
+            if (currentPhase === 'ready') {
+                if (currentTimeLeft <= 3 && currentTimeLeft > 0) playToneReady();
+                if (currentTimeLeft <= 0) {
+                    currentPhase = 'work';
+                    currentTimeLeft = workDuration;
+                    playToneStart();
+                }
+            } 
+            else if (currentPhase === 'work') {
+                if (currentTimeLeft <= 0) {
+                    addSetToActiveSession();
+                    currentPhase = 'rest';
+                    currentTimeLeft = restDuration;
+                    playToneRest();
+                }
+            } 
+            else if (currentPhase === 'rest') {
+                if (currentTimeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    currentPhase = 'idle';
+                    currentTimeLeft = workDuration;
+                    playToneStart();
+                }
+            }
+
+            updateDisplay();
+        }, 1000);
+    }
+
+    function resetTimerWorkflow() {
+        if (timerInterval) clearInterval(timerInterval);
+        currentPhase = 'idle';
+        currentTimeLeft = workDuration;
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        let mins = Math.floor(currentTimeLeft / 60);
+        let secs = currentTimeLeft % 60;
+        document.getElementById('timer-display').innerText = 
+            String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+        let statusEl = document.getElementById('timer-status');
+        let bodyEl = document.body;
+        bodyEl.className = '';
+
+        if (currentPhase === 'idle') {
+            statusEl.innerText = "Bereit für Satz";
+            statusEl.style.color = "var(--ready-color)";
+        } else if (currentPhase === 'ready') {
+            statusEl.innerText = "⌛ Positionieren (" + currentTimeLeft + "s)";
+            statusEl.style.color = "var(--ready-color)";
+        } else if (currentPhase === 'work') {
+            statusEl.innerText = "⚡ Muskelarbeit";
+            statusEl.style.color = "var(--work-color)";
+            bodyEl.classList.add('phase-work');
+        } else if (currentPhase === 'rest') {
+            statusEl.innerText = "☕ Pause";
+            statusEl.style.color = "var(--rest-color)";
+            bodyEl.classList.add('phase-rest');
+        }
+    }
+
+    // Init
+    onPositionSlidersChange();
+    renderActiveLogbook();
+    renderHistory();
+    checkLastTimeWorkout();
+    updateDisplay();
+</script>
+
+</body>
+</html>
