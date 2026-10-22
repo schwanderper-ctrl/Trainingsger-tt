@@ -411,7 +411,7 @@
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             margin-top: 4px;
-            max-height: 180px;
+            max-height: 200px;
             overflow-y: auto;
             z-index: 100;
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
@@ -422,6 +422,9 @@
             color: var(--text-primary);
             cursor: pointer;
             border-bottom: 1px solid rgba(255,255,255,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .dropdown-item:hover {
             background: rgba(129, 178, 154, 0.1);
@@ -429,6 +432,17 @@
         }
         .dropdown-item:last-child {
             border-bottom: none;
+        }
+        .delete-ex-btn {
+            color: var(--work-color);
+            font-size: 0.85rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+        .delete-ex-btn:hover {
+            background: rgba(217, 119, 113, 0.2);
         }
     </style>
 </head>
@@ -830,19 +844,50 @@
         if (listEl.style.display === 'block') {
             listEl.style.display = 'none';
         } else {
-            listEl.innerHTML = '';
-            savedExerciseList.forEach(ex => {
-                let item = document.createElement('div');
-                item.className = 'dropdown-item';
-                item.innerText = ex;
-                item.onclick = function() {
-                    document.getElementById('exercise-name-input').value = ex;
-                    listEl.style.display = 'none';
-                    checkLastTimeWorkout();
-                };
-                listEl.appendChild(item);
-            });
+            renderSavedDropdownItems();
             listEl.style.display = 'block';
+        }
+    }
+
+    function renderSavedDropdownItems() {
+        let listEl = document.getElementById('saved-dropdown-list');
+        listEl.innerHTML = '';
+        if (savedExerciseList.length === 0) {
+            listEl.innerHTML = '<div style="padding:10px; font-size:0.8rem; color:var(--text-secondary); text-align:center;">Keine Vorlagen gespeichert.</div>';
+            return;
+        }
+        savedExerciseList.forEach(ex => {
+            let item = document.createElement('div');
+            item.className = 'dropdown-item';
+            
+            let nameSpan = document.createElement('span');
+            nameSpan.innerText = ex;
+            nameSpan.onclick = function() {
+                document.getElementById('exercise-name-input').value = ex;
+                listEl.style.display = 'none';
+                checkLastTimeWorkout();
+            };
+
+            let deleteBtn = document.createElement('span');
+            deleteBtn.className = 'delete-ex-btn';
+            deleteBtn.innerText = '✕';
+            deleteBtn.title = 'Vorlage löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteSavedExercise(ex);
+            };
+
+            item.appendChild(nameSpan);
+            item.appendChild(deleteBtn);
+            listEl.appendChild(item);
+        });
+    }
+
+    function deleteSavedExercise(exName) {
+        if (confirm(`Möchtest du die Vorlage "${exName}" wirklich löschen?`)) {
+            savedExerciseList = savedExerciseList.filter(item => item !== exName);
+            localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+            renderSavedDropdownItems();
         }
     }
 
