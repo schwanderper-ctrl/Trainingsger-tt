@@ -99,10 +99,10 @@
             gap: 8px;
         }
 
-        /* Haupt-Anzeige */
+        /* Haupt-Anzeige mit integriertem Slider */
         .result-box {
             text-align: center;
-            padding: 24px 10px;
+            padding: 20px 16px;
             background: linear-gradient(180deg, rgba(0,230,118,0.05) 0%, rgba(0,0,0,0) 100%);
             border: 1px solid rgba(0, 230, 118, 0.2);
             position: relative;
@@ -110,7 +110,7 @@
         }
 
         .result-value {
-            font-size: 4rem;
+            font-size: 3.8rem;
             font-weight: 900;
             color: var(--accent-color);
             line-height: 1;
@@ -119,12 +119,13 @@
         }
 
         .result-unit {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            margin-top: 6px;
+            margin-top: 4px;
+            margin-bottom: 12px;
         }
 
         /* Controls */
@@ -164,22 +165,26 @@
             cursor: pointer;
         }
 
-        /* Number Inputs */
-        .input-number {
+        /* Text & Number Inputs */
+        .input-text, .input-number {
             width: 100%;
             background: #121622;
             border: 1px solid #2a344a;
             color: #fff;
             padding: 12px;
             border-radius: 12px;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
-            text-align: center;
             outline: none;
             transition: border-color 0.2s;
         }
 
-        .input-number:focus {
+        .input-number {
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .input-text:focus, .input-number:focus {
             border-color: var(--accent-cyan);
         }
 
@@ -188,7 +193,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-top: 14px;
+            margin-top: 10px;
         }
 
         .suggestion-item {
@@ -306,8 +311,60 @@
             border: 1px solid var(--card-border);
         }
 
+        button.danger {
+            background: #2a1215;
+            color: #ff5252;
+            border: 1px solid rgba(255, 82, 82, 0.3);
+            box-shadow: none;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+        }
+
         button:active {
             transform: scale(0.96);
+        }
+
+        /* LOGBUCH STYLES */
+        .log-exercise-block {
+            background: #121622;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 14px;
+            margin-top: 12px;
+        }
+
+        .log-exercise-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .log-set-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            font-size: 0.88rem;
+        }
+
+        .log-set-row:last-child {
+            border-bottom: none;
+        }
+
+        .log-rpe-badge {
+            background: rgba(255, 179, 0, 0.15);
+            color: var(--ready-color);
+            border: 1px solid rgba(255, 179, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
         }
     </style>
 </head>
@@ -318,14 +375,17 @@
         <h1>Board Computer</h1>
     </header>
 
-    <!-- HAUPTANZEIGE EFFEKTIVER WIDERSTAND -->
+    <!-- HAUPTANZEIGE EFFEKTIVER WIDERSTAND MIT EIGENEM REGLER -->
     <div class="card result-box">
         <div class="result-unit">Effektiver Widerstand</div>
         <div class="result-value" id="calc-result">17.5</div>
-        <div class="result-unit">Kilogramm</div>
+        <div class="result-unit" style="margin-bottom:16px;">Kilogramm</div>
+        
+        <!-- KILO-REGLER: MIN 5.0 kg, MAX 30.5 kg -->
+        <input type="range" id="slider-target-kg" min="5.0" max="30.5" step="0.5" value="17.5" oninput="onKgSliderChange()">
     </div>
 
-    <!-- MANUELLE REGLER -->
+    <!-- MANUELLE REGLER FÜR SCHEIBE & GRIFF -->
     <div class="card">
         <div class="card-title">⚙️ Manuelle Einstellung</div>
         <div class="control-group">
@@ -333,7 +393,7 @@
                 <span>Gewichtsscheiben Position</span>
                 <span id="val-weightPos">7</span>
             </div>
-            <input type="range" id="slider-weight" min="1" max="32" value="7" oninput="updateCalc()">
+            <input type="range" id="slider-weight" min="1" max="32" value="7" oninput="onPositionSlidersChange()">
         </div>
 
         <div class="control-group" style="margin-top: 20px;">
@@ -341,17 +401,16 @@
                 <span>Stand- / Griffposition</span>
                 <span id="val-gripPos">15</span>
             </div>
-            <input type="range" id="slider-grip" min="15" max="32" value="15" oninput="updateCalc()">
+            <input type="range" id="slider-grip" min="15" max="32" value="15" oninput="onPositionSlidersChange()">
         </div>
     </div>
 
-    <!-- WUNSCH-GEWICHT RECHNER (3 VORSCHLÄGE) -->
+    <!-- WUNSCH-GEWICHT OPTIONEN -->
     <div class="card">
-        <div class="card-title">🎯 Wunsch-Gewicht Finder</div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size:0.9rem; color:var(--text-secondary); flex:1;">Ziel-Gewicht (kg):</span>
-            <input type="number" id="target-weight-input" class="input-number" style="width:120px;" value="20.0" step="0.5" oninput="suggestTargetWeight()">
-        </div>
+        <div class="card-title" style="margin-bottom: 6px;">🎯 Positionierungs-Optionen</div>
+        <p style="font-size:0.8rem; color:var(--text-secondary); margin:0 0 10px 0;">
+            Alternative Kombinationen für die aktuell gewählten Kilogramm:
+        </p>
         <div class="suggestions-grid" id="target-weight-suggestions">
             <!-- Dynamisch generierte Vorschläge -->
         </div>
@@ -362,22 +421,22 @@
         <div class="card-title">🔥 Drop-Set Rechner (Feste Scheibe: Position <span id="drop-current-wpos" style="color:var(--accent-cyan);">7</span>)</div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div>
-                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Start-Ziel (kg)</label>
-                <input type="number" id="drop-start-input" class="input-number" value="20.0" step="0.5" oninput="calculateDirectDrop()">
+                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Startgewicht (kg)</label>
+                <input type="text" id="drop-start-display" class="input-number" value="17.5 kg" readonly style="color: var(--accent-color); background: #0b0e14;">
             </div>
             <div>
                 <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Drop-Ziel (kg)</label>
-                <input type="number" id="drop-target-input" class="input-number" value="15.0" step="0.5" oninput="calculateDirectDrop()">
+                <input type="number" id="drop-target-input" class="input-number" value="12.0" step="0.5" min="5.0" max="30.5" oninput="calculateDirectDrop()">
             </div>
         </div>
 
         <div class="drop-display-container">
             <div class="drop-box">
-                <div class="drop-box-label">1. Hauptsatz</div>
+                <div class="drop-box-label">Aktueller Griff</div>
                 <div class="drop-box-value" id="res-start-grip">Griff 15</div>
             </div>
             <div class="drop-box" style="border-color: var(--accent-color);">
-                <div class="drop-box-label" style="color:var(--accent-color);">2. Drop-Satz</div>
+                <div class="drop-box-label" style="color:var(--accent-color);">Drop-Griff</div>
                 <div class="drop-box-value" id="res-drop-grip" style="color:var(--accent-color);">Griff 24</div>
             </div>
         </div>
@@ -407,33 +466,105 @@
             <button class="secondary" onclick="resetTimerWorkflow()">RESET</button>
         </div>
     </div>
+
+    <!-- EINGABE ÜBUNG & RPE INTENSITÄT (LEER VOREINGESTELLT) -->
+    <div class="card">
+        <div class="card-title">📝 Aktuelle Übung & Intensität</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <div>
+                <label style="font-size:0.75rem; color:var(--text-secondary); display:block; margin-bottom:4px;">Name der Übung</label>
+                <input type="text" id="exercise-name-input" class="input-text" placeholder="z. B. Latziehen, Brustpresse..." value="Brustpresse">
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#121622; padding:10px 14px; border-radius:12px; border:1px solid #2a344a;">
+                <div>
+                    <span style="font-size:0.85rem; font-weight:700; display:block;">Intensität / RPE (1–10)</span>
+                    <span style="font-size:0.75rem; color:var(--text-secondary);">Optional (leer lassen oder 1–10)</span>
+                </div>
+                <input type="number" id="rpe-input" class="input-number" style="width:70px;" value="" placeholder="-" min="1" max="10">
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTOMATISCHES LOGBUCH -->
+    <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div class="card-title" style="margin:0;">📋 Trainings-Logbuch</div>
+            <button class="danger" onclick="clearLogbook()">Log Leeren</button>
+        </div>
+
+        <div id="logbook-container">
+            <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;" id="logbook-empty-msg">
+                Noch keine Sätze absolviert. Starte deinen ersten Satz oben am Timer!
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // --- MATHEMATISCHES MODELL (EINGEEICHT) ---
+    // --- MATHEMATISCHES MODELL ---
     let weightPos = 7;
     let gripPos = 15;
+    let currentEffectiveKg = 17.5;
 
-    function updateCalc() {
+    function onPositionSlidersChange() {
         weightPos = parseInt(document.getElementById('slider-weight').value);
         gripPos = parseInt(document.getElementById('slider-grip').value);
 
         gripPos = Math.max(15, Math.min(32, gripPos));
 
         let effectiveKg = 22.0 + (0.53 * weightPos) - (0.55 * gripPos);
+        currentEffectiveKg = Math.max(4.93, effectiveKg);
 
         document.getElementById('val-weightPos').innerText = weightPos;
         document.getElementById('val-gripPos').innerText = gripPos;
-        document.getElementById('calc-result').innerText = Math.max(1.0, effectiveKg).toFixed(1);
+        document.getElementById('calc-result').innerText = currentEffectiveKg.toFixed(1);
+        document.getElementById('slider-target-kg').value = currentEffectiveKg.toFixed(1);
 
-        // Aktualisiere Scheiben-Info im Drop-Set Rechner
         document.getElementById('drop-current-wpos').innerText = weightPos;
+        document.getElementById('drop-start-display').value = currentEffectiveKg.toFixed(1) + ' kg';
+        
+        suggestTargetWeight(currentEffectiveKg);
         calculateDirectDrop();
     }
 
-    // --- WUNSCHGEWICHT RECHNER (3 VORSCHLÄGE FUER HAUPTSATZ) ---
-    function suggestTargetWeight() {
-        let target = parseFloat(document.getElementById('target-weight-input').value) || 20.0;
+    function onKgSliderChange() {
+        currentEffectiveKg = parseFloat(document.getElementById('slider-target-kg').value);
+        document.getElementById('calc-result').innerText = currentEffectiveKg.toFixed(1);
+
+        let bestMatch = null;
+        let minDiff = 999;
+
+        for (let w = 1; w <= 32; w++) {
+            for (let g = 15; g <= 32; g++) {
+                let calcKg = 22.0 + (0.53 * w) - (0.55 * g);
+                let diff = Math.abs(calcKg - currentEffectiveKg);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestMatch = { weightPos: w, gripPos: g };
+                }
+            }
+        }
+
+        if (bestMatch) {
+            weightPos = bestMatch.weightPos;
+            gripPos = bestMatch.gripPos;
+
+            document.getElementById('slider-weight').value = weightPos;
+            document.getElementById('slider-grip').value = gripPos;
+            document.getElementById('val-weightPos').innerText = weightPos;
+            document.getElementById('val-gripPos').innerText = gripPos;
+
+            document.getElementById('drop-current-wpos').innerText = weightPos;
+            document.getElementById('drop-start-display').value = currentEffectiveKg.toFixed(1) + ' kg';
+            
+            suggestTargetWeight(currentEffectiveKg);
+            calculateDirectDrop();
+        }
+    }
+
+    // --- POSITIONIERUNGS-OPTIONEN ---
+    function suggestTargetWeight(targetKg) {
+        let target = targetKg || currentEffectiveKg;
         let container = document.getElementById('target-weight-suggestions');
         container.innerHTML = '';
 
@@ -476,12 +607,11 @@
         });
     }
 
-    // --- DIREKTER DROP-SET RECHNER (Basiert auf aktueller Scheibenposition) ---
+    // --- DIREKTER DROP-SET RECHNER ---
     function calculateDirectDrop() {
-        let startTarget = parseFloat(document.getElementById('drop-start-input').value) || 20.0;
-        let dropTarget = parseFloat(document.getElementById('drop-target-input').value) || 15.0;
+        let startTarget = currentEffectiveKg;
+        let dropTarget = parseFloat(document.getElementById('drop-target-input').value) || 12.0;
 
-        // Nutze die aktuell gewählte Scheibenposition
         let currentW = weightPos;
 
         let matchedStartGrip = Math.round((22.0 + (0.53 * currentW) - startTarget) / 0.55);
@@ -523,6 +653,84 @@
     function playToneReady() { playBeep(523.25, 0.15); }
     function playToneStart() { playBeep(880.00, 0.4, 'triangle'); }
     function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
+
+    // --- LOGBUCH SPEICHER LOGIK ---
+    let workoutLog = JSON.parse(localStorage.getItem('board_computer_log') || '[]');
+
+    function saveSetToLog() {
+        let exerciseName = document.getElementById('exercise-name-input').value.trim() || 'Übung';
+        let rpeInputVal = document.getElementById('rpe-input').value.trim();
+        let rpeVal = (rpeInputVal !== '' && !isNaN(rpeInputVal)) ? rpeInputVal : '-';
+        
+        let now = new Date();
+        let timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+        let setEntry = {
+            exercise: exerciseName,
+            kg: currentEffectiveKg.toFixed(1),
+            weightPos: weightPos,
+            gripPos: gripPos,
+            workSecs: workDuration,
+            rpe: rpeVal,
+            time: timeStr
+        };
+
+        workoutLog.push(setEntry);
+        localStorage.setItem('board_computer_log', JSON.stringify(workoutLog));
+        renderLogbook();
+    }
+
+    function renderLogbook() {
+        let container = document.getElementById('logbook-container');
+        if (workoutLog.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">Noch keine Sätze absolviert. Starte deinen ersten Satz oben am Timer!</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+
+        // Gruppiere Sätze nach Übungs-Name
+        let grouped = {};
+        workoutLog.forEach(item => {
+            if (!grouped[item.exercise]) grouped[item.exercise] = [];
+            grouped[item.exercise].push(item);
+        });
+
+        for (let exName in grouped) {
+            let sets = grouped[exName];
+            let blockHtml = `<div class="log-exercise-block">
+                <div class="log-exercise-title">
+                    <span>🏋️ ${exName}</span>
+                    <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:normal;">${sets.length} Satz/Sätze</span>
+                </div>`;
+
+            sets.forEach((s, idx) => {
+                blockHtml += `
+                    <div class="log-set-row">
+                        <div>
+                            <strong>Satz ${idx + 1}:</strong> <span style="color:var(--accent-color); font-weight:800;">${s.kg} kg</span> 
+                            <span style="color:var(--text-secondary); font-size:0.8rem;">(Scheibe ${s.weightPos} / Griff ${s.gripPos})</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            ${s.rpe !== '-' ? `<span class="log-rpe-badge">RPE ${s.rpe}/10</span>` : ''}
+                            <span style="color:var(--text-secondary); font-size:0.75rem;">${s.time}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            blockHtml += `</div>`;
+            container.innerHTML += blockHtml;
+        }
+    }
+
+    function clearLogbook() {
+        if (confirm("Möchtest du das gesamte Tages-Logbuch wirklich leeren?")) {
+            workoutLog = [];
+            localStorage.removeItem('board_computer_log');
+            renderLogbook();
+        }
+    }
 
     // --- WORKFLOW TIMER ---
     let timerInterval = null;
@@ -568,6 +776,9 @@
             } 
             else if (currentPhase === 'work') {
                 if (currentTimeLeft <= 0) {
+                    // SATZ BEENDET: Automatisch ins Logbuch eintragen!
+                    saveSetToLog();
+
                     currentPhase = 'rest';
                     currentTimeLeft = restDuration;
                     playToneRest();
@@ -621,8 +832,8 @@
     }
 
     // Init
-    updateCalc();
-    suggestTargetWeight();
+    onPositionSlidersChange();
+    renderLogbook();
     updateDisplay();
 </script>
 
