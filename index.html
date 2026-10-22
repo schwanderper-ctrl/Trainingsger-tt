@@ -11,6 +11,7 @@
             --accent-color: #00e676;
             --text-color: #ffffff;
             --subtext-color: #b0bec5;
+            --timer-bg: #2a2a2a;
         }
 
         body {
@@ -121,6 +122,43 @@
             color: var(--accent-color);
             margin-top: 5px;
         }
+
+        /* Timer Styles */
+        .timer-card {
+            text-align: center;
+            background: var(--timer-bg);
+            border: 2px solid #333;
+        }
+
+        .timer-display {
+            font-size: 2.8rem;
+            font-weight: bold;
+            font-variant-numeric: tabular-nums;
+            color: #ff9800;
+            margin: 10px 0;
+        }
+
+        .timer-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button.secondary {
+            background-color: #444;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -154,11 +192,21 @@
         </div>
     </div>
 
+    <!-- Pausen-Timer -->
+    <div class="card timer-card">
+        <div style="font-size: 0.9rem; color: var(--subtext-color);">Satzpause / Timer</div>
+        <div class="timer-display" id="timer-display">00:00</div>
+        <div class="timer-buttons">
+            <button onclick="startTimer()">Start Pause</button>
+            <button class="secondary" onclick="resetTimer()">Reset</button>
+        </div>
+    </div>
+
     <!-- Drop-Set Rechner -->
     <div class="card">
         <h3 style="margin-top:0; font-size:1.1rem;">Drop-Set Rechner</h3>
         <p style="font-size:0.85rem; color:var(--subtext-color); margin-bottom:15px;">
-            Berechnet die benötigte Griffposition bei gleicher Scheibenstellung:
+            Griffposition bei gleicher Scheibenstellung:
         </p>
         
         <div class="drop-grid">
@@ -184,10 +232,9 @@
         weightPos = parseInt(document.getElementById('slider-weight').value);
         gripPos = parseInt(document.getElementById('slider-grip').value);
 
-        // Auf den Bereich 15-32 begrenzt
         gripPos = Math.max(15, Math.min(32, gripPos));
 
-        // Empirisch eingeeichte Formel (<0.5 kg Toleranz)
+        // Kalibrierte Formel
         let effectiveKg = 22.0 + (0.53 * weightPos) - (0.55 * gripPos);
 
         document.getElementById('val-weightPos').innerText = weightPos;
@@ -201,11 +248,9 @@
         let startTarget = parseFloat(document.getElementById('drop-start-target').value) || 18;
         let endTarget = parseFloat(document.getElementById('drop-end-target').value) || 10;
         
-        // Umkehrformel für die Griffposition
         let matchedStartGrip = Math.round((22.0 + (0.53 * weightPos) - startTarget) / 0.55);
         let matchedEndGrip = Math.round((22.0 + (0.53 * weightPos) - endTarget) / 0.55);
 
-        // Begrenzung auf nutzbaren Bereich
         let safeStartGrip = Math.max(15, Math.min(32, matchedStartGrip));
         let safeEndGrip = Math.max(15, Math.min(32, matchedEndGrip));
 
@@ -213,7 +258,33 @@
         document.getElementById('res-drop-grip').innerText = `Griff ${safeEndGrip}`;
     }
 
-    // Erstberechnung beim Laden
+    // Timer Logik
+    let timerInterval = null;
+    let secondsElapsed = 0;
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        secondsElapsed = 0;
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            secondsElapsed++;
+            updateTimerDisplay();
+        }, 1000);
+    }
+
+    function resetTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        secondsElapsed = 0;
+        updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+        let mins = Math.floor(secondsElapsed / 60);
+        let secs = secondsElapsed % 60;
+        document.getElementById('timer-display').innerText = 
+            String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+    }
+
     updateCalc();
 </script>
 
