@@ -250,7 +250,7 @@
         }
         .preset-btn.active { background: var(--accent-cyan); color: #080b11; border-color: var(--accent-cyan); font-weight: 900; }
 
-        /* SUPERSATZ DUAL CARDS */
+        /* SUPERSATZ DUAL CARDS (HOCHWERTIG & GEHIGHLIGHTET) */
         .superset-dual-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -259,17 +259,17 @@
         }
         .superset-card-box {
             background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 14px;
-            padding: 12px 10px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 14px 10px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
         }
         .superset-card-box.active-card {
             border-color: var(--accent-cyan);
-            background: rgba(56, 189, 248, 0.08);
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+            background: rgba(56, 189, 248, 0.12);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.25);
         }
 
         .log-exercise-block {
@@ -324,7 +324,7 @@
         <h1>Board Computer</h1>
     </header>
 
-    <!-- MODUS AUSWAHL (STANDARD, SUPERSATZ, BLITZSÄTZE) -->
+    <!-- MODUS AUSWAHL -->
     <div class="mode-toggle-bar">
         <button id="btn-mode-normal" class="mode-btn active" onclick="setTrainingMode('normal')">⚡ Standard</button>
         <button id="btn-mode-super" class="mode-btn" onclick="setTrainingMode('superset')">🔥 Supersatz</button>
@@ -337,36 +337,36 @@
         <div class="superset-dual-container">
             <!-- Übung A -->
             <div class="superset-card-box active-card" id="card-super-a" onclick="selectSuperCard('A')">
-                <div style="font-size:0.7rem; color:var(--accent-cyan); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung A</div>
+                <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:900; text-transform:uppercase; margin-bottom:4px; letter-spacing:0.5px;">Übung A</div>
                 <div class="dropdown-container">
                     <div style="position:relative;">
-                        <input type="text" id="super-ex-a-input" class="input-text" value="Brustpresse" style="font-size:0.85rem; padding:6px 28px 6px 8px; margin-bottom:6px;" placeholder="Übung A" oninput="updateSuperCardData()">
-                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list-a')" style="position:absolute; right:8px; top:40%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.75rem; font-weight:800;">▼</span>
+                        <input type="text" id="super-ex-a-input" class="input-text" value="Brustpresse" style="font-size:1rem; font-weight:800; color:var(--accent-cyan); padding:8px 30px 8px 10px; margin-bottom:6px; background:#080b11; border-color:rgba(56,189,248,0.4);" placeholder="Übung A" oninput="updateSuperCardData()">
+                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list-a')" style="position:absolute; right:10px; top:42%; transform:translateY(-50%); cursor:pointer; color:var(--accent-cyan); font-size:0.85rem; font-weight:900; padding:4px;">▼</span>
                     </div>
                     <div id="saved-dropdown-list-a" class="dropdown-list"></div>
                 </div>
-                <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-a">24.4 kg</div>
-                <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:700;" id="super-pos-a">w:1 | g:15</div>
+                <div style="font-size:1.4rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:6px 0;" id="super-weight-a">24.4 kg</div>
+                <div style="font-size:0.8rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:800;" id="super-pos-a">w:1 | g:15</div>
             </div>
 
             <!-- Übung B -->
             <div class="superset-card-box" id="card-super-b" onclick="selectSuperCard('B')">
-                <div style="font-size:0.7rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung B</div>
+                <div style="font-size:0.75rem; color:var(--text-secondary); font-weight:900; text-transform:uppercase; margin-bottom:4px; letter-spacing:0.5px;">Übung B</div>
                 <div class="dropdown-container">
                     <div style="position:relative;">
-                        <input type="text" id="super-ex-b-input" class="input-text" value="Low Row" style="font-size:0.85rem; padding:6px 28px 6px 8px; margin-bottom:6px;" placeholder="Übung B" oninput="updateSuperCardData()">
-                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list-b')" style="position:absolute; right:8px; top:40%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.75rem; font-weight:800;">▼</span>
+                        <input type="text" id="super-ex-b-input" class="input-text" value="Low Row" style="font-size:1rem; font-weight:800; color:var(--accent-cyan); padding:8px 30px 8px 10px; margin-bottom:6px; background:#080b11; border-color:rgba(56,189,248,0.4);" placeholder="Übung B" oninput="updateSuperCardData()">
+                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list-b')" style="position:absolute; right:10px; top:42%; transform:translateY(-50%); cursor:pointer; color:var(--accent-cyan); font-size:0.85rem; font-weight:900; padding:4px;">▼</span>
                     </div>
                     <div id="saved-dropdown-list-b" class="dropdown-list"></div>
                 </div>
-                <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-b">38.8 kg</div>
-                <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:700;" id="super-pos-b">w:12 | g:17</div>
+                <div style="font-size:1.4rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:6px 0;" id="super-weight-b">38.8 kg</div>
+                <div style="font-size:0.8rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:800;" id="super-pos-b">w:12 | g:17</div>
             </div>
         </div>
-        <p style="font-size:0.72rem; color:var(--text-secondary); text-align:center; margin:8px 0 0 0;">Tippe auf eine Karte, um deren Gewicht & Regler unten anzupassen.</p>
+        <p style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin:10px 0 0 0;">👉 Tippe auf eine Karte, um deren Gewicht unten per Regler oder manuell anzupassen.</p>
     </div>
 
-    <!-- HAUPTANZEIGE (FÜR STANDARD & BLITZSÄTZE) -->
+    <!-- HAUPTANZEIGE (GEWICHT & REGLER) -->
     <div class="card result-box" id="main-result-box">
         <div class="result-display-row">
             <input type="number" id="calc-result-input" class="result-input-field" value="24.4" step="0.5" min="10.0" max="80.0" oninput="onManualKgInput()">
@@ -375,10 +375,10 @@
         <input type="range" id="slider-target-kg" min="10.0" max="80.0" step="0.5" value="24.4" oninput="onKgSliderChange()">
     </div>
 
-    <!-- MANUELLE REGLER (EINKLAPPBAR) -->
+    <!-- MANUELLE REGLER -->
     <div class="card" id="card-manual">
         <div class="card-title" onclick="toggleCard('card-manual')">
-            <span>⚙️ Manuelle Einstellung</span>
+            <span>⚙️ Gewichts- & Griffregler</span>
             <span class="collapse-icon" id="icon-manual">▼ Verstecken</span>
         </div>
         <div class="card-content">
@@ -468,7 +468,7 @@
         </div>
     </div>
 
-    <!-- AKTUELLE ÜBUNG & LOGBUCH (GEMEINSAM SYNCHRONISIERT) -->
+    <!-- AKTUELLE ÜBUNG & LOGBUCH -->
     <div class="card">
         <div class="card-title" style="cursor:default; margin-bottom:12px;">📝 Aktuelle Übung & Training</div>
         <div class="card-content" style="gap:14px;">
@@ -591,11 +591,11 @@
 
         superCardEl.style.display = (mode === 'superset') ? 'block' : 'none';
         dropCardEl.style.display = (mode === 'dropset') ? 'block' : 'none';
-        mainResultBox.style.display = (mode === 'superset') ? 'none' : 'block';
 
         if (mode === 'superset') {
             selectSuperCard('A');
-            updateSuperCardDisplays();
+        } else {
+            onPositionSlidersChange();
         }
     }
 
@@ -674,14 +674,14 @@
 
         document.getElementById('val-weightPos').innerText = weightPos;
         document.getElementById('val-gripPos').innerText = gripPos;
+        document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
+        document.getElementById('slider-target-kg').value = currentTotalKg.toFixed(1);
         
         if (trainingMode === 'superset') {
             supersetData[activeSuperCard].w = weightPos;
             supersetData[activeSuperCard].g = gripPos;
             updateSuperCardDisplays();
         } else {
-            document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
-            document.getElementById('slider-target-kg').value = currentTotalKg.toFixed(1);
             suggestTargetWeight(currentTotalKg);
             updateExerciseWeightBadge();
         }
@@ -743,7 +743,13 @@
         let data = supersetData[card];
         document.getElementById('slider-weight').value = data.w;
         document.getElementById('slider-grip').value = data.g;
-        onPositionSlidersChange();
+        
+        let singleKg = getSingleSideKg(data.w, data.g);
+        currentTotalKg = singleKg * 2;
+        document.getElementById('val-weightPos').innerText = data.w;
+        document.getElementById('val-gripPos').innerText = data.g;
+        document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
+        document.getElementById('slider-target-kg').value = currentTotalKg.toFixed(1);
     }
 
     function updateSuperCardData() {
@@ -1184,28 +1190,48 @@
         let statusEl = document.getElementById('timer-status');
         let bodyEl = document.body; bodyEl.className = '';
 
-        if (currentPhase === 'idle') { statusEl.innerText = "Bereit für Satz"; statusEl.style.color = "var(--ready-color)"; }
+        if (currentPhase === 'idle') {
+            statusEl.innerText = "Bereit für Satz";
+            statusEl.style.color = "var(--ready-color)";
+        }
         else if (currentPhase === 'ready') {
-            let targetName = (trainingMode === 'superset') ? supersetData.A.name : (document.getElementById('prominent-exercise-name').innerText || 'Satz');
-            statusEl.innerText = `⌛ Bereit für ${targetName} (${currentTimeLeft}s)`;
+            if (trainingMode === 'superset') {
+                let nameA = supersetData.A.name || 'Übung A';
+                let wA = supersetData.A.w, gA = supersetData.A.g;
+                statusEl.innerText = `⌛ Bereit für ${nameA} (w:${wA} | g:${gA}) – ${currentTimeLeft}s`;
+            } else {
+                let nameNormal = document.getElementById('prominent-exercise-name').innerText || 'Satz';
+                statusEl.innerText = `⌛ Bereit für ${nameNormal} (${currentTimeLeft}s)`;
+            }
             statusEl.style.color = "var(--ready-color)";
         }
         else if (currentPhase === 'workA') {
-            let nameA = (trainingMode === 'superset') ? supersetData.A.name : (document.getElementById('prominent-exercise-name').innerText || 'Übung');
+            let nameA = (trainingMode === 'superset') ? (supersetData.A.name || 'Übung A') : (document.getElementById('prominent-exercise-name').innerText || 'Übung');
             statusEl.innerText = `⚡ ${nameA} (Arbeit)`;
-            statusEl.style.color = "var(--work-color)"; bodyEl.classList.add('phase-work');
+            statusEl.style.color = "var(--work-color)";
+            bodyEl.classList.add('phase-work');
         }
         else if (currentPhase === 'transition') {
-            let nameB = (trainingMode === 'superset') ? supersetData.B.name : 'Übung B';
-            statusEl.innerText = `⚙️ Umbau auf ${nameB} (${currentTimeLeft}s)`;
+            if (trainingMode === 'superset') {
+                let nameB = supersetData.B.name || 'Übung B';
+                let wB = supersetData.B.w, gB = supersetData.B.g;
+                statusEl.innerText = `⚙️ Umbau auf ${nameB} (w:${wB} | g:${gB}) – ${currentTimeLeft}s`;
+            } else {
+                statusEl.innerText = `⚙️ Umbau & Wechsel (${currentTimeLeft}s)`;
+            }
             statusEl.style.color = "var(--ready-color)";
         }
         else if (currentPhase === 'workB') {
-            let nameB = (trainingMode === 'superset') ? supersetData.B.name : 'Übung B';
+            let nameB = (trainingMode === 'superset') ? (supersetData.B.name || 'Übung B') : 'Übung B';
             statusEl.innerText = `⚡ ${nameB} (Arbeit)`;
-            statusEl.style.color = "var(--work-color)"; bodyEl.classList.add('phase-work');
+            statusEl.style.color = "var(--work-color)";
+            bodyEl.classList.add('phase-work');
         }
-        else if (currentPhase === 'rest') { statusEl.innerText = "☕ Satzpause"; statusEl.style.color = "var(--rest-color)"; bodyEl.classList.add('phase-rest'); }
+        else if (currentPhase === 'rest') {
+            statusEl.innerText = "☕ Satzpause";
+            statusEl.style.color = "var(--rest-color)";
+            bodyEl.classList.add('phase-rest');
+        }
     }
 
     // Init
