@@ -275,9 +275,27 @@
         .log-exercise-block {
             background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 12px;
         }
+        .log-exercise-block.is-superset {
+            border-color: rgba(56, 189, 248, 0.4);
+            background: rgba(56, 189, 248, 0.03);
+        }
+
         .log-exercise-title {
             font-size: 0.95rem; font-weight: 800; color: var(--accent-cyan); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
         }
+
+        .superset-tag {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .log-set-wrapper { border-bottom: 1px dashed rgba(255, 255, 255, 0.08); padding: 8px 0; }
         .log-set-wrapper:last-child { border-bottom: none; }
         .log-set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -359,7 +377,7 @@
         <button id="btn-mode-drop" class="mode-btn" onclick="setTrainingMode('dropset')">⚡ Drop-Set</button>
     </div>
 
-    <!-- ÜBUNGSAUSWAHL BLOCK (IM STANDARD TRAINING DURCHGÄNGIG GANZ OBEN) -->
+    <!-- ÜBUNGSAUSWAHL BLOCK (IM STANDARD TRAINING GANZ OBEN) -->
     <div class="card" id="view-normal-exercise-card">
         <div class="card-title" style="cursor:default; margin-bottom:8px;">📝 Aktuelle Übung wählen</div>
         <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 12px 14px;">
@@ -399,7 +417,7 @@
         </div>
     </div>
 
-    <!-- SUPER-SET ZWEI-KARTEN ANSICHT (Ganz oben im Super-Set-Modus) -->
+    <!-- SUPER-SET ZWEI-KARTEN ANSICHT -->
     <div class="card" id="view-superset-cards-card" style="display:none;">
         <div class="card-title" style="cursor:default; margin-bottom:12px;">🔥 Super-Set-Konfiguration</div>
         <div class="superset-dual-container">
@@ -539,7 +557,7 @@
     <!-- LOGBUCH STEUERUNG & BUTTONS -->
     <div class="card">
         <div style="display:flex; gap:8px;">
-            <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz protokollieren</button>
+            <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz hinzufügen</button>
             <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
         </div>
 
@@ -894,6 +912,14 @@
         }
     }
 
+    function selectExerciseFromSaved(exName) {
+        document.getElementById('exercise-name-input').value = exName;
+        document.getElementById('prominent-exercise-name').innerText = exName;
+        document.getElementById('exercise-edit-container').style.display = 'none';
+        document.getElementById('saved-dropdown-list').style.display = 'none';
+        checkLastTimeWorkout();
+    }
+
     function onExerciseNameChange() {
         let val = document.getElementById('exercise-name-input').value.trim();
         document.getElementById('prominent-exercise-name').innerText = val || "Übung wählen";
@@ -921,19 +947,18 @@
             item.className = 'dropdown-item';
             item.innerHTML = `<span>${ex}</span><span class="delete-ex-btn" onclick="event.stopPropagation(); deleteSavedExercise('${ex}', '${listId}')">✕</span>`;
             
-            // Bei Klick direkt auswählen & Dropdown schließen
             item.firstChild.onclick = function() {
                 if (listId.includes('a')) {
                     document.getElementById('super-ex-a-input').value = ex;
                     updateSuperCardData();
+                    listEl.style.display = 'none';
                 } else if (listId.includes('b')) {
                     document.getElementById('super-ex-b-input').value = ex;
                     updateSuperCardData();
+                    listEl.style.display = 'none';
                 } else {
-                    document.getElementById('exercise-name-input').value = ex;
-                    confirmExerciseName();
+                    selectExerciseFromSaved(ex);
                 }
-                listEl.style.display = 'none';
             };
             listEl.appendChild(item);
         });
@@ -957,13 +982,12 @@
     });
 
     function checkLastTimeWorkout() {
-        if (trainingMode !== 'normal') return;
-        let name = document.getElementById('exercise-name-input').value.trim();
+        let name = document.getElementById('prominent-exercise-name').innerText.trim();
         let container = document.getElementById('last-time-container');
         let textEl = document.getElementById('last-time-text');
         let badgeEl = document.getElementById('exercise-1rm-badge');
 
-        if (!name || workoutHistory.length === 0) {
+        if (!name || name === 'Übung wählen' || workoutHistory.length === 0) {
             container.style.display = 'none';
             if (badgeEl) badgeEl.innerText = '';
             return;
@@ -996,8 +1020,8 @@
         }
     }
 
-    function addSetToActiveSession(customExercise = null, customKg = null, customW = null, customG = null) {
-        let exerciseName = customExercise || (trainingMode === 'superset' ? supersetData[activeSuperCard].name : (document.getElementById('exercise-name-input').value.trim() || 'Übung'));
+    function addSetToActiveSession(customExercise = null, customKg = null, customW = null, customG = null, isSuperSet = false) {
+        let exerciseName = customExercise || (trainingMode === 'superset' ? supersetData[activeSuperCard].name : (document.getElementById('prominent-exercise-name').innerText.trim() || 'Übung'));
         let kgVal = customKg !== null ? customKg : currentTotalKg.toFixed(1);
         let wVal = customW !== null ? customW : weightPos;
         let gVal = customG !== null ? customG : gripPos;
@@ -1014,6 +1038,7 @@
             weightPos: wVal,
             gripPos: gVal,
             wdh: '', rpe: '', ds: false, dsDetails: '',
+            isSuperSet: isSuperSet || (trainingMode === 'superset'),
             time: timeStr
         });
 
@@ -1024,8 +1049,8 @@
 
     function addManualSet() {
         if (trainingMode === 'superset') {
-            addSetToActiveSession(supersetData.A.name, (getSingleSideKg(supersetData.A.w, supersetData.A.g)*2).toFixed(1), supersetData.A.w, supersetData.A.g);
-            addSetToActiveSession(supersetData.B.name, (getSingleSideKg(supersetData.B.w, supersetData.B.g)*2).toFixed(1), supersetData.B.w, supersetData.B.g);
+            addSetToActiveSession(supersetData.A.name, (getSingleSideKg(supersetData.A.w, supersetData.A.g)*2).toFixed(1), supersetData.A.w, supersetData.A.g, true);
+            addSetToActiveSession(supersetData.B.name, (getSingleSideKg(supersetData.B.w, supersetData.B.g)*2).toFixed(1), supersetData.B.w, supersetData.B.g, true);
         } else {
             addSetToActiveSession();
         }
@@ -1054,7 +1079,7 @@
     function finishCurrentExercise() {
         if (trainingMode === 'normal') {
             document.getElementById('exercise-name-input').value = '';
-            document.getElementById('prominent-exercise-name').innerText = 'Nächste Übung wählen...';
+            document.getElementById('prominent-exercise-name').innerText = 'Übung wählen';
             enableExerciseEditMode();
         }
     }
@@ -1124,7 +1149,11 @@
 
         order.forEach(exName => {
             let sets = grouped[exName];
-            let blockHtml = `<div class="log-exercise-block"><div class="log-exercise-title"><span>🏋️ ${exName}</span><span>${sets.length} Sätze</span></div>`;
+            let isSuper = sets.some(s => s.isSuperSet);
+            let superBadge = isSuper ? `<span class="superset-tag">🔥 Super-Set</span>` : '';
+            let blockClass = isSuper ? 'log-exercise-block is-superset' : 'log-exercise-block';
+
+            let blockHtml = `<div class="${blockClass}"><div class="log-exercise-title"><span>${exName}</span><span>${superBadge} <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:4px;">${sets.length} Sätze</span></span></div>`;
 
             sets.forEach((s, idx) => {
                 let est1RM = calculate1RM(s.kg, s.wdh);
@@ -1167,7 +1196,28 @@
         if (workoutHistory.length === 0) { container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">Bisher keine Workouts.</div>'; return; }
         container.innerHTML = '';
         workoutHistory.forEach(session => {
-            container.innerHTML += `<div class="history-card"><div class="history-header"><div class="history-date">📅 ${session.date} (${session.time})</div><button class="danger" onclick="deleteWorkoutHistoryItem(${session.id})">✕</button></div></div>`;
+            let itemHtml = `<div class="history-card"><div class="history-header"><div class="history-date">📅 ${session.date} (${session.time})</div><button class="danger" onclick="deleteWorkoutHistoryItem(${session.id})">✕</button></div>`;
+            
+            let grouped = {};
+            session.sets.forEach(s => {
+                if (!grouped[s.exercise]) grouped[s.exercise] = [];
+                grouped[s.exercise].push(s);
+            });
+
+            for (let ex in grouped) {
+                let isSuper = grouped[ex].some(s => s.isSuperSet);
+                let tag = isSuper ? ' <span class="superset-tag">🔥 Super-Set</span>' : '';
+                itemHtml += `<div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan); margin-top:6px;">${ex}${tag}</div>`;
+                grouped[ex].forEach((s, idx) => {
+                    let wdhText = s.wdh ? s.wdh + ' WDH' : '';
+                    let rpeText = s.rpe ? 'RPE ' + s.rpe : '';
+                    let dsText = s.ds ? '[Drop-Set]' : '';
+                    itemHtml += `<div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">• Satz ${idx + 1}: ${s.kg} kg (S:${s.weightPos}/G:${s.gripPos}) ${wdhText} ${rpeText} ${dsText}</div>`;
+                });
+            }
+
+            itemHtml += `</div>`;
+            container.innerHTML += itemHtml;
         });
     }
 
@@ -1208,8 +1258,8 @@
             } else if (currentPhase === 'transition' && currentTimeLeft <= 0) {
                 currentPhase = 'workB'; currentTimeLeft = workDuration; playToneStart();
             } else if (currentPhase === 'workB' && currentTimeLeft <= 0) {
-                addSetToActiveSession(supersetData.A.name, (getSingleSideKg(supersetData.A.w, supersetData.A.g)*2).toFixed(1), supersetData.A.w, supersetData.A.g);
-                addSetToActiveSession(supersetData.B.name, (getSingleSideKg(supersetData.B.w, supersetData.B.g)*2).toFixed(1), supersetData.B.w, supersetData.B.g);
+                addSetToActiveSession(supersetData.A.name, (getSingleSideKg(supersetData.A.w, supersetData.A.g)*2).toFixed(1), supersetData.A.w, supersetData.A.g, true);
+                addSetToActiveSession(supersetData.B.name, (getSingleSideKg(supersetData.B.w, supersetData.B.g)*2).toFixed(1), supersetData.B.w, supersetData.B.g, true);
                 currentPhase = 'rest'; currentTimeLeft = restDuration; playToneRest(); selectSuperCard('A');
             } else if (currentPhase === 'rest' && currentTimeLeft <= 0) {
                 clearInterval(timerInterval); currentPhase = 'idle'; currentTimeLeft = workDuration; playToneStart();
