@@ -2,663 +2,1656 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Board Computer - Resistance Machine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Board Computer - Performance Gym Console</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --card-border: #334155;
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --accent-light: #60a5fa;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --warning: #d97706;
+            --bg-color: #080b11;
+            --card-bg: #141c2c;
+            --card-border: rgba(255, 255, 255, 0.14);
+            --accent-color: #22c55e; /* Knalliges Smaragdgrün */
+            --accent-cyan: #38bdf8;  /* Leuchtendes Blau */
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --work-color: #f43f5e;   /* Kräftiges Rot */
+            --rest-color: #22c55e;
+            --ready-color: #fbbf24;  /* Markantes Gelb */
+            --font-mono: 'SF Pro Rounded', 'SF Mono', Menlo, Monaco, Consolas, monospace;
         }
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-main);
+            color: var(--text-primary);
+            margin: 0;
             padding: 16px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
             min-height: 100vh;
+            transition: background-color 0.8s ease;
         }
 
-        .app-container {
+        @keyframes pulse-work {
+            0% { background-color: #080b11; }
+            50% { background-color: #2b1117; }
+            100% { background-color: #080b11; }
+        }
+
+        @keyframes pulse-rest {
+            0% { background-color: #080b11; }
+            50% { background-color: #10291f; }
+            100% { background-color: #080b11; }
+        }
+
+        body.phase-work { animation: pulse-work 2.5s infinite ease-in-out; }
+        body.phase-rest { animation: pulse-rest 3.5s infinite ease-in-out; }
+
+        .container {
             width: 100%;
-            max-width: 520px;
+            max-width: 480px;
             display: flex;
             flex-direction: column;
             gap: 16px;
+            padding-bottom: 30px;
         }
 
-        header {
-            text-align: center;
-            padding: 8px 0;
-        }
-
+        header { text-align: center; margin-bottom: 2px; }
         header h1 {
-            font-size: 1.4rem;
-            letter-spacing: 0.08em;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
-            color: var(--text-main);
-        }
-
-        header p {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        /* NAVIGATION TABS */
-        .nav-tabs {
-            display: flex;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 4px;
-            gap: 4px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 10px 6px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .tab-btn.active {
-            background: var(--accent);
-            color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        /* CARDS & PANELS */
-        .tab-content {
-            display: none;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .tab-content.active {
-            display: flex;
+            color: var(--text-primary);
+            margin: 0;
         }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 18px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
-        /* DISPLAY BOXES */
-        .display-box {
-            background: #090d16;
-            border: 1px solid #1e293b;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .display-box .primary-val {
-            font-size: 2.6rem;
-            font-weight: 800;
-            color: var(--accent-light);
-            line-height: 1.1;
-        }
-
-        .display-box .secondary-val {
-            font-size: 0.95rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
-
-        /* CONTROLS */
-        .control-group {
+        .card-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-top: 0;
+            margin-bottom: 14px;
             display: flex;
-            flex-direction: column;
-            gap: 6px;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .card-title span.collapse-icon {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .card-content { display: flex; flex-direction: column; gap: 12px; }
+        .collapsed .card-content { display: none; }
+
+        /* MODUS TOGGLE LEISTE */
+        .mode-toggle-bar {
+            display: flex;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 10px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-cyan);
+            color: #080b11;
+            box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+        }
+
+        /* HAUPTANZEIGE (GROSS & KOMPAKT) */
+        .result-box {
+            text-align: center;
+            padding: 24px 16px 20px 16px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+        }
+
+        .result-display-row {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 8px;
             margin-bottom: 14px;
         }
 
+        .result-input-field {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            line-height: 1;
+            font-family: var(--font-mono);
+            background: transparent;
+            border: none;
+            text-align: right;
+            width: 170px;
+            outline: none;
+            text-shadow: 0 2px 10px rgba(34, 197, 94, 0.2);
+        }
+
+        .result-kg-label {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        .control-group { margin-top: 4px; }
         .control-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.88rem;
-            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
         }
 
-        .control-header span.val {
-            color: var(--text-main);
-            font-weight: 700;
+        .control-header span:last-child {
+            color: var(--text-primary);
+            font-weight: 800;
+            font-family: var(--font-mono);
         }
 
         input[type="range"] {
+            -webkit-appearance: none;
             width: 100%;
-            height: 8px;
-            background: #0f172a;
-            border-radius: 4px;
+            height: 10px;
+            border-radius: 5px;
+            background: #1e293b;
             outline: none;
-            accent-color: var(--accent);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
             cursor: pointer;
         }
 
-        .btn {
+        .input-text, .input-number {
             width: 100%;
-            padding: 12px 16px;
-            border: none;
-            border-radius: 10px;
-            background: var(--accent);
-            color: #ffffff;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-success {
-            background: var(--success);
-        }
-
-        .btn-secondary {
-            background: #334155;
-            color: var(--text-main);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 1px solid var(--card-border);
-            color: var(--text-muted);
-        }
-
-        /* SUPERSET LAYOUT */
-        .superset-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-
-        .exercise-card {
-            background: #090d16;
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-primary);
             padding: 12px;
-            text-align: center;
-            cursor: pointer;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            outline: none;
             transition: border-color 0.2s;
         }
 
-        .exercise-card.active {
-            border-color: var(--accent);
-            background: #111827;
-        }
+        .input-number { text-align: center; font-family: var(--font-mono); }
+        .input-text:focus, .input-number:focus { border-color: var(--accent-cyan); }
 
-        .exercise-card .title {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .exercise-card .weight {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 4px 0;
-        }
-
-        .exercise-card .pos {
-            font-size: 0.75rem;
-            color: var(--accent-light);
-        }
-
-        /* TIMER BAR */
-        .timer-container {
-            background: #090d16;
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .timer-val {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--warning);
-        }
-
-        .progress-bar-bg {
-            height: 6px;
-            background: #1e293b;
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 6px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--warning);
-            width: 100%;
-            transition: width 1s linear;
-        }
-
-        /* DROP SET LIST */
-        .drop-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .drop-item {
-            background: #090d16;
-            border: 1px solid var(--card-border);
-            border-radius: 8px;
-            padding: 10px 14px;
+        .suggestions-grid { display: flex; flex-direction: column; gap: 8px; }
+        .suggestion-item {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 12px 16px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .drop-item .step {
+        .suggestion-tag {
+            font-size: 0.7rem;
             font-weight: 700;
-            color: var(--accent-light);
-        }
-
-        .drop-item .target {
-            font-size: 0.9rem;
-            color: var(--text-main);
-        }
-
-        .drop-item .setting {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            background: #1e293b;
+            text-transform: uppercase;
             padding: 4px 8px;
-            border-radius: 4px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
         }
 
-        /* FINDER RESULT */
-        .finder-result {
-            margin-top: 10px;
-            padding: 10px;
-            background: #090d16;
+        .suggestion-details { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+
+        .timer-card { text-align: center; border: 1px solid rgba(251, 191, 36, 0.3); }
+        .timer-status {
+            font-size: 0.95rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--ready-color);
+            margin-bottom: 6px;
+        }
+
+        .timer-display {
+            font-size: 3.8rem;
+            font-weight: 900;
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+            margin: 0 0 16px 0;
+            text-shadow: 0 2px 12px rgba(251, 191, 36, 0.2);
+        }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 16px; }
+
+        button {
+            flex: 1;
+            background: var(--accent-color);
+            color: #080b11;
+            border: none;
+            padding: 14px 16px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        button.secondary { background: #1e293b; color: var(--text-primary); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.12); }
+        button.action-btn { background: #0f172a; color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: none; }
+        button.finish-workout { background: var(--ready-color); color: #080b11; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3); }
+        button.danger { background: #381318; color: var(--work-color); border: 1px solid rgba(244, 63, 94, 0.4); box-shadow: none; font-size: 0.8rem; padding: 8px 12px; }
+        button:active { transform: scale(0.97); }
+
+        .icon-btn-compact {
+            width: 42px;
+            height: 44px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex: none;
+        }
+
+        .preset-btn {
+            background: #1e293b;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
             border-radius: 8px;
-            font-size: 0.88rem;
+            box-shadow: none;
+            flex: 1;
+        }
+        .preset-btn.active {
+            background: var(--accent-cyan);
+            color: #080b11;
+            border-color: var(--accent-cyan);
+            font-weight: 900;
+        }
+
+        /* PROMINENTE ÜBUNGS-ÜBERSCHRIFT STYLING */
+        .exercise-header-display {
+            background: rgba(56, 189, 248, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 4px;
+        }
+
+        .exercise-title-prominent {
+            font-size: 1.55rem;
+            font-weight: 900;
+            color: var(--accent-cyan);
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .exercise-sub-info {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-top: 6px;
+            font-family: var(--font-mono);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* SUPERSATZ DUAL-CONTAINER */
+        .superset-dual-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .superset-box {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 14px;
+            transition: all 0.3s;
+        }
+
+        .superset-box.active-card {
+            border-color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.08);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+
+        .log-exercise-block {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .log-exercise-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-set-wrapper {
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            padding: 8px 0;
+        }
+        .log-set-wrapper:last-child { border-bottom: none; }
+
+        .log-set-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rm-tag {
+            font-size: 0.65rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-family: var(--font-mono);
+            margin-top: 2px;
+        }
+
+        .ds-details-box {
+            margin-top: 6px;
+            background: #080b11;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            border-radius: 8px;
+            padding: 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ds-details-box label {
+            font-size: 0.7rem;
+            color: var(--accent-color);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .small-box {
+            width: 48px;
+            background: #080b11;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-primary);
+            font-weight: 800;
+            font-family: var(--font-mono);
             text-align: center;
-            color: var(--accent-light);
+            padding: 6px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .small-box:focus { border-color: var(--accent-cyan); }
+        .rpe-box { color: var(--ready-color); border-color: rgba(251, 191, 36, 0.4); }
+
+        .ds-checkbox {
+            width: 36px;
+            height: 36px;
+            background: #080b11;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .history-card {
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-date {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .last-time-box {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 10px;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+
+        /* Dropdown Styling */
+        .dropdown-container {
+            position: relative;
+            flex: 1;
+        }
+        .dropdown-list {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            margin-top: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        .dropdown-item {
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dropdown-item:hover {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-color);
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .delete-ex-btn {
+            color: var(--work-color);
+            font-size: 0.9rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.15s;
+        }
+        .delete-ex-btn:hover {
+            background: rgba(244, 63, 94, 0.25);
         }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <header>
-            <h1>Board Computer</h1>
-            <p>Empirische Präzisions-Kalibrierung (±0,5 kg)</p>
-        </header>
+<div class="container">
+    <header>
+        <h1>Board Computer</h1>
+    </header>
 
-        <!-- HAUPT-NAVIGATION -->
-        <nav class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('single')">Einzel-Übung</button>
-            <button class="tab-btn" onclick="switchTab('superset')">Superset</button>
-            <button class="tab-btn" onclick="switchTab('dropset')">Blitzsätze</button>
-        </nav>
-
-        <!-- TAB 1: EINZEL-ÜBUNG -->
-        <main id="tab-single" class="tab-content active">
-            <section class="card">
-                <div class="display-box">
-                    <div class="primary-val" id="single-total">0.0 kg</div>
-                    <div class="secondary-val">Gesamtzuggewicht (Total)</div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 6px;">
-                        Einzelne Seite: <strong id="single-side" style="color: var(--text-main);">0.0</strong> kg
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <div class="control-header">
-                        <span>Gewichtsscheibe (Position w)</span>
-                        <span class="val" id="single-val-w">1</span>
-                    </div>
-                    <input type="range" id="single-range-w" min="1" max="32" value="1" oninput="updateSingleUI()">
-                </div>
-
-                <div class="control-group">
-                    <div class="control-header">
-                        <span>Griffposition (Position g)</span>
-                        <span class="val" id="single-val-g">15</span>
-                    </div>
-                    <input type="range" id="single-range-g" min="15" max="32" value="15" oninput="updateSingleUI()">
-                </div>
-            </section>
-
-            <!-- ZIELGEWICHT-SUCHER -->
-            <section class="card">
-                <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--text-muted);">Zielgewicht-Finder</h3>
-                <div class="control-group">
-                    <div class="control-header">
-                        <span>Gewünschtes Gesamtgewicht (kg)</span>
-                        <span class="val" id="target-val">24.0 kg</span>
-                    </div>
-                    <input type="range" id="target-range" min="12.4" max="74.0" step="0.5" value="24.0" oninput="findTargetWeight()">
-                </div>
-                <div id="finder-output" class="finder-result">
-                    Empfohlene Einstellung wird berechnet...
-                </div>
-            </section>
-        </main>
-
-        <!-- TAB 2: SUPERSET MODUS -->
-        <main id="tab-superset" class="tab-content">
-            <section class="card">
-                <div class="superset-grid">
-                    <div id="card-ex-a" class="exercise-card active" onclick="selectSupersetEx('A')">
-                        <div class="title">Übung A</div>
-                        <div class="weight" id="superset-weight-a">0.0 kg</div>
-                        <div class="pos" id="superset-pos-a">w:1 | g:15</div>
-                    </div>
-                    <div id="card-ex-b" class="exercise-card" onclick="selectSupersetEx('B')">
-                        <div class="title">Übung B</div>
-                        <div class="weight" id="superset-weight-b">0.0 kg</div>
-                        <div class="pos" id="superset-pos-b">w:1 | g:15</div>
-                    </div>
-                </div>
-
-                <div class="control-group">
-                    <div class="control-header">
-                        <span>Gewichtsscheibe (Position w)</span>
-                        <span class="val" id="super-val-w">1</span>
-                    </div>
-                    <input type="range" id="super-range-w" min="1" max="32" value="1" oninput="updateSupersetUI()">
-                </div>
-
-                <div class="control-group">
-                    <div class="control-header">
-                        <span>Griffposition (Position g)</span>
-                        <span class="val" id="super-val-g">15</span>
-                    </div>
-                    <input type="range" id="super-range-g" min="15" max="32" value="15" oninput="updateSupersetUI()">
-                </div>
-
-                <!-- TIMER UTILITY -->
-                <div class="timer-container">
-                    <div class="timer-val" id="timer-display">15 s</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">Satzpause & Wechsel-Timer</div>
-                    <div class="progress-bar-bg">
-                        <div id="timer-progress" class="progress-bar-fill"></div>
-                    </div>
-                </div>
-
-                <div style="display:flex; gap:8px; margin-top:12px;">
-                    <button class="btn btn-secondary" onclick="startPauseTimer()">Timer Starten</button>
-                    <button class="btn btn-outline" onclick="resetPauseTimer()">Reset</button>
-                </div>
-            </section>
-        </main>
-
-        <!-- TAB 3: BLITZSÄTZE (DROP-SETS) -->
-        <main id="tab-dropset" class="tab-content">
-            <section class="card">
-                <h3 style="font-size: 1rem; margin-bottom: 12px;">Blitzsatz-Berechnung (-20% / Stufe)</h3>
-                
-                <div class="control-group">
-                    <div class="control-header">
-                        <span>Anzahl Drops</span>
-                        <span class="val" id="drop-count-val">3</span>
-                    </div>
-                    <input type="range" id="drop-count-range" min="1" max="5" value="3" oninput="document.getElementById('drop-count-val').innerText = this.value">
-                </div>
-
-                <button class="btn btn-success" onclick="calculateDropSet()">Blitzsatz berechnen</button>
-
-                <div id="drop-results" class="drop-list"></div>
-            </section>
-        </main>
-
-        <!-- PROTOKOLL & SPEICHERN -->
-        <section class="card" style="margin-top: auto;">
-            <button class="btn btn-secondary" onclick="saveSession()">Beenden & Speichern</button>
-        </section>
+    <!-- MODUS AUSWAHL (NORMAL VS SUPERSATZ) -->
+    <div class="mode-toggle-bar">
+        <button id="btn-mode-normal" class="mode-btn active" onclick="setTrainingMode('normal')">⚡ Standard-Modus</button>
+        <button id="btn-mode-super" class="mode-btn" onclick="setTrainingMode('superset')">🔥 Supersatz-Modus</button>
     </div>
 
-    <script>
-        // --- 1. EMPIRISCHES KALIBRIERUNGS-NETZ (ALLE REALEN MESSPUNKTE) ---
-        const measuredPoints = {
-            "1_15":  12.2,
-            "1_32":   6.2,
-            "8_20":  15.0,
-            "10_20": 16.0,
-            "12_17": 19.4,
-            "16_15": 24.5,
-            "16_32": 13.4,
-            "24_20": 24.5,
-            "24_27": 19.2,
-            "24_28": 18.5,
-            "32_15": 37.0,
-            "32_32": 19.0
+    <!-- HAUPTANZEIGE (GROSS & KOMPAKT) -->
+    <div class="card result-box">
+        <div class="result-display-row">
+            <input type="number" id="calc-result-input" class="result-input-field" value="24.4" step="0.5" min="10.0" max="80.0" oninput="onManualKgInput()">
+            <span class="result-kg-label">kg</span>
+        </div>
+        <input type="range" id="slider-target-kg" min="10.0" max="80.0" step="0.5" value="24.4" oninput="onKgSliderChange()">
+    </div>
+
+    <!-- MANUELLE REGLER (EINKLAPPBAR) -->
+    <div class="card" id="card-manual">
+        <div class="card-title" onclick="toggleCard('card-manual')">
+            <span>⚙️ Manuelle Einstellung</span>
+            <span class="collapse-icon" id="icon-manual">▼ Verstecken</span>
+        </div>
+        <div class="card-content">
+            <div class="control-group">
+                <div class="control-header">
+                    <span>Gewichtsscheiben Position</span>
+                    <span id="val-weightPos">1</span>
+                </div>
+                <input type="range" id="slider-weight" min="1" max="32" value="1" oninput="onPositionSlidersChange()">
+            </div>
+
+            <div class="control-group" style="margin-top: 12px;">
+                <div class="control-header">
+                    <span>Stand- / Griffposition</span>
+                    <span id="val-gripPos">15</span>
+                </div>
+                <input type="range" id="slider-grip" min="15" max="32" value="15" oninput="onPositionSlidersChange()">
+            </div>
+        </div>
+    </div>
+
+    <!-- POSITIONIERUNGS-ALTERNATIVEN (EINGEKLAPPT) -->
+    <div class="card collapsed" id="card-options">
+        <div class="card-title" onclick="toggleCard('card-options')">
+            <span>🎯 Positionierungs-Alternativen</span>
+            <span class="collapse-icon" id="icon-options">▶ Einblenden</span>
+        </div>
+        <div class="card-content">
+            <p style="font-size:0.8rem; color:var(--text-secondary); margin:0 0 4px 0;">
+                Reale Stand-Optionen für die gewählten Gesamtkilogramm:
+            </p>
+            <div class="suggestions-grid" id="target-weight-suggestions"></div>
+        </div>
+    </div>
+
+    <!-- WORKFLOW TIMER -->
+    <div class="card timer-card">
+        <div class="timer-status" id="timer-status">Bereit für Satz</div>
+        <div class="timer-display" id="timer-display">00:45</div>
+        
+        <div style="text-align: left; background: #0f172a; padding: 14px; border-radius: 12px;">
+            <!-- Muskelarbeit Schnellwahl -->
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:700;">Muskelarbeit:</div>
+            <div style="display:flex; gap:6px; margin-bottom:12px;">
+                <button class="preset-btn work-preset active" onclick="setWorkPreset(45, this)">45s</button>
+                <button class="preset-btn work-preset" onclick="setWorkPreset(50, this)">50s</button>
+                <button class="preset-btn work-preset" onclick="setWorkPreset(60, this)">60s</button>
+                <button class="preset-btn work-preset" onclick="setWorkPreset(70, this)">70s</button>
+            </div>
+
+            <!-- Pausenzeit Schnellwahl -->
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:700;">Pausenzeit:</div>
+            <div style="display:flex; gap:6px;">
+                <button class="preset-btn rest-preset" onclick="setRestPreset(60, this)">60s</button>
+                <button class="preset-btn rest-preset" onclick="setRestPreset(90, this)">90s</button>
+                <button class="preset-btn rest-preset active" onclick="setRestPreset(120, this)">120s</button>
+                <button class="preset-btn rest-preset" onclick="setRestPreset(180, this)">180s</button>
+            </div>
+
+            <!-- Manuell einstellen Dropdown/Accordion -->
+            <div style="margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.12); padding-top: 8px;">
+                <div style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer; user-select: none; display:flex; justify-content:space-between; font-weight:700;" onclick="toggleTimerManual()">
+                    <span>⚙️ Manuell feineinstellen</span>
+                    <span id="icon-timer-manual">▶ Einblenden</span>
+                </div>
+                <div id="timer-manual-controls" style="display: none; margin-top: 10px;">
+                    <div class="control-header" style="margin:0;">
+                        <span style="color:var(--text-secondary);">Muskelarbeitzeit</span>
+                        <span id="val-workTime" style="color:var(--text-primary);">45s</span>
+                    </div>
+                    <input type="range" id="slider-work" min="10" max="120" step="5" value="45" oninput="updateTimerFromSliders()" style="margin-top:6px;">
+
+                    <div class="control-header" style="margin-top:10px;">
+                        <span style="color:var(--text-secondary);">Pausenzeit</span>
+                        <span id="val-restTime" style="color:var(--text-primary);">120s</span>
+                    </div>
+                    <input type="range" id="slider-rest" min="10" max="300" step="5" value="120" oninput="updateTimerFromSliders()" style="margin-top:6px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button id="btn-start" onclick="startSetWorkflow()">▶ SATZ STARTEN</button>
+            <button class="secondary" onclick="resetTimerWorkflow()">RESET</button>
+        </div>
+    </div>
+
+    <!-- ZUSAMMENGEFÜGTER BLOCK: AKTUELLE ÜBUNG & LOGBUCH -->
+    <div class="card">
+        <div class="card-title" style="cursor:default; margin-bottom:12px;">📝 Aktuelle Übung & Training</div>
+        <div class="card-content" style="gap:14px;">
+            <div>
+                <!-- STANDARD MODUS ÜBUNG -->
+                <div id="view-normal-exercise">
+                    <div class="exercise-header-display">
+                        <div class="exercise-title-prominent">
+                            <span id="prominent-exercise-name">Brustpresse</span>
+                            <span style="font-size:1.1rem; cursor:pointer;" title="Übung ändern / anpassen" onclick="enableExerciseEditMode()">✏️</span>
+                        </div>
+                        <div class="exercise-sub-info">
+                            <span id="exercise-weight-info">⚡ Aktuell: 24.4 kg (Scheibe 1 / Griff 15)</span>
+                            <span id="exercise-1rm-badge" style="color:var(--ready-color); font-size:0.75rem;"></span>
+                        </div>
+                    </div>
+
+                    <div id="exercise-edit-container" style="display:none; margin-top:10px;">
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <div class="dropdown-container">
+                                <div style="position:relative;">
+                                    <input type="text" id="exercise-name-input" class="input-text" placeholder="Übung eingeben oder wählen..." value="Brustpresse" onkeydown="handleExerciseInputKey(event)" oninput="onExerciseNameChange()" style="padding-right: 36px;">
+                                    <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.85rem; padding: 4px; font-weight:800;">▼</span>
+                                </div>
+                                <div id="saved-dropdown-list" class="dropdown-list"></div>
+                            </div>
+                            <button class="secondary icon-btn-compact" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
+                            <button class="secondary icon-btn-compact" title="Notiz hinzufügen" onclick="toggleNoteField()">📝</button>
+                            <button class="action-btn icon-btn-compact" style="width: auto; padding: 0 12px; font-size: 0.85rem;" title="Übernehmen" onclick="confirmExerciseName()">OK</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUPERSATZ MODUS DUAL-ANSICHT -->
+                <div id="view-superset-exercise" style="display:none;">
+                    <div class="superset-dual-container">
+                        <!-- Übung A -->
+                        <div class="superset-box active-card" id="card-super-a">
+                            <div style="font-size:0.7rem; color:var(--accent-cyan); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung A (Aktiv)</div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <input type="text" id="super-ex-a-input" class="input-text" value="Brustpresse" style="font-size:1rem; padding:8px 10px;" placeholder="Übung A...">
+                            </div>
+                        </div>
+
+                        <!-- Übung B -->
+                        <div class="superset-box" id="card-super-b">
+                            <div style="font-size:0.7rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung B (Antagonist)</div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <input type="text" id="super-ex-b-input" class="input-text" value="Low Row" style="font-size:1rem; padding:8px 10px;" placeholder="Übung B...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diskretes Notizfeld -->
+                <div id="note-field-container" style="display:none; margin-top:8px;">
+                    <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#080b11;" placeholder="Notiz (z. B. Sitzhöhe 3, 90° geneigt)...">
+                </div>
+
+                <div id="last-time-container" style="display:none;" class="last-time-box">
+                    <span>📈</span>
+                    <span id="last-time-text">Letztes Mal: -</span>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:8px;">
+                <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz (+)</button>
+                <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
+            </div>
+
+            <!-- Trenner -->
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 4px 0;"></div>
+
+            <!-- Aktuelles Tages-Logbuch -->
+            <div>
+                <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); margin-bottom:10px;">
+                    Aktuelle Sätze
+                </div>
+                <div id="logbook-container">
+                    <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">
+                        Noch keine Sätze im aktuellen Training.
+                    </div>
+                </div>
+
+                <div style="margin-top:16px;">
+                    <button class="finish-workout" onclick="finishWorkoutSession()">🏁 TRAINING BEENDEN & SPEICHERN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KALENDER / HISTORIE & BACKUP -->
+    <div class="card">
+        <div class="card-title" style="cursor:default;">📅 Absolvierte Workouts (Historie)</div>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+            <button class="secondary" style="font-size:0.8rem; padding:8px;" onclick="exportBackup()">💾 Daten Sichern</button>
+            <button class="secondary" style="font-size:0.8rem; padding:8px;" onclick="document.getElementById('import-file').click()">📂 Wiederherstellen</button>
+            <input type="file" id="import-file" style="display:none" accept=".json" onchange="importBackup(event)">
+        </div>
+        <div id="history-container">
+            <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">
+                Bisher noch keine Workouts abgeschlossen.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- WAKE LOCK API ---
+    let wakeLock = null;
+    async function requestWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                wakeLock = await navigator.wakeLock.request('screen');
+            }
+        } catch (err) {}
+    }
+    document.addEventListener('visibilitychange', () => {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+            requestWakeLock();
+        }
+    });
+    requestWakeLock();
+
+    // --- MODUS STEUERUNG ---
+    let trainingMode = 'normal'; // 'normal' oder 'superset'
+
+    function setTrainingMode(mode) {
+        trainingMode = mode;
+        document.getElementById('btn-mode-normal').classList.toggle('active', mode === 'normal');
+        document.getElementById('btn-mode-super').classList.toggle('active', mode === 'superset');
+
+        let normEl = document.getElementById('view-normal-exercise');
+        let superEl = document.getElementById('view-superset-exercise');
+
+        if (mode === 'superset') {
+            normEl.style.display = 'none';
+            superEl.style.display = 'block';
+        } else {
+            normEl.style.display = 'block';
+            superEl.style.display = 'none';
+        }
+    }
+
+    // --- EINKLAPPBARE SEKTIONEN (ACCORDION) ---
+    function toggleCard(cardId) {
+        let card = document.getElementById(cardId);
+        let icon = document.getElementById(cardId === 'card-manual' ? 'icon-manual' : 'icon-options');
+        card.classList.toggle('collapsed');
+        if (card.classList.contains('collapsed')) {
+            icon.innerText = "▶ Einblenden";
+        } else {
+            icon.innerText = "▼ Verstecken";
+        }
+    }
+
+    function toggleTimerManual() {
+        let el = document.getElementById('timer-manual-controls');
+        let icon = document.getElementById('icon-timer-manual');
+        if (el.style.display === 'none') {
+            el.style.display = 'block';
+            icon.innerText = '▼ Verstecken';
+        } else {
+            el.style.display = 'none';
+            icon.innerText = '▶ Einblenden';
+        }
+    }
+
+    function toggleNoteField() {
+        let container = document.getElementById('note-field-container');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+    }
+
+    // --- 1RM FORMEL (EPLEY) ---
+    function calculate1RM(weight, reps) {
+        let w = parseFloat(weight);
+        let r = parseInt(reps);
+        if (isNaN(w) || isNaN(r) || r <= 0) return 0;
+        if (r === 1) return w;
+        return w * (1 + r / 30);
+    }
+
+    // --- KALIBRIERUNGS-ECKDATEN & NEUER MESSWERTE-STÜTZPUNKT (8_20) ---
+    const measuredPoints = {
+        "1_32": 6.2,   // Scheibe 1, Griff 32 -> 6.2 kg (Single Side)
+        "1_15": 12.2,  // Scheibe 1, Griff 15 -> 12.2 kg (Single Side)
+        "8_20": 15.0,  // Scheibe 8, Griff 20 -> 15.0 kg (Single Side - frisch gemessen!)
+        "32_32": 19.0, // Scheibe 32, Griff 32 -> 19.0 kg (Single Side)
+        "32_15": 37.0  // Scheibe 32, Griff 15 -> 37.0 kg (Single Side)
+    };
+
+    function getSingleSideKg(w, g) {
+        let key = `${w}_${g}`;
+        if (measuredPoints[key] !== undefined) {
+            return measuredPoints[key];
+        }
+
+        // Bilineare Interpolation über das Gesamtraster
+        let w_norm = (w - 1) / 31;
+        let g_norm = (g - 15) / 17;
+
+        let q11 = 12.2; // w=1, g=15
+        let q12 = 6.2;  // w=1, g=32
+        let q21 = 37.0; // w=32, g=15
+        let q22 = 19.0; // w=32, g=32
+
+        let r1 = q11 * (1 - g_norm) + q12 * g_norm;
+        let r2 = q21 * (1 - g_norm) + q22 * g_norm;
+        let interpolated = r1 * (1 - w_norm) + r2 * w_norm;
+
+        return Math.max(4.0, Math.min(45.0, interpolated));
+    }
+
+    let weightPos = 1;
+    let gripPos = 15;
+    let currentTotalKg = 24.4; // 12.2 * 2
+
+    function updateExerciseWeightBadge() {
+        let el = document.getElementById('exercise-weight-info');
+        if (el) {
+            el.innerText = `⚡ Aktuell: ${currentTotalKg.toFixed(1)} kg (Scheibe ${weightPos} / Griff ${gripPos})`;
+        }
+    }
+
+    function onPositionSlidersChange() {
+        weightPos = parseInt(document.getElementById('slider-weight').value);
+        gripPos = parseInt(document.getElementById('slider-grip').value);
+        gripPos = Math.max(15, Math.min(32, gripPos));
+
+        let singleKg = getSingleSideKg(weightPos, gripPos);
+        currentTotalKg = singleKg * 2;
+
+        document.getElementById('val-weightPos').innerText = weightPos;
+        document.getElementById('val-gripPos').innerText = gripPos;
+        document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
+        document.getElementById('slider-target-kg').value = currentTotalKg.toFixed(1);
+
+        suggestTargetWeight(currentTotalKg);
+        updateExerciseWeightBadge();
+    }
+
+    function onKgSliderChange() {
+        currentTotalKg = parseFloat(document.getElementById('slider-target-kg').value);
+        document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
+        syncPositionToKg(currentTotalKg);
+        updateExerciseWeightBadge();
+    }
+
+    function onManualKgInput() {
+        let val = parseFloat(document.getElementById('calc-result-input').value);
+        if (!isNaN(val) && val >= 10.0 && val <= 80.0) {
+            currentTotalKg = val;
+            document.getElementById('slider-target-kg').value = val;
+            syncPositionToKg(val);
+            updateExerciseWeightBadge();
+        }
+    }
+
+    function syncPositionToKg(targetTotalKg) {
+        let targetSingleKg = targetTotalKg / 2;
+        let bestMatch = null;
+        let minDiff = 999;
+
+        for (let w = 1; w <= 32; w++) {
+            for (let g = 15; g <= 32; g++) {
+                let calcSingleKg = getSingleSideKg(w, g);
+                let diff = Math.abs(calcSingleKg - targetSingleKg);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestMatch = { weightPos: w, gripPos: g };
+                }
+            }
+        }
+
+        if (bestMatch) {
+            weightPos = bestMatch.weightPos;
+            gripPos = bestMatch.gripPos;
+
+            document.getElementById('slider-weight').value = weightPos;
+            document.getElementById('slider-grip').value = gripPos;
+            document.getElementById('val-weightPos').innerText = weightPos;
+            document.getElementById('val-gripPos').innerText = gripPos;
+
+            suggestTargetWeight(targetTotalKg);
+            updateExerciseWeightBadge();
+        }
+    }
+
+    function suggestTargetWeight(targetTotalKg) {
+        let target = targetTotalKg || currentTotalKg;
+        let container = document.getElementById('target-weight-suggestions');
+        container.innerHTML = '';
+
+        let validOptions = [];
+        for (let w = 1; w <= 32; w++) {
+            for (let g = 15; g <= 32; g++) {
+                let singleKg = getSingleSideKg(w, g);
+                let totalKg = singleKg * 2;
+                let diff = Math.abs(totalKg - target);
+                if (diff <= 1.2) {
+                    validOptions.push({ weightPos: w, gripPos: g, calculatedTotalKg: totalKg, diff: diff });
+                }
+            }
+        }
+
+        if (validOptions.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--work-color); text-align:center; padding:6px;">Keine physikalisch mögliche Kombination im Korridor.</div>';
+            return;
+        }
+
+        let zoneEng = validOptions.filter(o => o.gripPos >= 15 && o.gripPos <= 20).sort((a,b) => a.diff - b.diff);
+        let zoneMittel = validOptions.filter(o => o.gripPos >= 21 && o.gripPos <= 26).sort((a,b) => a.diff - b.diff);
+        let zoneWeit = validOptions.filter(o => o.gripPos >= 27 && o.gripPos <= 32).sort((a,b) => a.diff - b.diff);
+
+        let picks = [];
+        if (zoneEng.length > 0) picks.push({ tag: "Option A (Vorne)", ...zoneEng[0] });
+        if (zoneMittel.length > 0) picks.push({ tag: "Option B (Mitte)", ...zoneMittel[0] });
+        if (zoneWeit.length > 0) picks.push({ tag: "Option C (Hinten)", ...zoneWeit[0] });
+
+        if (picks.length === 0) {
+            validOptions.sort((a,b) => a.diff - b.diff);
+            validOptions.slice(0, 3).forEach((opt, idx) => {
+                picks.push({ tag: `Option ${String.fromCharCode(65 + idx)}`, ...opt });
+            });
+        }
+
+        picks.forEach(opt => {
+            container.innerHTML += `
+                <div class="suggestion-item">
+                    <span class="suggestion-tag">${opt.tag}</span>
+                    <div class="suggestion-details">Scheibe <strong>${opt.weightPos}</strong> | Griff <strong>${opt.gripPos}</strong></div>
+                    <span style="font-size:0.85rem; color:var(--accent-color); font-weight:800;">~${opt.calculatedTotalKg.toFixed(1)} kg</span>
+                </div>
+            `;
+        });
+    }
+
+    // --- AUDIO SYSTEM ---
+    let audioCtx = null;
+    function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    function playBeep(freq, duration, type = 'sine') {
+        try {
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {}
+    }
+
+    function playToneReady() { playBeep(523.25, 0.15); }
+    function playToneStart() { playBeep(880.00, 0.4, 'triangle'); }
+    function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
+    function playToneTransition() { playBeep(660.00, 0.3, 'square'); }
+
+    // --- GESPEICHERTE ÜBUNGEN & LOGBUCH LOGIK ---
+    let savedExerciseList = JSON.parse(localStorage.getItem('board_computer_saved_exercises') || '["Brustpresse", "Squats", "Deadlifts", "Latzug", "Low Row"]');
+    let activeSessionLog = JSON.parse(localStorage.getItem('board_computer_active_session') || '[]');
+    let workoutHistory = JSON.parse(localStorage.getItem('board_computer_history') || '[]');
+
+    function enableExerciseEditMode() {
+        document.getElementById('exercise-edit-container').style.display = 'block';
+        document.getElementById('exercise-name-input').focus();
+    }
+
+    function confirmExerciseName() {
+        let val = document.getElementById('exercise-name-input').value.trim();
+        if (val) {
+            document.getElementById('prominent-exercise-name').innerText = val;
+            document.getElementById('exercise-edit-container').style.display = 'none';
+            checkLastTimeWorkout();
+        }
+    }
+
+    function onExerciseNameChange() {
+        let val = document.getElementById('exercise-name-input').value.trim();
+        document.getElementById('prominent-exercise-name').innerText = val || "Übung wählen";
+        checkLastTimeWorkout();
+    }
+
+    function handleExerciseInputKey(e) {
+        if (e.key === 'Enter') {
+            confirmExerciseName();
+        }
+    }
+
+    function toggleSavedDropdown(event, listId) {
+        event.stopPropagation();
+        let listEl = document.getElementById(listId);
+        if (listEl.style.display === 'block') {
+            listEl.style.display = 'none';
+        } else {
+            renderSavedDropdownItems(listId);
+            listEl.style.display = 'block';
+        }
+    }
+
+    function renderSavedDropdownItems(listId) {
+        let listEl = document.getElementById(listId);
+        listEl.innerHTML = '';
+        if (savedExerciseList.length === 0) {
+            listEl.innerHTML = '<div style="padding:10px; font-size:0.8rem; color:var(--text-secondary); text-align:center;">Keine Vorlagen gespeichert.</div>';
+            return;
+        }
+        savedExerciseList.forEach(ex => {
+            let item = document.createElement('div');
+            item.className = 'dropdown-item';
+            
+            let nameSpan = document.createElement('span');
+            nameSpan.innerText = ex;
+            nameSpan.onclick = function() {
+                if (trainingMode === 'normal') {
+                    document.getElementById('exercise-name-input').value = ex;
+                    confirmExerciseName();
+                }
+                listEl.style.display = 'none';
+            };
+
+            let deleteBtn = document.createElement('span');
+            deleteBtn.className = 'delete-ex-btn';
+            deleteBtn.innerText = '✕';
+            deleteBtn.title = 'Vorlage löschen';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteSavedExercise(ex, listId);
+            };
+
+            item.appendChild(nameSpan);
+            item.appendChild(deleteBtn);
+            listEl.appendChild(item);
+        });
+    }
+
+    function deleteSavedExercise(exName, listId) {
+        if (confirm(`Möchtest du die Vorlage "${exName}" wirklich löschen?`)) {
+            savedExerciseList = savedExerciseList.filter(item => item !== exName);
+            localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+            renderSavedDropdownItems(listId);
+        }
+    }
+
+    window.addEventListener('click', function() {
+        let listEl = document.getElementById('saved-dropdown-list');
+        if (listEl) listEl.style.display = 'none';
+    });
+
+    function checkLastTimeWorkout() {
+        if (trainingMode !== 'normal') return;
+        let name = document.getElementById('exercise-name-input').value.trim();
+        let container = document.getElementById('last-time-container');
+        let textEl = document.getElementById('last-time-text');
+        let badgeEl = document.getElementById('exercise-1rm-badge');
+
+        if (!name || workoutHistory.length === 0) {
+            container.style.display = 'none';
+            if (badgeEl) badgeEl.innerText = '';
+            return;
+        }
+
+        let lastSet = null;
+        let lastDate = '';
+        let max1RM = 0;
+
+        for (let session of workoutHistory) {
+            let found = session.sets.filter(s => s.exercise.toLowerCase() === name.toLowerCase());
+            if (found.length > 0) {
+                if (!lastSet) {
+                    lastSet = found[0];
+                    lastDate = session.date;
+                }
+                found.forEach(s => {
+                    let est = calculate1RM(s.kg, s.wdh);
+                    if (est > max1RM) max1RM = est;
+                });
+            }
+        }
+
+        if (lastSet) {
+            let wdhStr = lastSet.wdh ? ` | ${lastSet.wdh} WDH` : '';
+            textEl.innerText = `Letztes Mal (${lastDate}): ${lastSet.kg} kg Total (Scheibe ${lastSet.weightPos}/Griff ${lastSet.gripPos})${wdhStr}`;
+            container.style.display = 'flex';
+        } else {
+            container.style.display = 'none';
+        }
+
+        if (max1RM > 0 && badgeEl) {
+            badgeEl.innerText = `🔥 PR: ${max1RM.toFixed(1)} kg`;
+        } else if (badgeEl) {
+            badgeEl.innerText = '';
+        }
+    }
+
+    function saveCurrentExerciseName() {
+        let val = document.getElementById('exercise-name-input').value.trim();
+        if (!val) {
+            alert("Bitte zuerst einen Namen eintragen.");
+            return;
+        }
+        if (!savedExerciseList.includes(val)) {
+            savedExerciseList.push(val);
+            localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+            alert(`Übung "${val}" wurde als Vorlage gespeichert!`);
+        } else {
+            alert("Diese Übung ist bereits in deinen Vorlagen vorhanden.");
+        }
+    }
+
+    function addSetToActiveSession(customExercise = null, customNote = null) {
+        let exerciseName = customExercise || (trainingMode === 'normal' ? (document.getElementById('exercise-name-input').value.trim() || 'Übung') : document.getElementById('super-ex-a-input').value.trim());
+        let exerciseNote = customNote || document.getElementById('exercise-note-input').value.trim();
+        let now = new Date();
+        let timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+        let setEntry = {
+            id: Date.now() + Math.random(),
+            exercise: exerciseName,
+            note: exerciseNote,
+            kg: currentTotalKg.toFixed(1),
+            weightPos: weightPos,
+            gripPos: gripPos,
+            wdh: '',
+            rpe: '',
+            ds: false,
+            dsDetails: '',
+            time: timeStr
         };
 
-        // IDW Interpolation mit Exponent p = 2.5
-        function getSingleSideKg(w, g) {
-            let key = `${w}_${g}`;
-            if (measuredPoints[key] !== undefined) {
-                return measuredPoints[key];
+        activeSessionLog.unshift(setEntry);
+        localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+        renderActiveLogbook();
+        checkLastTimeWorkout();
+    }
+
+    function addManualSet() { 
+        if (trainingMode === 'superset') {
+            let exA = document.getElementById('super-ex-a-input').value.trim() || 'Übung A';
+            let exB = document.getElementById('super-ex-b-input').value.trim() || 'Übung B';
+            addSetToActiveSession(exA);
+            addSetToActiveSession(exB);
+        } else {
+            addSetToActiveSession(); 
+        }
+    }
+
+    function updateSetField(setId, field, val) {
+        let item = activeSessionLog.find(s => s.id === setId);
+        if (item) {
+            item[field] = val;
+            localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+            if (field === 'wdh' || field === 'kg') {
+                renderActiveLogbook();
+                checkLastTimeWorkout();
+            }
+        }
+    }
+
+    function toggleDropSet(setId) {
+        let item = activeSessionLog.find(s => s.id === setId);
+        if (item) {
+            item.ds = !item.ds;
+            localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+            renderActiveLogbook();
+        }
+    }
+
+    function deleteSet(setId) {
+        activeSessionLog = activeSessionLog.filter(s => s.id !== setId);
+        localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+        renderActiveLogbook();
+    }
+
+    function finishCurrentExercise() {
+        if (trainingMode === 'normal') {
+            document.getElementById('exercise-name-input').value = '';
+            document.getElementById('prominent-exercise-name').innerText = 'Nächste Übung wählen...';
+            document.getElementById('exercise-note-input').value = '';
+            document.getElementById('note-field-container').style.display = 'none';
+            document.getElementById('last-time-container').style.display = 'none';
+            enableExerciseEditMode();
+        } else {
+            alert("Supersatz beendet. Bereit für den nächsten Block.");
+        }
+    }
+
+    function finishWorkoutSession() {
+        if (activeSessionLog.length === 0) {
+            alert("Es wurden noch keine Sätze im aktuellen Training absolviert!");
+            return;
+        }
+
+        let now = new Date();
+        let dateStr = String(now.getDate()).padStart(2, '0') + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + now.getFullYear();
+
+        let workoutRecord = {
+            id: Date.now(),
+            date: dateStr,
+            time: String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0'),
+            sets: [...activeSessionLog]
+        };
+
+        workoutHistory.unshift(workoutRecord);
+        localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+
+        activeSessionLog = [];
+        localStorage.removeItem('board_computer_active_session');
+        
+        renderActiveLogbook();
+        renderHistory();
+        checkLastTimeWorkout();
+        alert("Workout erfolgreich am " + dateStr + " im Kalender abgespeichert!");
+    }
+
+    function deleteWorkoutHistoryItem(workoutId) {
+        if (confirm("Möchtest du dieses gespeicherte Workout wirklich aus der Historie löschen?")) {
+            workoutHistory = workoutHistory.filter(w => w.id !== workoutId);
+            localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+            renderHistory();
+            checkLastTimeWorkout();
+        }
+    }
+
+    // --- BACKUP EXPORT & IMPORT ---
+    function exportBackup() {
+        let backupData = {
+            history: workoutHistory,
+            savedExercises: savedExerciseList,
+            version: "1.0",
+            date: new Date().toISOString()
+        };
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "board_computer_backup_" + new Date().toISOString().slice(0,10) + ".json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function importBackup(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let imported = JSON.parse(e.target.result);
+                if (imported.history && imported.savedExercises) {
+                    if (confirm("Möchtest du die Daten wirklich importieren? Vorhandene Historie wird überschrieben.")) {
+                        workoutHistory = imported.history;
+                        savedExerciseList = imported.savedExercises;
+                        localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+                        localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+                        renderHistory();
+                        alert("Backup erfolgreich wiederhergestellt!");
+                    }
+                } else {
+                    alert("Ungültiges Backup-Format!");
+                }
+            } catch (err) {
+                alert("Fehler beim Lesen der JSON-Datei.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function renderActiveLogbook() {
+        let container = document.getElementById('logbook-container');
+        if (activeSessionLog.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">Noch keine Sätze im aktuellen Training.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        let grouped = {};
+        let order = [];
+        
+        activeSessionLog.forEach(item => {
+            if (!grouped[item.exercise]) {
+                grouped[item.exercise] = [];
+                order.push(item.exercise);
+            }
+            grouped[item.exercise].push(item);
+        });
+
+        order.forEach(exName => {
+            let sets = grouped[exName];
+            let firstNote = sets[0].note || '';
+
+            let blockHtml = `<div class="log-exercise-block">
+                <div class="log-exercise-title">
+                    <span>🏋️ ${exName}</span>
+                    <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:normal;">${sets.length} Sätze</span>
+                </div>`;
+
+            if (firstNote) {
+                blockHtml += `<div class="log-exercise-note-display" style="font-size:0.8rem; color:var(--ready-color); margin-bottom:8px; font-style:italic;" title="${firstNote}">📝 ${firstNote}</div>`;
             }
 
-            let sumWeights = 0;
-            let sumValues = 0;
-            let p = 2.5;
+            sets.forEach((s, idx) => {
+                let dsSymbol = s.ds ? '✓' : '';
+                let est1RM = calculate1RM(s.kg, s.wdh);
+                let est1RMHtml = est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : '';
 
-            for (let ptKey in measuredPoints) {
-                let parts = ptKey.split('_');
-                let pw = parseInt(parts[0]);
-                let pg = parseInt(parts[1]);
+                blockHtml += `
+                    <div class="log-set-wrapper">
+                        <div class="log-set-row">
+                            <div style="flex: 1; min-width: 90px;">
+                                <strong style="font-size:0.85rem;">Satz ${sets.length - idx}</strong><br>
+                                <span style="color:var(--accent-color); font-weight:800; font-family:var(--font-mono); font-size:1rem;">${s.kg} kg</span> 
+                                <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                                ${est1RMHtml}
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
+                                    <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
+                                    <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">DS</span>
+                                    <div class="ds-checkbox" onclick="toggleDropSet(${s.id})">${dsSymbol}</div>
+                                </div>
+                                <button class="danger" style="padding:6px 8px; font-size:0.75rem; margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
+                            </div>
+                        </div>
 
-                let distSq = Math.pow(w - pw, 2) + Math.pow(g - pg, 2);
-                if (distSq === 0) return measuredPoints[ptKey];
+                        ${s.ds ? `
+                            <div class="ds-details-box">
+                                <label>↳ Drop-Details:</label>
+                                <input type="text" class="input-text" style="padding:4px 8px; font-size:0.8rem; background:#080b11;" 
+                                    placeholder="z. B. 25 kg / 6 WDH..." value="${s.dsDetails || ''}" 
+                                    oninput="updateSetField(${s.id}, 'dsDetails', this.value)">
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
 
-                let weight = 1 / Math.pow(distSq, p / 2);
-                sumWeights += weight;
-                sumValues += weight * measuredPoints[ptKey];
+            blockHtml += `</div>`;
+            container.innerHTML += blockHtml;
+        });
+    }
+
+    function renderHistory() {
+        let container = document.getElementById('history-container');
+        if (workoutHistory.length === 0) {
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">Bisher noch keine Workouts abgeschlossen.</div>';
+            return;
+        }
+
+        container.innerHTML = '';
+        workoutHistory.forEach(session => {
+            let itemHtml = `<div class="history-card">
+                <div class="history-header">
+                    <div class="history-date">📅 Workout vom ${session.date} (${session.time} Uhr)</div>
+                    <button class="danger" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteWorkoutHistoryItem(${session.id})">✕ Löschen</button>
+                </div>`;
+
+            let grouped = {};
+            session.sets.forEach(item => {
+                if (!grouped[item.exercise]) grouped[item.exercise] = [];
+                grouped[item.exercise].push(item);
+            });
+
+            for (let exName in grouped) {
+                let sets = grouped[exName];
+                let firstNote = sets[0].note ? ` <span style="font-size:0.75rem; color:var(--ready-color); font-style:italic;">(📌 ${sets[0].note})</span>` : '';
+
+                itemHtml += `<div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan); margin-top:6px;">${exName}${firstNote}</div>`;
+                sets.forEach((s, idx) => {
+                    let wdhText = s.wdh ? s.wdh + ' WDH' : '';
+                    let rpeText = s.rpe ? 'RPE ' + s.rpe : '';
+                    let dsText = s.ds ? `[Drop-Set${s.dsDetails ? ': ' + s.dsDetails : ''}]` : '';
+                    itemHtml += `
+                        <div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">
+                            • Satz ${idx + 1}: ${s.kg} kg (Scheibe ${s.weightPos}/Griff ${s.gripPos}) ${wdhText} ${rpeText} ${dsText}
+                        </div>
+                    `;
+                });
             }
 
-            return Math.max(4.0, Math.min(45.0, sumValues / sumWeights));
+            itemHtml += `</div>`;
+            container.innerHTML += itemHtml;
+        });
+    }
+
+    // --- WORKFLOW TIMER (MIT SUPERSATZ-UMBAU-PHASE) ---
+    let timerInterval = null;
+    let currentTimeLeft = 45;
+    let currentPhase = 'idle';
+
+    let prepDuration = 10;
+    let workDuration = 45;
+    let transitionDuration = 15;
+    let restDuration = 120;
+
+    function setWorkPreset(secs, btnElement) {
+        workDuration = secs;
+        document.getElementById('slider-work').value = secs;
+        document.getElementById('val-workTime').innerText = secs + 's';
+
+        document.querySelectorAll('.work-preset').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
         }
+    }
 
-        // --- 2. NAVIGATION ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    function setRestPreset(secs, btnElement) {
+        restDuration = secs;
+        document.getElementById('slider-rest').value = secs;
+        document.getElementById('val-restTime').innerText = secs + 's';
 
-            event.target.classList.add('active');
-            document.getElementById(`tab-${tabId}`).classList.add('active');
+        document.querySelectorAll('.rest-preset').forEach(b => b.classList.remove('active'));
+        btnElement.classList.add('active');
+
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
         }
+    }
 
-        // --- 3. EINZEL-ÜBUNG LOGIK ---
-        function updateSingleUI() {
-            let w = parseInt(document.getElementById('single-range-w').value);
-            let g = parseInt(document.getElementById('single-range-g').value);
+    function updateTimerFromSliders() {
+        workDuration = parseInt(document.getElementById('slider-work').value);
+        restDuration = parseInt(document.getElementById('slider-rest').value);
 
-            document.getElementById('single-val-w').innerText = w;
-            document.getElementById('single-val-g').innerText = g;
+        document.getElementById('val-workTime').innerText = workDuration + 's';
+        document.getElementById('val-restTime').innerText = restDuration + 's';
 
-            let single = getSingleSideKg(w, g);
-            let total = single * 2;
+        document.querySelectorAll('.work-preset').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.innerText) === workDuration);
+        });
+        document.querySelectorAll('.rest-preset').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.innerText) === restDuration);
+        });
 
-            document.getElementById('single-side').innerText = single.toFixed(1);
-            document.getElementById('single-total').innerText = total.toFixed(1) + " kg";
+        if (currentPhase === 'idle') {
+            currentTimeLeft = workDuration;
+            updateDisplay();
         }
+    }
 
-        function findTargetWeight() {
-            let targetTotal = parseFloat(document.getElementById('target-range').value);
-            document.getElementById('target-val').innerText = targetTotal.toFixed(1) + " kg";
-            let targetSingle = targetTotal / 2;
+    function startSetWorkflow() {
+        initAudio();
+        requestWakeLock();
+        if (timerInterval) clearInterval(timerInterval);
 
-            let bestMatch = findBestPosition(targetSingle);
-            let actualTotal = getSingleSideKg(bestMatch.w, bestMatch.g) * 2;
+        currentPhase = 'ready';
+        currentTimeLeft = prepDuration;
+        playToneReady();
+        updateDisplay();
 
-            document.getElementById('finder-output').innerHTML = 
-                `Einstellung: <strong>Scheibe ${bestMatch.w} | Griff ${bestMatch.g}</strong><br>` +
-                `<span style="font-size:0.75rem; color:var(--text-muted);">Erreicht: ${actualTotal.toFixed(1)} kg Total</span>`;
-        }
+        timerInterval = setInterval(() => {
+            currentTimeLeft--;
 
-        function findBestPosition(targetSingle) {
-            let bestW = 1, bestG = 15;
-            let minDiff = 999;
-
-            for (let w = 1; w <= 32; w++) {
-                for (let g = 15; g <= 32; g++) {
-                    let kg = getSingleSideKg(w, g);
-                    let diff = Math.abs(kg - targetSingle);
-                    if (diff < minDiff) {
-                        minDiff = diff;
-                        bestW = w;
-                        bestG = g;
+            if (currentPhase === 'ready') {
+                if (currentTimeLeft <= 3 && currentTimeLeft > 0) playToneReady();
+                if (currentTimeLeft <= 0) {
+                    currentPhase = 'workA';
+                    currentTimeLeft = workDuration;
+                    playToneStart();
+                    setActiveSupersetCard('a');
+                }
+            } 
+            else if (currentPhase === 'workA') {
+                if (currentTimeLeft <= 0) {
+                    addSetToActiveSession(trainingMode === 'superset' ? document.getElementById('super-ex-a-input').value.trim() : null);
+                    
+                    if (trainingMode === 'superset') {
+                        currentPhase = 'transition';
+                        currentTimeLeft = transitionDuration;
+                        playToneTransition();
+                        setActiveSupersetCard('b');
+                    } else {
+                        currentPhase = 'rest';
+                        currentTimeLeft = restDuration;
+                        playToneRest();
                     }
                 }
             }
-            return { w: bestW, g: bestG };
-        }
-
-        // --- 4. SUPERSET LOGIK ---
-        let supersetData = {
-            A: { w: 1, g: 15 },
-            B: { w: 12, g: 17 }
-        };
-        let activeEx = 'A';
-
-        function selectSupersetEx(ex) {
-            activeEx = ex;
-            document.getElementById('card-ex-a').classList.toggle('active', ex === 'A');
-            document.getElementById('card-ex-b').classList.toggle('active', ex === 'B');
-
-            document.getElementById('super-range-w').value = supersetData[ex].w;
-            document.getElementById('super-range-g').value = supersetData[ex].g;
-            updateSupersetUIDisplays();
-        }
-
-        function updateSupersetUI() {
-            let w = parseInt(document.getElementById('super-range-w').value);
-            let g = parseInt(document.getElementById('super-range-g').value);
-
-            supersetData[activeEx].w = w;
-            supersetData[activeEx].g = g;
-
-            updateSupersetUIDisplays();
-        }
-
-        function updateSupersetUIDisplays() {
-            document.getElementById('super-val-w').innerText = supersetData[activeEx].w;
-            document.getElementById('super-val-g').innerText = supersetData[activeEx].g;
-
-            let singleA = getSingleSideKg(supersetData.A.w, supersetData.A.g);
-            let singleB = getSingleSideKg(supersetData.B.w, supersetData.B.g);
-
-            document.getElementById('superset-weight-a').innerText = (singleA * 2).toFixed(1) + " kg";
-            document.getElementById('superset-pos-a').innerText = `w:${supersetData.A.w} | g:${supersetData.A.g}`;
-
-            document.getElementById('superset-weight-b').innerText = (singleB * 2).toFixed(1) + " kg";
-            document.getElementById('superset-pos-b').innerText = `w:${supersetData.B.w} | g:${supersetData.B.g}`;
-        }
-
-        // TIMER LOGIK
-        let timerInterval = null;
-        let timeLeft = 15;
-
-        function startPauseTimer() {
-            clearInterval(timerInterval);
-            timeLeft = 15;
-            updateTimerDisplay();
-
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    // Automatisch zur anderen Übung wechseln
-                    selectSupersetEx(activeEx === 'A' ? 'B' : 'A');
+            else if (currentPhase === 'transition') {
+                if (currentTimeLeft <= 0) {
+                    currentPhase = 'workB';
+                    currentTimeLeft = workDuration;
+                    playToneStart();
                 }
-            }, 1000);
-        }
-
-        function resetPauseTimer() {
-            clearInterval(timerInterval);
-            timeLeft = 15;
-            updateTimerDisplay();
-        }
-
-        function updateTimerDisplay() {
-            document.getElementById('timer-display').innerText = timeLeft + " s";
-            let pct = (timeLeft / 15) * 100;
-            document.getElementById('timer-progress').style.width = pct + "%";
-        }
-
-        // --- 5. BLITZSATZ (DROP-SET) LOGIK ---
-        function calculateDropSet() {
-            let currentW = parseInt(document.getElementById('single-range-w').value);
-            let currentG = parseInt(document.getElementById('single-range-g').value);
-            let currentSingle = getSingleSideKg(currentW, currentG);
-            let dropCount = parseInt(document.getElementById('drop-count-range').value);
-
-            let container = document.getElementById('drop-results');
-            container.innerHTML = "";
-
-            let weight = currentSingle;
-            for (let i = 1; i <= dropCount; i++) {
-                weight = weight * 0.80; // 20% Reduktion pro Stufe
-                let match = findBestPosition(weight);
-                let actualTotal = getSingleSideKg(match.w, match.g) * 2;
-
-                let item = document.createElement('div');
-                item.className = 'drop-item';
-                item.innerHTML = `
-                    <div>
-                        <div class="step">Drop ${i}</div>
-                        <div class="target">${actualTotal.toFixed(1)} kg Total</div>
-                    </div>
-                    <div class="setting">Scheibe ${match.w} | Griff ${match.g}</div>
-                `;
-                container.appendChild(item);
             }
-        }
+            else if (currentPhase === 'workB') {
+                if (currentTimeLeft <= 0) {
+                    addSetToActiveSession(document.getElementById('super-ex-b-input').value.trim() || 'Übung B');
+                    currentPhase = 'rest';
+                    currentTimeLeft = restDuration;
+                    playToneRest();
+                    setActiveSupersetCard('a');
+                }
+            }
+            else if (currentPhase === 'rest') {
+                if (currentTimeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    currentPhase = 'idle';
+                    currentTimeLeft = workDuration;
+                    playToneStart();
+                }
+            }
 
-        // --- 6. SESSION SPEICHERN ---
-        function saveSession() {
-            alert("Trainingseinheit wurde erfolgreich im Protokoll gespeichert.");
-        }
+            updateDisplay();
+        }, 1000);
+    }
 
-        // INITIALISIERUNG
-        updateSingleUI();
-        findTargetWeight();
-        updateSupersetUIDisplays();
-    </script>
+    function setActiveSupersetCard(card) {
+        let cardA = document.getElementById('card-super-a');
+        let cardB = document.getElementById('card-super-b');
+        if (!cardA || !cardB) return;
+        if (card === 'a') {
+            cardA.classList.add('active-card');
+            cardA.querySelector('div').style.color = 'var(--accent-cyan)';
+            cardA.querySelector('div').innerText = 'Übung A (Aktiv)';
+
+            cardB.classList.remove('active-card');
+            cardB.querySelector('div').style.color = 'var(--text-secondary)';
+            cardB.querySelector('div').innerText = 'Übung B (Antagonist)';
+        } else {
+            cardB.classList.add('active-card');
+            cardB.querySelector('div').style.color = 'var(--accent-cyan)';
+            cardB.querySelector('div').innerText = 'Übung B (Aktiv)';
+
+            cardA.classList.remove('active-card');
+            cardA.querySelector('div').style.color = 'var(--text-secondary)';
+            cardA.querySelector('div').innerText = 'Übung A';
+        }
+    }
+
+    function resetTimerWorkflow() {
+        if (timerInterval) clearInterval(timerInterval);
+        currentPhase = 'idle';
+        currentTimeLeft = workDuration;
+        setActiveSupersetCard('a');
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        let mins = Math.floor(currentTimeLeft / 60);
+        let secs = currentTimeLeft % 60;
+        document.getElementById('timer-display').innerText = 
+            String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+
+        let statusEl = document.getElementById('timer-status');
+        let bodyEl = document.body;
+        bodyEl.className = '';
+
+        if (currentPhase === 'idle') {
+            statusEl.innerText = "Bereit für Satz";
+            statusEl.style.color = "var(--ready-color)";
+        } else if (currentPhase === 'ready') {
+            statusEl.innerText = "⌛ Positionieren (" + currentTimeLeft + "s)";
+            statusEl.style.color = "var(--ready-color)";
+        } else if (currentPhase === 'workA') {
+            statusEl.innerText = trainingMode === 'superset' ? "⚡ Übung A (Arbeit)" : "⚡ Muskelarbeit";
+            statusEl.style.color = "var(--work-color)";
+            bodyEl.classList.add('phase-work');
+        } else if (currentPhase === 'transition') {
+            statusEl.innerText = "⚙️ Umbau & Wechsel (" + currentTimeLeft + "s)";
+            statusEl.style.color = "var(--ready-color)";
+        } else if (currentPhase === 'workB') {
+            statusEl.innerText = "⚡ Übung B (Arbeit)";
+            statusEl.style.color = "var(--work-color)";
+            bodyEl.classList.add('phase-work');
+        } else if (currentPhase === 'rest') {
+            statusEl.innerText = "☕ Pause";
+            statusEl.style.color = "var(--rest-color)";
+            bodyEl.classList.add('phase-rest');
+        }
+    }
+
+    // Init
+    onPositionSlidersChange();
+    renderActiveLogbook();
+    renderHistory();
+    checkLastTimeWorkout();
+    updateDisplay();
+    updateExerciseWeightBadge();
+</script>
+
 </body>
 </html>
