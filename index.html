@@ -6,16 +6,16 @@
     <title>Board Computer - Performance Gym Console</title>
     <style>
         :root {
-            --bg-color: #12151c;
-            --card-bg: rgba(22, 27, 36, 0.85);
-            --card-border: rgba(255, 255, 255, 0.06);
-            --accent-color: #81b29a;
-            --accent-cyan: #74a6b2;
-            --text-primary: #f0f4f8;
-            --text-secondary: #8c9ba5;
-            --work-color: #d97771;
-            --rest-color: #81b29a;
-            --ready-color: #e5b567;
+            --bg-color: #080b11;
+            --card-bg: #141c2c;
+            --card-border: rgba(255, 255, 255, 0.14);
+            --accent-color: #22c55e; /* Knalliges Smaragdgrün */
+            --accent-cyan: #38bdf8;  /* Leuchtendes Blau */
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --work-color: #f43f5e;   /* Kräftiges Rot */
+            --rest-color: #22c55e;
+            --ready-color: #fbbf24;  /* Markantes Gelb */
             --font-mono: 'SF Pro Rounded', 'SF Mono', Menlo, Monaco, Consolas, monospace;
         }
 
@@ -38,15 +38,15 @@
         }
 
         @keyframes pulse-work {
-            0% { background-color: #12151c; }
-            50% { background-color: #241616; }
-            100% { background-color: #12151c; }
+            0% { background-color: #080b11; }
+            50% { background-color: #2b1117; }
+            100% { background-color: #080b11; }
         }
 
         @keyframes pulse-rest {
-            0% { background-color: #12151c; }
-            50% { background-color: #14221c; }
-            100% { background-color: #12151c; }
+            0% { background-color: #080b11; }
+            50% { background-color: #10291f; }
+            100% { background-color: #080b11; }
         }
 
         body.phase-work { animation: pulse-work 2.5s infinite ease-in-out; }
@@ -61,29 +61,27 @@
             padding-bottom: 30px;
         }
 
-        header { text-align: center; margin-bottom: 4px; }
+        header { text-align: center; margin-bottom: 2px; }
         header h1 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: 2px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
             color: var(--text-primary);
             margin: 0;
-            opacity: 0.9;
         }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            backdrop-filter: blur(12px);
             border-radius: 18px;
             padding: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
         .card-title {
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-secondary);
@@ -99,40 +97,48 @@
         .card-title span.collapse-icon {
             font-size: 0.75rem;
             color: var(--accent-cyan);
-            font-weight: normal;
+            font-weight: 600;
         }
 
         .card-content { display: flex; flex-direction: column; gap: 12px; }
         .collapsed .card-content { display: none; }
 
+        /* NEUE HAUPTANZEIGE (GROSS & KOMPAKT) */
         .result-box {
             text-align: center;
-            padding: 22px 16px;
-            background: linear-gradient(180deg, rgba(129, 178, 154, 0.04) 0%, rgba(0,0,0,0) 100%);
-            border: 1px solid rgba(129, 178, 154, 0.15);
+            padding: 24px 16px 20px 16px;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+            border: 1px solid rgba(34, 197, 94, 0.35);
+        }
+
+        .result-display-row {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 14px;
         }
 
         .result-input-field {
-            font-size: 3.2rem;
-            font-weight: 800;
+            font-size: 4rem;
+            font-weight: 900;
             color: var(--accent-color);
             line-height: 1;
             font-family: var(--font-mono);
             background: transparent;
             border: none;
-            text-align: center;
-            width: 100%;
+            text-align: right;
+            width: 170px;
             outline: none;
+            text-shadow: 0 2px 10px rgba(34, 197, 94, 0.2);
         }
 
-        .result-unit {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--text-secondary);
+        .result-kg-label {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent-color);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-top: 6px;
-            margin-bottom: 12px;
+            font-family: var(--font-mono);
         }
 
         .control-group { margin-top: 4px; }
@@ -140,40 +146,40 @@
             display: flex;
             justify-content: space-between;
             font-size: 0.85rem;
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 8px;
             color: var(--text-secondary);
         }
 
         .control-header span:last-child {
             color: var(--text-primary);
-            font-weight: 700;
+            font-weight: 800;
             font-family: var(--font-mono);
         }
 
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: #1a202c;
+            height: 10px;
+            border-radius: 5px;
+            background: #1e293b;
             outline: none;
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: var(--accent-color);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
             cursor: pointer;
         }
 
         .input-text, .input-number {
             width: 100%;
-            background: #171d26;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: var(--text-primary);
             padding: 12px;
             border-radius: 12px;
@@ -188,8 +194,8 @@
 
         .suggestions-grid { display: flex; flex-direction: column; gap: 8px; }
         .suggestion-item {
-            background: #171d26;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 12px 16px;
             border-radius: 12px;
             display: flex;
@@ -199,20 +205,20 @@
 
         .suggestion-tag {
             font-size: 0.7rem;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
             padding: 4px 8px;
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-secondary);
         }
 
         .suggestion-details { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
 
-        .timer-card { text-align: center; border: 1px solid rgba(229, 181, 103, 0.2); }
+        .timer-card { text-align: center; border: 1px solid rgba(251, 191, 36, 0.3); }
         .timer-status {
-            font-size: 0.9rem;
-            font-weight: 700;
+            font-size: 0.95rem;
+            font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1.5px;
             color: var(--ready-color);
@@ -220,11 +226,12 @@
         }
 
         .timer-display {
-            font-size: 3.5rem;
-            font-weight: 800;
+            font-size: 3.8rem;
+            font-weight: 900;
             font-family: var(--font-mono);
             color: var(--text-primary);
             margin: 0 0 16px 0;
+            text-shadow: 0 2px 12px rgba(251, 191, 36, 0.2);
         }
 
         .btn-group { display: flex; gap: 10px; margin-top: 16px; }
@@ -232,55 +239,55 @@
         button {
             flex: 1;
             background: var(--accent-color);
-            color: #12151c;
+            color: #080b11;
             border: none;
             padding: 14px 16px;
             font-size: 0.95rem;
-            font-weight: 700;
+            font-weight: 800;
             border-radius: 12px;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(129, 178, 154, 0.25);
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
             transition: transform 0.1s, opacity 0.2s;
         }
 
-        button.secondary { background: #1a202c; color: var(--text-primary); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.08); }
-        button.action-btn { background: #171d26; color: var(--accent-cyan); border: 1px solid rgba(116, 166, 178, 0.3); box-shadow: none; }
-        button.finish-workout { background: #e5b567; color: #12151c; }
-        button.danger { background: #261717; color: var(--work-color); border: 1px solid rgba(217, 119, 113, 0.3); box-shadow: none; font-size: 0.8rem; padding: 8px 12px; }
+        button.secondary { background: #1e293b; color: var(--text-primary); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.12); }
+        button.action-btn { background: #0f172a; color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: none; }
+        button.finish-workout { background: var(--ready-color); color: #080b11; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3); }
+        button.danger { background: #381318; color: var(--work-color); border: 1px solid rgba(244, 63, 94, 0.4); box-shadow: none; font-size: 0.8rem; padding: 8px 12px; }
         button:active { transform: scale(0.97); }
 
         .icon-btn-compact {
-            width: 38px;
-            height: 42px;
+            width: 42px;
+            height: 44px;
             padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             flex: none;
         }
 
         .preset-btn {
-            background: #1a202c;
+            background: #1e293b;
             color: var(--text-secondary);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 8px;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 700;
             border-radius: 8px;
             box-shadow: none;
             flex: 1;
         }
         .preset-btn.active {
             background: var(--accent-cyan);
-            color: #12151c;
+            color: #080b11;
             border-color: var(--accent-cyan);
-            font-weight: 700;
+            font-weight: 900;
         }
 
         .log-exercise-block {
-            background: #171d26;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             padding: 14px;
             margin-bottom: 12px;
@@ -288,9 +295,9 @@
 
         .log-exercise-title {
             font-size: 0.95rem;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--accent-cyan);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding-bottom: 6px;
             margin-bottom: 10px;
             display: flex;
@@ -299,7 +306,7 @@
         }
 
         .log-set-wrapper {
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
             padding: 8px 0;
         }
         .log-set-wrapper:last-child { border-bottom: none; }
@@ -313,8 +320,8 @@
 
         .ds-details-box {
             margin-top: 6px;
-            background: #12151c;
-            border: 1px solid rgba(129, 178, 154, 0.3);
+            background: #080b11;
+            border: 1px solid rgba(34, 197, 94, 0.4);
             border-radius: 8px;
             padding: 6px 10px;
             display: flex;
@@ -325,46 +332,46 @@
         .ds-details-box label {
             font-size: 0.7rem;
             color: var(--accent-color);
-            font-weight: 600;
+            font-weight: 700;
             white-space: nowrap;
         }
 
         .small-box {
-            width: 46px;
-            background: #12151c;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 48px;
+            background: #080b11;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             color: var(--text-primary);
-            font-weight: 700;
+            font-weight: 800;
             font-family: var(--font-mono);
             text-align: center;
             padding: 6px;
             border-radius: 8px;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             outline: none;
         }
 
         .small-box:focus { border-color: var(--accent-cyan); }
-        .rpe-box { color: var(--ready-color); border-color: rgba(229, 181, 103, 0.3); }
+        .rpe-box { color: var(--ready-color); border-color: rgba(251, 191, 36, 0.4); }
 
         .ds-checkbox {
-            width: 34px;
-            height: 34px;
-            background: #12151c;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 36px;
+            height: 36px;
+            background: #080b11;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1rem;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 800;
             color: var(--accent-color);
             cursor: pointer;
             user-select: none;
         }
 
         .history-card {
-            background: #171d26;
-            border: 1px solid rgba(116, 166, 178, 0.15);
+            background: #0f172a;
+            border: 1px solid rgba(56, 189, 248, 0.2);
             border-radius: 12px;
             padding: 14px;
             margin-bottom: 12px;
@@ -379,13 +386,13 @@
 
         .history-date {
             font-size: 0.85rem;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--accent-color);
         }
 
         .last-time-box {
-            background: rgba(116, 166, 178, 0.06);
-            border: 1px solid rgba(116, 166, 178, 0.2);
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.3);
             border-radius: 10px;
             padding: 8px 12px;
             margin-top: 8px;
@@ -394,6 +401,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            font-weight: 600;
         }
 
         /* Dropdown Styling */
@@ -407,27 +415,28 @@
             top: 100%;
             left: 0;
             right: 0;
-            background: #171d26;
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             margin-top: 4px;
             max-height: 200px;
             overflow-y: auto;
             z-index: 100;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
         .dropdown-item {
-            padding: 10px 14px;
-            font-size: 0.9rem;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
             color: var(--text-primary);
             cursor: pointer;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .dropdown-item:hover {
-            background: rgba(129, 178, 154, 0.1);
+            background: rgba(34, 197, 94, 0.15);
             color: var(--accent-color);
         }
         .dropdown-item:last-child {
@@ -435,14 +444,14 @@
         }
         .delete-ex-btn {
             color: var(--work-color);
-            font-size: 0.85rem;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
             transition: background 0.15s;
         }
         .delete-ex-btn:hover {
-            background: rgba(217, 119, 113, 0.2);
+            background: rgba(244, 63, 94, 0.25);
         }
     </style>
 </head>
@@ -453,13 +462,12 @@
         <h1>Board Computer</h1>
     </header>
 
-    <!-- HAUPTANZEIGE EFFEKTIVER GESAMT-WIDERSTAND -->
+    <!-- NEUE HAUPTANZEIGE (OHNE TEXT, NUR ZAHL + KG) -->
     <div class="card result-box">
-        <div class="result-unit">Effektiver Gesamtwiderstand (Beide Seiten)</div>
-        <div style="display:flex; justify-content:center; align-items:center;">
+        <div class="result-display-row">
             <input type="number" id="calc-result-input" class="result-input-field" value="27.0" step="0.5" min="14.0" max="60.0" oninput="onManualKgInput()">
+            <span class="result-kg-label">kg</span>
         </div>
-        <div class="result-unit" style="margin-bottom:16px;">Kilogramm (Total)</div>
         <input type="range" id="slider-target-kg" min="14.0" max="60.0" step="0.5" value="27.0" oninput="onKgSliderChange()">
     </div>
 
@@ -488,7 +496,7 @@
         </div>
     </div>
 
-    <!-- WUNSCH-GEWICHT OPTIONEN (DEZENT & STANDARDMÄSSIG EINGEKLAPPT) -->
+    <!-- POSITIONIERUNGS-ALTERNATIVEN (EINGEKLAPPT) -->
     <div class="card collapsed" id="card-options">
         <div class="card-title" onclick="toggleCard('card-options')">
             <span>🎯 Positionierungs-Alternativen</span>
@@ -507,9 +515,9 @@
         <div class="timer-status" id="timer-status">Bereit für Satz</div>
         <div class="timer-display" id="timer-display">00:45</div>
         
-        <div style="text-align: left; background: #171d26; padding: 14px; border-radius: 12px;">
+        <div style="text-align: left; background: #0f172a; padding: 14px; border-radius: 12px;">
             <!-- Muskelarbeit Schnellwahl -->
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">Muskelarbeit:</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:700;">Muskelarbeit:</div>
             <div style="display:flex; gap:6px; margin-bottom:12px;">
                 <button class="preset-btn work-preset active" onclick="setWorkPreset(45, this)">45s</button>
                 <button class="preset-btn work-preset" onclick="setWorkPreset(50, this)">50s</button>
@@ -518,7 +526,7 @@
             </div>
 
             <!-- Pausenzeit Schnellwahl -->
-            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:600;">Pausenzeit:</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:6px; font-weight:700;">Pausenzeit:</div>
             <div style="display:flex; gap:6px;">
                 <button class="preset-btn rest-preset" onclick="setRestPreset(60, this)">60s</button>
                 <button class="preset-btn rest-preset" onclick="setRestPreset(90, this)">90s</button>
@@ -527,8 +535,8 @@
             </div>
 
             <!-- Manuell einstellen Dropdown/Accordion -->
-            <div style="margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
-                <div style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer; user-select: none; display:flex; justify-content:space-between;" onclick="toggleTimerManual()">
+            <div style="margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.12); padding-top: 8px;">
+                <div style="font-size: 0.75rem; color: var(--accent-cyan); cursor: pointer; user-select: none; display:flex; justify-content:space-between; font-weight:700;" onclick="toggleTimerManual()">
                     <span>⚙️ Manuell feineinstellen</span>
                     <span id="icon-timer-manual">▶ Einblenden</span>
                 </div>
@@ -563,8 +571,8 @@
                     <!-- Eingabefeld mit echtem Dropdown-Pfeil -->
                     <div class="dropdown-container">
                         <div style="position:relative;">
-                            <input type="text" id="exercise-name-input" class="input-text" placeholder="Brustpresse, Squats..." value="Brustpresse" oninput="checkLastTimeWorkout()" style="padding-right: 32px;">
-                            <span onclick="toggleSavedDropdown(event)" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.75rem; padding: 4px;">▼</span>
+                            <input type="text" id="exercise-name-input" class="input-text" placeholder="Brustpresse, Squats..." value="Brustpresse" oninput="checkLastTimeWorkout()" style="padding-right: 36px;">
+                            <span onclick="toggleSavedDropdown(event)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.85rem; padding: 4px; font-weight:800;">▼</span>
                         </div>
                         <div id="saved-dropdown-list" class="dropdown-list"></div>
                     </div>
@@ -576,7 +584,7 @@
 
                 <!-- Diskretes Notizfeld (Standardmäßig versteckt) -->
                 <div id="note-field-container" style="display:none; margin-top:8px;">
-                    <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#12151c;" placeholder="Notiz (z. B. Sitzhöhe 3, 90° geneigt)...">
+                    <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#080b11;" placeholder="Notiz (z. B. Sitzhöhe 3, 90° geneigt)...">
                 </div>
 
                 <div id="last-time-container" style="display:none;" class="last-time-box">
@@ -591,11 +599,11 @@
             </div>
 
             <!-- Trenner -->
-            <div style="border-top: 1px solid rgba(255,255,255,0.06); margin: 4px 0;"></div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 4px 0;"></div>
 
             <!-- Aktuelles Tages-Logbuch -->
             <div>
-                <div style="font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); margin-bottom:10px;">
+                <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); margin-bottom:10px;">
                     Aktuelle Sätze
                 </div>
                 <div id="logbook-container">
@@ -803,7 +811,7 @@
                 <div class="suggestion-item">
                     <span class="suggestion-tag">${opt.tag}</span>
                     <div class="suggestion-details">Scheibe <strong>${opt.weightPos}</strong> | Griff <strong>${opt.gripPos}</strong></div>
-                    <span style="font-size:0.85rem; color:var(--accent-color); font-weight:700;">~${opt.calculatedTotalKg.toFixed(1)} kg</span>
+                    <span style="font-size:0.85rem; color:var(--accent-color); font-weight:800;">~${opt.calculatedTotalKg.toFixed(1)} kg</span>
                 </div>
             `;
         });
@@ -1121,7 +1129,7 @@
                         <div class="log-set-row">
                             <div style="flex: 1; min-width: 90px;">
                                 <strong style="font-size:0.85rem;">Satz ${sets.length - idx}</strong><br>
-                                <span style="color:var(--accent-color); font-weight:700; font-family:var(--font-mono); font-size:0.95rem;">${s.kg} kg</span> 
+                                <span style="color:var(--accent-color); font-weight:800; font-family:var(--font-mono); font-size:1rem;">${s.kg} kg</span> 
                                 <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
@@ -1144,7 +1152,7 @@
                         ${s.ds ? `
                             <div class="ds-details-box">
                                 <label>↳ Drop-Details:</label>
-                                <input type="text" class="input-text" style="padding:4px 8px; font-size:0.8rem; background:#12151c;" 
+                                <input type="text" class="input-text" style="padding:4px 8px; font-size:0.8rem; background:#080b11;" 
                                     placeholder="z. B. 25 kg / 6 WDH..." value="${s.dsDetails || ''}" 
                                     oninput="updateSetField(${s.id}, 'dsDetails', this.value)">
                             </div>
@@ -1183,7 +1191,7 @@
                 let sets = grouped[exName];
                 let firstNote = sets[0].note ? ` <span style="font-size:0.75rem; color:var(--ready-color); font-style:italic;">(📌 ${sets[0].note})</span>` : '';
 
-                itemHtml += `<div style="font-size:0.85rem; font-weight:700; color:var(--accent-cyan); margin-top:6px;">${exName}${firstNote}</div>`;
+                itemHtml += `<div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan); margin-top:6px;">${exName}${firstNote}</div>`;
                 sets.forEach((s, idx) => {
                     let wdhText = s.wdh ? s.wdh + ' WDH' : '';
                     let rpeText = s.rpe ? 'RPE ' + s.rpe : '';
