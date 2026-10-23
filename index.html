@@ -275,9 +275,12 @@
         .log-exercise-block {
             background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 12px;
         }
-        .log-exercise-block.is-superset {
-            border-color: rgba(56, 189, 248, 0.4);
-            background: rgba(56, 189, 248, 0.03);
+        
+        /* Unified Super-Set Block Styling */
+        .superset-unified-block {
+            border: 2px solid rgba(56, 189, 248, 0.5);
+            background: rgba(56, 189, 248, 0.04);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.12);
         }
 
         .log-exercise-title {
@@ -285,15 +288,16 @@
         }
 
         .superset-tag {
-            background: rgba(56, 189, 248, 0.15);
+            background: rgba(56, 189, 248, 0.2);
             color: var(--accent-cyan);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.6);
+            font-size: 0.75rem;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
         }
 
         .log-set-wrapper { border-bottom: 1px dashed rgba(255, 255, 255, 0.08); padding: 8px 0; }
@@ -301,7 +305,6 @@
         .log-set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
         .rm-tag { font-size: 0.65rem; color: var(--accent-cyan); font-weight: 700; font-family: var(--font-mono); margin-top: 2px; }
 
-        /* INPUTS IN LOGBUCH GEINRAHMT & DESIGNT */
         .small-box {
             width: 48px; 
             background: #080b11; 
@@ -916,7 +919,8 @@
         document.getElementById('exercise-name-input').value = exName;
         document.getElementById('prominent-exercise-name').innerText = exName;
         document.getElementById('exercise-edit-container').style.display = 'none';
-        document.getElementById('saved-dropdown-list').style.display = 'none';
+        let listEl = document.getElementById('saved-dropdown-list');
+        if (listEl) listEl.style.display = 'none';
         checkLastTimeWorkout();
     }
 
@@ -947,7 +951,8 @@
             item.className = 'dropdown-item';
             item.innerHTML = `<span>${ex}</span><span class="delete-ex-btn" onclick="event.stopPropagation(); deleteSavedExercise('${ex}', '${listId}')">✕</span>`;
             
-            item.firstChild.onclick = function() {
+            item.onclick = function(e) {
+                e.stopPropagation();
                 if (listId.includes('a')) {
                     document.getElementById('super-ex-a-input').value = ex;
                     updateSuperCardData();
@@ -1141,53 +1146,115 @@
         }
 
         container.innerHTML = '';
-        let grouped = {}, order = [];
-        activeSessionLog.forEach(item => {
-            if (!grouped[item.exercise]) { grouped[item.exercise] = []; order.push(item.exercise); }
-            grouped[item.exercise].push(item);
-        });
+        
+        // Group log items: Super-sets in combined unified blocks, standard items by exercise name
+        let blocks = [];
+        let i = 0;
+        while (i < activeSessionLog.length) {
+            let item = activeSessionLog[i];
+            if (item.isSuperSet) {
+                let pair = [item];
+                if (i + 1 < activeSessionLog.length && activeSessionLog[i + 1].isSuperSet) {
+                    pair.push(activeSessionLog[i + 1]);
+                    i++;
+                }
+                blocks.push({ type: 'superset', items: pair });
+            } else {
+                let exName = item.exercise;
+                let standardItems = [item];
+                let j = i + 1;
+                while (j < activeSessionLog.length && !activeSessionLog[j].isSuperSet && activeSessionLog[j].exercise === exName) {
+                    standardItems.push(activeSessionLog[j]);
+                    j++;
+                }
+                blocks.push({ type: 'standard', exercise: exName, items: standardItems });
+                i = j - 1;
+            }
+            i++;
+        }
 
-        order.forEach(exName => {
-            let sets = grouped[exName];
-            let isSuper = sets.some(s => s.isSuperSet);
-            let superBadge = isSuper ? `<span class="superset-tag">🔥 Super-Set</span>` : '';
-            let blockClass = isSuper ? 'log-exercise-block is-superset' : 'log-exercise-block';
+        blocks.forEach(block => {
+            if (block.type === 'superset') {
+                let blockHtml = `
+                    <div class="log-exercise-block superset-unified-block">
+                        <div class="log-exercise-title" style="border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom: 8px; margin-bottom: 12px;">
+                            <span class="superset-tag">🔥 SUPER-SET</span>
+                            <span style="font-size: 0.8rem; color: var(--text-secondary);">Kombination</span>
+                        </div>`;
+                
+                block.items.forEach((s) => {
+                    let est1RM = calculate1RM(s.kg, s.wdh);
+                    let dsClass = s.ds ? 'ds-checkbox active' : 'ds-checkbox';
+                    let dsText = s.ds ? '✓ Drop-Set' : 'Drop-Set';
 
-            let blockHtml = `<div class="${blockClass}"><div class="log-exercise-title"><span>${exName}</span><span>${superBadge} <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:4px;">${sets.length} Sätze</span></span></div>`;
-
-            sets.forEach((s, idx) => {
-                let est1RM = calculate1RM(s.kg, s.wdh);
-                let dsClass = s.ds ? 'ds-checkbox active' : 'ds-checkbox';
-                let dsText = s.ds ? '✓ Drop-Set' : 'Drop-Set';
-
-                blockHtml += `
-                    <div class="log-set-wrapper">
-                        <div class="log-set-row">
-                            <div style="flex: 1;">
-                                <strong style="font-size:0.85rem;">Satz ${sets.length - idx}</strong><br>
-                                <span style="color:var(--accent-color); font-weight:800; font-family:var(--font-mono);">${s.kg} kg</span> 
-                                <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
-                                ${est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
+                    blockHtml += `
+                        <div style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.12);">
+                            <div style="font-size: 0.95rem; font-weight: 800; color: var(--accent-cyan); margin-bottom: 6px;">${s.exercise}</div>
+                            <div class="log-set-row">
+                                <div style="flex: 1;">
+                                    <span style="color:var(--accent-color); font-weight:800; font-family:var(--font-mono); font-size: 1.05rem;">${s.kg} kg</span> 
+                                    <span style="color:var(--text-secondary); font-size:0.75rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                                    ${est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
+                                </div>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <div style="text-align:center;">
+                                        <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
+                                        <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
+                                        <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">Option</span>
+                                        <div class="${dsClass}" onclick="toggleDropSet(${s.id})">${dsText}</div>
+                                    </div>
+                                    <button class="danger" style="margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
+                                </div>
                             </div>
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <div style="text-align:center;">
-                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
-                                    <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+                        </div>`;
+                });
+                blockHtml += `</div>`;
+                container.innerHTML += blockHtml;
+
+            } else {
+                let sets = block.items;
+                let blockHtml = `<div class="log-exercise-block"><div class="log-exercise-title"><span>${block.exercise}</span><span style="font-size:0.8rem; color:var(--text-secondary);">${sets.length} Sätze</span></div>`;
+
+                sets.forEach((s, idx) => {
+                    let est1RM = calculate1RM(s.kg, s.wdh);
+                    let dsClass = s.ds ? 'ds-checkbox active' : 'ds-checkbox';
+                    let dsText = s.ds ? '✓ Drop-Set' : 'Drop-Set';
+
+                    blockHtml += `
+                        <div class="log-set-wrapper">
+                            <div class="log-set-row">
+                                <div style="flex: 1;">
+                                    <strong style="font-size:0.85rem;">Satz ${sets.length - idx}</strong><br>
+                                    <span style="color:var(--accent-color); font-weight:800; font-family:var(--font-mono);">${s.kg} kg</span> 
+                                    <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                                    ${est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
                                 </div>
-                                <div style="text-align:center;">
-                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
-                                    <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <div style="text-align:center;">
+                                        <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
+                                        <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
+                                        <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
+                                    </div>
+                                    <div style="text-align:center;">
+                                        <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">Option</span>
+                                        <div class="${dsClass}" onclick="toggleDropSet(${s.id})">${dsText}</div>
+                                    </div>
+                                    <button class="danger" style="margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
                                 </div>
-                                <div style="text-align:center;">
-                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">Option</span>
-                                    <div class="${dsClass}" onclick="toggleDropSet(${s.id})">${dsText}</div>
-                                </div>
-                                <button class="danger" style="margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
                             </div>
-                        </div>
-                    </div>`;
-            });
-            container.innerHTML += blockHtml + `</div>`;
+                        </div>`;
+                });
+                container.innerHTML += blockHtml + `</div>`;
+            }
         });
     }
 
@@ -1206,7 +1273,7 @@
 
             for (let ex in grouped) {
                 let isSuper = grouped[ex].some(s => s.isSuperSet);
-                let tag = isSuper ? ' <span class="superset-tag">🔥 Super-Set</span>' : '';
+                let tag = isSuper ? ' <span class="superset-tag" style="font-size:0.65rem; padding:1px 4px;">🔥 SUPER-SET</span>' : '';
                 itemHtml += `<div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan); margin-top:6px;">${ex}${tag}</div>`;
                 grouped[ex].forEach((s, idx) => {
                     let wdhText = s.wdh ? s.wdh + ' WDH' : '';
