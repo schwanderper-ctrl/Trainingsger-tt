@@ -250,7 +250,7 @@
         }
         .preset-btn.active { background: var(--accent-cyan); color: #080b11; border-color: var(--accent-cyan); font-weight: 900; }
 
-        /* SUPERSATZ DUAL CARDS (HOCHWERTIG & GEHIGHLIGHTET) */
+        /* SUPERSET DUAL CARDS */
         .superset-dual-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -283,14 +283,42 @@
         .log-set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
         .rm-tag { font-size: 0.65rem; color: var(--accent-cyan); font-weight: 700; font-family: var(--font-mono); margin-top: 2px; }
 
+        /* INPUTS IN LOGBUCH GEINRAHMT & DESIGNT */
         .small-box {
-            width: 48px; background: #080b11; border: 1px solid rgba(255, 255, 255, 0.12); color: var(--text-primary); font-weight: 800; font-family: var(--font-mono); text-align: center; padding: 6px; border-radius: 8px; font-size: 0.9rem; outline: none;
+            width: 48px; 
+            background: #080b11; 
+            border: 1px solid rgba(56, 189, 248, 0.4); 
+            color: var(--text-primary); 
+            font-weight: 800; 
+            font-family: var(--font-mono); 
+            text-align: center; 
+            padding: 6px; 
+            border-radius: 8px; 
+            font-size: 0.9rem; 
+            outline: none;
         }
         .small-box:focus { border-color: var(--accent-cyan); }
         .rpe-box { color: var(--ready-color); border-color: rgba(251, 191, 36, 0.4); }
 
         .ds-checkbox {
-            width: 36px; height: 36px; background: #080b11; border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 800; color: var(--accent-color); cursor: pointer; user-select: none;
+            height: 32px; 
+            padding: 0 8px;
+            background: #080b11; 
+            border: 1px solid rgba(34, 197, 94, 0.4); 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            color: var(--accent-color); 
+            cursor: pointer; 
+            user-select: none;
+            gap: 4px;
+        }
+        .ds-checkbox.active {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: var(--accent-color);
         }
 
         .history-card { background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
@@ -326,14 +354,54 @@
 
     <!-- MODUS AUSWAHL -->
     <div class="mode-toggle-bar">
-        <button id="btn-mode-normal" class="mode-btn active" onclick="setTrainingMode('normal')">⚡ Standard</button>
-        <button id="btn-mode-super" class="mode-btn" onclick="setTrainingMode('superset')">🔥 Supersatz</button>
-        <button id="btn-mode-drop" class="mode-btn" onclick="setTrainingMode('dropset')">⚡ Blitzsätze</button>
+        <button id="btn-mode-normal" class="mode-btn active" onclick="setTrainingMode('normal')">⚡ Standard Training</button>
+        <button id="btn-mode-super" class="mode-btn" onclick="setTrainingMode('superset')">🔥 Super-Set</button>
+        <button id="btn-mode-drop" class="mode-btn" onclick="setTrainingMode('dropset')">⚡ Drop-Set</button>
     </div>
 
-    <!-- SUPERSATZ ZWEI-KARTEN ANSICHT (Ganz oben im Supersatz-Modus) -->
+    <!-- ÜBUNGSAUSWAHL BLOCK (IM STANDARD TRAINING DURCHGÄNGIG GANZ OBEN) -->
+    <div class="card" id="view-normal-exercise-card">
+        <div class="card-title" style="cursor:default; margin-bottom:8px;">📝 Aktuelle Übung wählen</div>
+        <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 12px 14px;">
+            <div style="font-size: 1.45rem; font-weight: 900; color: var(--accent-cyan); display: flex; align-items: center; justify-content: space-between;">
+                <span id="prominent-exercise-name">Brustpresse</span>
+                <span style="font-size:1.1rem; cursor:pointer;" onclick="enableExerciseEditMode()">✏️</span>
+            </div>
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--accent-color); margin-top: 6px; font-family: var(--font-mono); display: flex; justify-content: space-between;">
+                <span id="exercise-weight-info">⚡ Aktuell: 24.4 kg (Scheibe 1 / Griff 15)</span>
+                <span id="exercise-1rm-badge" style="color:var(--ready-color); font-size:0.75rem;"></span>
+            </div>
+        </div>
+
+        <div id="exercise-edit-container" style="display:none; margin-top:10px;">
+            <div style="display:flex; gap:6px; align-items:center;">
+                <div class="dropdown-container">
+                    <div style="position:relative;">
+                        <input type="text" id="exercise-name-input" class="input-text" placeholder="Übung eingeben oder wählen..." value="Brustpresse" onkeydown="handleExerciseInputKey(event)" oninput="onExerciseNameChange()" style="padding-right: 36px;">
+                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.85rem; font-weight:800;">▼</span>
+                    </div>
+                    <div id="saved-dropdown-list" class="dropdown-list"></div>
+                </div>
+                <button class="secondary icon-btn-compact" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
+                <button class="secondary icon-btn-compact" title="Notiz hinzufügen" onclick="toggleNoteField()">📝</button>
+                <button class="action-btn icon-btn-compact" style="width: auto; padding: 0 12px; font-size: 0.85rem;" onclick="confirmExerciseName()">OK</button>
+            </div>
+        </div>
+
+        <!-- Notizfeld -->
+        <div id="note-field-container" style="display:none; margin-top:8px;">
+            <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#080b11;" placeholder="Notiz (z. B. Sitzhöhe 3)...">
+        </div>
+
+        <div id="last-time-container" style="display:none;" class="last-time-box">
+            <span>📈</span>
+            <span id="last-time-text">Letztes Mal: -</span>
+        </div>
+    </div>
+
+    <!-- SUPER-SET ZWEI-KARTEN ANSICHT (Ganz oben im Super-Set-Modus) -->
     <div class="card" id="view-superset-cards-card" style="display:none;">
-        <div class="card-title" style="cursor:default; margin-bottom:12px;">🔥 Supersatz-Konfiguration</div>
+        <div class="card-title" style="cursor:default; margin-bottom:12px;">🔥 Super-Set-Konfiguration</div>
         <div class="superset-dual-container">
             <!-- Übung A -->
             <div class="superset-card-box active-card" id="card-super-a" onclick="selectSuperCard('A')">
@@ -412,9 +480,9 @@
         </div>
     </div>
 
-    <!-- BLITZSÄTZE MODUL -->
+    <!-- DROP-SET MODUL -->
     <div class="card" id="view-dropset-card" style="display:none;">
-        <div class="card-title">⚡ Blitzsatz-Rechner (-20% pro Stufe)</div>
+        <div class="card-title">⚡ Drop-Set-Rechner (-20% pro Stufe)</div>
         <button class="action-btn" onclick="calculateDropSet()">Drops für aktuelles Gewicht berechnen</button>
         <div id="drop-results-container" style="margin-top: 12px; display:flex; flex-direction:column; gap:6px;"></div>
     </div>
@@ -468,72 +536,28 @@
         </div>
     </div>
 
-    <!-- AKTUELLE ÜBUNG & LOGBUCH -->
+    <!-- LOGBUCH STEUERUNG & BUTTONS -->
     <div class="card">
-        <div class="card-title" style="cursor:default; margin-bottom:12px;">📝 Aktuelle Übung & Training</div>
-        <div class="card-content" style="gap:14px;">
-            <div>
-                <!-- STANDARD / EINZEL ÜBUNG ANZEIGE -->
-                <div id="view-normal-exercise">
-                    <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 14px 16px; margin-bottom: 4px;">
-                        <div style="font-size: 1.55rem; font-weight: 900; color: var(--accent-cyan); display: flex; align-items: center; justify-content: space-between;">
-                            <span id="prominent-exercise-name">Brustpresse</span>
-                            <span style="font-size:1.1rem; cursor:pointer;" onclick="enableExerciseEditMode()">✏️</span>
-                        </div>
-                        <div style="font-size: 0.82rem; font-weight: 700; color: var(--accent-color); margin-top: 6px; font-family: var(--font-mono); display: flex; justify-content: space-between;">
-                            <span id="exercise-weight-info">⚡ Aktuell: 24.4 kg (Scheibe 1 / Griff 15)</span>
-                            <span id="exercise-1rm-badge" style="color:var(--ready-color); font-size:0.75rem;"></span>
-                        </div>
-                    </div>
+        <div style="display:flex; gap:8px;">
+            <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz protokollieren</button>
+            <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
+        </div>
 
-                    <div id="exercise-edit-container" style="display:none; margin-top:10px;">
-                        <div style="display:flex; gap:6px; align-items:center;">
-                            <div class="dropdown-container">
-                                <div style="position:relative;">
-                                    <input type="text" id="exercise-name-input" class="input-text" placeholder="Übung eingeben oder wählen..." value="Brustpresse" onkeydown="handleExerciseInputKey(event)" oninput="onExerciseNameChange()" style="padding-right: 36px;">
-                                    <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.85rem; font-weight:800;">▼</span>
-                                </div>
-                                <div id="saved-dropdown-list" class="dropdown-list"></div>
-                            </div>
-                            <button class="secondary icon-btn-compact" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
-                            <button class="secondary icon-btn-compact" title="Notiz hinzufügen" onclick="toggleNoteField()">📝</button>
-                            <button class="action-btn icon-btn-compact" style="width: auto; padding: 0 12px; font-size: 0.85rem;" onclick="confirmExerciseName()">OK</button>
-                        </div>
-                    </div>
-                </div>
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 14px 0 10px 0;"></div>
 
-                <!-- Notizfeld -->
-                <div id="note-field-container" style="display:none; margin-top:8px;">
-                    <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#080b11;" placeholder="Notiz (z. B. Sitzhöhe 3)...">
-                </div>
-
-                <div id="last-time-container" style="display:none;" class="last-time-box">
-                    <span>📈</span>
-                    <span id="last-time-text">Letztes Mal: -</span>
+        <!-- GEMEINSAMES LOGBUCH -->
+        <div>
+            <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); margin-bottom:10px;">
+                Aktuelle Sätze (Gemeinsames Logbuch)
+            </div>
+            <div id="logbook-container">
+                <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">
+                    Noch keine Sätze im aktuellen Training.
                 </div>
             </div>
 
-            <div style="display:flex; gap:8px;">
-                <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz protokollieren</button>
-                <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
-            </div>
-
-            <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 4px 0;"></div>
-
-            <!-- GEMEINSAMES LOGBUCH -->
-            <div>
-                <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); margin-bottom:10px;">
-                    Aktuelle Sätze (Gemeinsames Logbuch)
-                </div>
-                <div id="logbook-container">
-                    <div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:15px 0;">
-                        Noch keine Sätze im aktuellen Training.
-                    </div>
-                </div>
-
-                <div style="margin-top:16px;">
-                    <button class="finish-workout" onclick="finishWorkoutSession()">🏁 TRAINING BEENDEN & SPEICHERN</button>
-                </div>
+            <div style="margin-top:16px;">
+                <button class="finish-workout" onclick="finishWorkoutSession()">🏁 TRAINING BEENDEN & SPEICHERN</button>
             </div>
         </div>
     </div>
@@ -585,10 +609,11 @@
         document.getElementById('btn-mode-super').classList.toggle('active', mode === 'superset');
         document.getElementById('btn-mode-drop').classList.toggle('active', mode === 'dropset');
 
+        let normalExCard = document.getElementById('view-normal-exercise-card');
         let superCardEl = document.getElementById('view-superset-cards-card');
         let dropCardEl = document.getElementById('view-dropset-card');
-        let mainResultBox = document.getElementById('main-result-box');
 
+        normalExCard.style.display = (mode === 'normal') ? 'block' : 'none';
         superCardEl.style.display = (mode === 'superset') ? 'block' : 'none';
         dropCardEl.style.display = (mode === 'dropset') ? 'block' : 'none';
 
@@ -734,7 +759,7 @@
         }
     }
 
-    // --- SUPERSATZ LOGIK (ZWEI KARTEN) ---
+    // --- SUPERSET LOGIK (ZWEI KARTEN) ---
     function selectSuperCard(card) {
         activeSuperCard = card;
         document.getElementById('card-super-a').classList.toggle('active-card', card === 'A');
@@ -772,7 +797,7 @@
         document.getElementById('super-pos-b').innerText = `w:${supersetData.B.w} | g:${supersetData.B.g}`;
     }
 
-    // --- BLITZSÄTZE (DROP-SETS) RECHNER ---
+    // --- DROP-SET RECHNER ---
     function calculateDropSet() {
         let container = document.getElementById('drop-results-container');
         container.innerHTML = '';
@@ -895,6 +920,8 @@
             let item = document.createElement('div');
             item.className = 'dropdown-item';
             item.innerHTML = `<span>${ex}</span><span class="delete-ex-btn" onclick="event.stopPropagation(); deleteSavedExercise('${ex}', '${listId}')">✕</span>`;
+            
+            // Bei Klick direkt auswählen & Dropdown schließen
             item.firstChild.onclick = function() {
                 if (listId.includes('a')) {
                     document.getElementById('super-ex-a-input').value = ex;
@@ -1101,6 +1128,9 @@
 
             sets.forEach((s, idx) => {
                 let est1RM = calculate1RM(s.kg, s.wdh);
+                let dsClass = s.ds ? 'ds-checkbox active' : 'ds-checkbox';
+                let dsText = s.ds ? '✓ Drop-Set' : 'Drop-Set';
+
                 blockHtml += `
                     <div class="log-set-wrapper">
                         <div class="log-set-row">
@@ -1111,10 +1141,19 @@
                                 ${est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
-                                <input type="number" class="small-box" placeholder="WDH" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
-                                <input type="number" class="small-box rpe-box" placeholder="RPE" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
-                                <div class="ds-checkbox" onclick="toggleDropSet(${s.id})">${s.ds ? '✓' : ''}</div>
-                                <button class="danger" onclick="deleteSet(${s.id})">✕</button>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
+                                    <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
+                                    <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">Option</span>
+                                    <div class="${dsClass}" onclick="toggleDropSet(${s.id})">${dsText}</div>
+                                </div>
+                                <button class="danger" style="margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
                             </div>
                         </div>
                     </div>`;
