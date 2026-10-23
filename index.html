@@ -103,7 +103,37 @@
         .card-content { display: flex; flex-direction: column; gap: 12px; }
         .collapsed .card-content { display: none; }
 
-        /* NEUE HAUPTANZEIGE (GROSS & KOMPAKT) */
+        /* MODUS TOGGLE LEISTE */
+        .mode-toggle-bar {
+            display: flex;
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 10px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-cyan);
+            color: #080b11;
+            box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3);
+        }
+
+        /* HAUPTANZEIGE (GROSS & KOMPAKT) */
         .result-box {
             text-align: center;
             padding: 24px 16px 20px 16px;
@@ -285,6 +315,58 @@
             font-weight: 900;
         }
 
+        /* PROMINENTE ÜBUNGS-ÜBERSCHRIFT STYLING */
+        .exercise-header-display {
+            background: rgba(56, 189, 248, 0.06);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 4px;
+        }
+
+        .exercise-title-prominent {
+            font-size: 1.55rem;
+            font-weight: 900;
+            color: var(--accent-cyan);
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .exercise-sub-info {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-top: 6px;
+            font-family: var(--font-mono);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* SUPERSATZ DUAL-CONTAINER */
+        .superset-dual-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .superset-box {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 14px;
+            transition: all 0.3s;
+        }
+
+        .superset-box.active-card {
+            border-color: var(--accent-cyan);
+            background: rgba(56, 189, 248, 0.08);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+
         .log-exercise-block {
             background: #0f172a;
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -316,6 +398,14 @@
             justify-content: space-between;
             align-items: center;
             gap: 8px;
+        }
+
+        .rm-tag {
+            font-size: 0.65rem;
+            color: var(--accent-cyan);
+            font-weight: 700;
+            font-family: var(--font-mono);
+            margin-top: 2px;
         }
 
         .ds-details-box {
@@ -462,7 +552,13 @@
         <h1>Board Computer</h1>
     </header>
 
-    <!-- NEUE HAUPTANZEIGE (OHNE TEXT, NUR ZAHL + KG) -->
+    <!-- MODUS AUSWAHL (NORMAL VS SUPERSATZ) -->
+    <div class="mode-toggle-bar">
+        <button id="btn-mode-normal" class="mode-btn active" onclick="setTrainingMode('normal')">⚡ Standard-Modus</button>
+        <button id="btn-mode-super" class="mode-btn" onclick="setTrainingMode('superset')">🔥 Supersatz-Modus</button>
+    </div>
+
+    <!-- HAUPTANZEIGE (GROSS & KOMPAKT) -->
     <div class="card result-box">
         <div class="result-display-row">
             <input type="number" id="calc-result-input" class="result-input-field" value="27.0" step="0.5" min="14.0" max="60.0" oninput="onManualKgInput()">
@@ -564,25 +660,60 @@
 
     <!-- ZUSAMMENGEFÜGTER BLOCK: AKTUELLE ÜBUNG & LOGBUCH -->
     <div class="card">
-        <div class="card-title" style="cursor:default; margin-bottom:14px;">📝 Aktuelle Übung & Training</div>
+        <div class="card-title" style="cursor:default; margin-bottom:12px;">📝 Aktuelle Übung & Training</div>
         <div class="card-content" style="gap:14px;">
             <div>
-                <div style="display:flex; gap:6px; align-items:center;">
-                    <!-- Eingabefeld mit echtem Dropdown-Pfeil -->
-                    <div class="dropdown-container">
-                        <div style="position:relative;">
-                            <input type="text" id="exercise-name-input" class="input-text" placeholder="Brustpresse, Squats..." value="Brustpresse" oninput="checkLastTimeWorkout()" style="padding-right: 36px;">
-                            <span onclick="toggleSavedDropdown(event)" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.85rem; padding: 4px; font-weight:800;">▼</span>
+                <!-- STANDARD MODUS ÜBUNG -->
+                <div id="view-normal-exercise">
+                    <div class="exercise-header-display">
+                        <div class="exercise-title-prominent">
+                            <span id="prominent-exercise-name">Brustpresse</span>
+                            <span style="font-size:1.1rem; cursor:pointer;" title="Übung ändern / anpassen" onclick="enableExerciseEditMode()">✏️</span>
                         </div>
-                        <div id="saved-dropdown-list" class="dropdown-list"></div>
+                        <div class="exercise-sub-info">
+                            <span id="exercise-weight-info">⚡ Aktuell: 27.0 kg (Scheibe 7 / Griff 15)</span>
+                            <span id="exercise-1rm-badge" style="color:var(--ready-color); font-size:0.75rem;"></span>
+                        </div>
                     </div>
-                    <!-- Speichern Button dezent & klein -->
-                    <button class="secondary icon-btn-compact" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
-                    <!-- Notiz Button dezent & klein -->
-                    <button class="secondary icon-btn-compact" title="Notiz hinzufügen" onclick="toggleNoteField()">✏️</button>
+
+                    <div id="exercise-edit-container" style="display:none; margin-top:10px;">
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <div class="dropdown-container">
+                                <div style="position:relative;">
+                                    <input type="text" id="exercise-name-input" class="input-text" placeholder="Übung eingeben oder wählen..." value="Brustpresse" onkeydown="handleExerciseInputKey(event)" oninput="onExerciseNameChange()" style="padding-right: 36px;">
+                                    <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.85rem; padding: 4px; font-weight:800;">▼</span>
+                                </div>
+                                <div id="saved-dropdown-list" class="dropdown-list"></div>
+                            </div>
+                            <button class="secondary icon-btn-compact" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
+                            <button class="secondary icon-btn-compact" title="Notiz hinzufügen" onclick="toggleNoteField()">📝</button>
+                            <button class="action-btn icon-btn-compact" style="width: auto; padding: 0 12px; font-size: 0.85rem;" title="Übernehmen" onclick="confirmExerciseName()">OK</button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Diskretes Notizfeld (Standardmäßig versteckt) -->
+                <!-- SUPERSATZ MODUS DUAL-ANSICHT -->
+                <div id="view-superset-exercise" style="display:none;">
+                    <div class="superset-dual-container">
+                        <!-- Übung A -->
+                        <div class="superset-box active-card" id="card-super-a">
+                            <div style="font-size:0.7rem; color:var(--accent-cyan); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung A (Aktiv)</div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <input type="text" id="super-ex-a-input" class="input-text" value="Brustpresse" style="font-size:1rem; padding:8px 10px;" placeholder="Übung A...">
+                            </div>
+                        </div>
+
+                        <!-- Übung B -->
+                        <div class="superset-box" id="card-super-b">
+                            <div style="font-size:0.7rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung B (Antagonist)</div>
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <input type="text" id="super-ex-b-input" class="input-text" value="Low Row" style="font-size:1rem; padding:8px 10px;" placeholder="Übung B...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Diskretes Notizfeld -->
                 <div id="note-field-container" style="display:none; margin-top:8px;">
                     <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#080b11;" placeholder="Notiz (z. B. Sitzhöhe 3, 90° geneigt)...">
                 </div>
@@ -652,6 +783,26 @@
     });
     requestWakeLock();
 
+    // --- MODUS STEUERUNG ---
+    let trainingMode = 'normal'; // 'normal' oder 'superset'
+
+    function setTrainingMode(mode) {
+        trainingMode = mode;
+        document.getElementById('btn-mode-normal').classList.toggle('active', mode === 'normal');
+        document.getElementById('btn-mode-super').classList.toggle('active', mode === 'superset');
+
+        let normEl = document.getElementById('view-normal-exercise');
+        let superEl = document.getElementById('view-superset-exercise');
+
+        if (mode === 'superset') {
+            normEl.style.display = 'none';
+            superEl.style.display = 'block';
+        } else {
+            normEl.style.display = 'block';
+            superEl.style.display = 'none';
+        }
+    }
+
     // --- EINKLAPPBARE SEKTIONEN (ACCORDION) ---
     function toggleCard(cardId) {
         let card = document.getElementById(cardId);
@@ -681,6 +832,15 @@
         container.style.display = (container.style.display === 'none') ? 'block' : 'none';
     }
 
+    // --- 1RM FORMEL (EPLEY) ---
+    function calculate1RM(weight, reps) {
+        let w = parseFloat(weight);
+        let r = parseInt(reps);
+        if (isNaN(w) || isNaN(r) || r <= 0) return 0;
+        if (r === 1) return w;
+        return w * (1 + r / 30);
+    }
+
     // --- EMPIRISCHE STÜTZSTELLEN-TABELLE ---
     const measuredPoints = {
         "1_32": 7.4,
@@ -708,6 +868,13 @@
     let gripPos = 15;
     let currentTotalKg = 25.4;
 
+    function updateExerciseWeightBadge() {
+        let el = document.getElementById('exercise-weight-info');
+        if (el) {
+            el.innerText = `⚡ Aktuell: ${currentTotalKg.toFixed(1)} kg (Scheibe ${weightPos} / Griff ${gripPos})`;
+        }
+    }
+
     function onPositionSlidersChange() {
         weightPos = parseInt(document.getElementById('slider-weight').value);
         gripPos = parseInt(document.getElementById('slider-grip').value);
@@ -722,12 +889,14 @@
         document.getElementById('slider-target-kg').value = currentTotalKg.toFixed(1);
 
         suggestTargetWeight(currentTotalKg);
+        updateExerciseWeightBadge();
     }
 
     function onKgSliderChange() {
         currentTotalKg = parseFloat(document.getElementById('slider-target-kg').value);
         document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
         syncPositionToKg(currentTotalKg);
+        updateExerciseWeightBadge();
     }
 
     function onManualKgInput() {
@@ -736,6 +905,7 @@
             currentTotalKg = val;
             document.getElementById('slider-target-kg').value = val;
             syncPositionToKg(val);
+            updateExerciseWeightBadge();
         }
     }
 
@@ -765,6 +935,7 @@
             document.getElementById('val-gripPos').innerText = gripPos;
 
             suggestTargetWeight(targetTotalKg);
+            updateExerciseWeightBadge();
         }
     }
 
@@ -840,25 +1011,52 @@
     function playToneReady() { playBeep(523.25, 0.15); }
     function playToneStart() { playBeep(880.00, 0.4, 'triangle'); }
     function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
+    function playToneTransition() { playBeep(660.00, 0.3, 'square'); }
 
     // --- GESPEICHERTE ÜBUNGEN & LOGBUCH LOGIK ---
     let savedExerciseList = JSON.parse(localStorage.getItem('board_computer_saved_exercises') || '["Brustpresse", "Squats", "Deadlifts", "Latzug", "Low Row"]');
     let activeSessionLog = JSON.parse(localStorage.getItem('board_computer_active_session') || '[]');
     let workoutHistory = JSON.parse(localStorage.getItem('board_computer_history') || '[]');
 
-    function toggleSavedDropdown(event) {
+    function enableExerciseEditMode() {
+        document.getElementById('exercise-edit-container').style.display = 'block';
+        document.getElementById('exercise-name-input').focus();
+    }
+
+    function confirmExerciseName() {
+        let val = document.getElementById('exercise-name-input').value.trim();
+        if (val) {
+            document.getElementById('prominent-exercise-name').innerText = val;
+            document.getElementById('exercise-edit-container').style.display = 'none';
+            checkLastTimeWorkout();
+        }
+    }
+
+    function onExerciseNameChange() {
+        let val = document.getElementById('exercise-name-input').value.trim();
+        document.getElementById('prominent-exercise-name').innerText = val || "Übung wählen";
+        checkLastTimeWorkout();
+    }
+
+    function handleExerciseInputKey(e) {
+        if (e.key === 'Enter') {
+            confirmExerciseName();
+        }
+    }
+
+    function toggleSavedDropdown(event, listId) {
         event.stopPropagation();
-        let listEl = document.getElementById('saved-dropdown-list');
+        let listEl = document.getElementById(listId);
         if (listEl.style.display === 'block') {
             listEl.style.display = 'none';
         } else {
-            renderSavedDropdownItems();
+            renderSavedDropdownItems(listId);
             listEl.style.display = 'block';
         }
     }
 
-    function renderSavedDropdownItems() {
-        let listEl = document.getElementById('saved-dropdown-list');
+    function renderSavedDropdownItems(listId) {
+        let listEl = document.getElementById(listId);
         listEl.innerHTML = '';
         if (savedExerciseList.length === 0) {
             listEl.innerHTML = '<div style="padding:10px; font-size:0.8rem; color:var(--text-secondary); text-align:center;">Keine Vorlagen gespeichert.</div>';
@@ -871,9 +1069,11 @@
             let nameSpan = document.createElement('span');
             nameSpan.innerText = ex;
             nameSpan.onclick = function() {
-                document.getElementById('exercise-name-input').value = ex;
+                if (trainingMode === 'normal') {
+                    document.getElementById('exercise-name-input').value = ex;
+                    confirmExerciseName();
+                }
                 listEl.style.display = 'none';
-                checkLastTimeWorkout();
             };
 
             let deleteBtn = document.createElement('span');
@@ -882,7 +1082,7 @@
             deleteBtn.title = 'Vorlage löschen';
             deleteBtn.onclick = function(e) {
                 e.stopPropagation();
-                deleteSavedExercise(ex);
+                deleteSavedExercise(ex, listId);
             };
 
             item.appendChild(nameSpan);
@@ -891,11 +1091,11 @@
         });
     }
 
-    function deleteSavedExercise(exName) {
+    function deleteSavedExercise(exName, listId) {
         if (confirm(`Möchtest du die Vorlage "${exName}" wirklich löschen?`)) {
             savedExerciseList = savedExerciseList.filter(item => item !== exName);
             localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
-            renderSavedDropdownItems();
+            renderSavedDropdownItems(listId);
         }
     }
 
@@ -905,24 +1105,33 @@
     });
 
     function checkLastTimeWorkout() {
+        if (trainingMode !== 'normal') return;
         let name = document.getElementById('exercise-name-input').value.trim();
         let container = document.getElementById('last-time-container');
         let textEl = document.getElementById('last-time-text');
+        let badgeEl = document.getElementById('exercise-1rm-badge');
 
         if (!name || workoutHistory.length === 0) {
             container.style.display = 'none';
+            if (badgeEl) badgeEl.innerText = '';
             return;
         }
 
         let lastSet = null;
         let lastDate = '';
+        let max1RM = 0;
 
         for (let session of workoutHistory) {
             let found = session.sets.filter(s => s.exercise.toLowerCase() === name.toLowerCase());
             if (found.length > 0) {
-                lastSet = found[0];
-                lastDate = session.date;
-                break;
+                if (!lastSet) {
+                    lastSet = found[0];
+                    lastDate = session.date;
+                }
+                found.forEach(s => {
+                    let est = calculate1RM(s.kg, s.wdh);
+                    if (est > max1RM) max1RM = est;
+                });
             }
         }
 
@@ -932,6 +1141,12 @@
             container.style.display = 'flex';
         } else {
             container.style.display = 'none';
+        }
+
+        if (max1RM > 0 && badgeEl) {
+            badgeEl.innerText = `🔥 PR: ${max1RM.toFixed(1)} kg`;
+        } else if (badgeEl) {
+            badgeEl.innerText = '';
         }
     }
 
@@ -950,14 +1165,14 @@
         }
     }
 
-    function addSetToActiveSession() {
-        let exerciseName = document.getElementById('exercise-name-input').value.trim() || 'Übung';
-        let exerciseNote = document.getElementById('exercise-note-input').value.trim();
+    function addSetToActiveSession(customExercise = null, customNote = null) {
+        let exerciseName = customExercise || (trainingMode === 'normal' ? (document.getElementById('exercise-name-input').value.trim() || 'Übung') : document.getElementById('super-ex-a-input').value.trim());
+        let exerciseNote = customNote || document.getElementById('exercise-note-input').value.trim();
         let now = new Date();
         let timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 
         let setEntry = {
-            id: Date.now(),
+            id: Date.now() + Math.random(),
             exercise: exerciseName,
             note: exerciseNote,
             kg: currentTotalKg.toFixed(1),
@@ -976,13 +1191,26 @@
         checkLastTimeWorkout();
     }
 
-    function addManualSet() { addSetToActiveSession(); }
+    function addManualSet() { 
+        if (trainingMode === 'superset') {
+            let exA = document.getElementById('super-ex-a-input').value.trim() || 'Übung A';
+            let exB = document.getElementById('super-ex-b-input').value.trim() || 'Übung B';
+            addSetToActiveSession(exA);
+            addSetToActiveSession(exB);
+        } else {
+            addSetToActiveSession(); 
+        }
+    }
 
     function updateSetField(setId, field, val) {
         let item = activeSessionLog.find(s => s.id === setId);
         if (item) {
             item[field] = val;
             localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+            if (field === 'wdh' || field === 'kg') {
+                renderActiveLogbook();
+                checkLastTimeWorkout();
+            }
         }
     }
 
@@ -1002,11 +1230,16 @@
     }
 
     function finishCurrentExercise() {
-        document.getElementById('exercise-name-input').value = '';
-        document.getElementById('exercise-note-input').value = '';
-        document.getElementById('note-field-container').style.display = 'none';
-        document.getElementById('exercise-name-input').placeholder = 'Nächste Übung...';
-        document.getElementById('last-time-container').style.display = 'none';
+        if (trainingMode === 'normal') {
+            document.getElementById('exercise-name-input').value = '';
+            document.getElementById('prominent-exercise-name').innerText = 'Nächste Übung wählen...';
+            document.getElementById('exercise-note-input').value = '';
+            document.getElementById('note-field-container').style.display = 'none';
+            document.getElementById('last-time-container').style.display = 'none';
+            enableExerciseEditMode();
+        } else {
+            alert("Supersatz beendet. Bereit für den nächsten Block.");
+        }
     }
 
     function finishWorkoutSession() {
@@ -1119,11 +1352,14 @@
                 </div>`;
 
             if (firstNote) {
-                blockHtml += `<div class="log-exercise-note-display" style="font-size:0.8rem; color:var(--ready-color); margin-bottom:8px; font-style:italic;" title="${firstNote}">✏️ ${firstNote}</div>`;
+                blockHtml += `<div class="log-exercise-note-display" style="font-size:0.8rem; color:var(--ready-color); margin-bottom:8px; font-style:italic;" title="${firstNote}">📝 ${firstNote}</div>`;
             }
 
             sets.forEach((s, idx) => {
                 let dsSymbol = s.ds ? '✓' : '';
+                let est1RM = calculate1RM(s.kg, s.wdh);
+                let est1RMHtml = est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : '';
+
                 blockHtml += `
                     <div class="log-set-wrapper">
                         <div class="log-set-row">
@@ -1131,6 +1367,7 @@
                                 <strong style="font-size:0.85rem;">Satz ${sets.length - idx}</strong><br>
                                 <span style="color:var(--accent-color); font-weight:800; font-family:var(--font-mono); font-size:1rem;">${s.kg} kg</span> 
                                 <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                                ${est1RMHtml}
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
                                 <div style="text-align:center;">
@@ -1209,13 +1446,14 @@
         });
     }
 
-    // --- WORKFLOW TIMER ---
+    // --- WORKFLOW TIMER (MIT SUPERSATZ-UMBAU-PHASE) ---
     let timerInterval = null;
     let currentTimeLeft = 45;
-    let currentPhase = 'idle';
+    let currentPhase = 'idle'; // 'idle', 'ready', 'workA', 'transition', 'workB', 'rest'
 
     let prepDuration = 10;
     let workDuration = 45;
+    let transitionDuration = 15; // 15s Umbauzeit im Supersatz
     let restDuration = 120;
 
     function setWorkPreset(secs, btnElement) {
@@ -1282,19 +1520,44 @@
             if (currentPhase === 'ready') {
                 if (currentTimeLeft <= 3 && currentTimeLeft > 0) playToneReady();
                 if (currentTimeLeft <= 0) {
-                    currentPhase = 'work';
+                    currentPhase = 'workA';
+                    currentTimeLeft = workDuration;
+                    playToneStart();
+                    setActiveSupersetCard('a');
+                }
+            } 
+            else if (currentPhase === 'workA') {
+                if (currentTimeLeft <= 0) {
+                    addSetToActiveSession(trainingMode === 'superset' ? document.getElementById('super-ex-a-input').value.trim() : null);
+                    
+                    if (trainingMode === 'superset') {
+                        currentPhase = 'transition';
+                        currentTimeLeft = transitionDuration;
+                        playToneTransition();
+                        setActiveSupersetCard('b');
+                    } else {
+                        currentPhase = 'rest';
+                        currentTimeLeft = restDuration;
+                        playToneRest();
+                    }
+                }
+            }
+            else if (currentPhase === 'transition') {
+                if (currentTimeLeft <= 0) {
+                    currentPhase = 'workB';
                     currentTimeLeft = workDuration;
                     playToneStart();
                 }
-            } 
-            else if (currentPhase === 'work') {
+            }
+            else if (currentPhase === 'workB') {
                 if (currentTimeLeft <= 0) {
-                    addSetToActiveSession();
+                    addSetToActiveSession(document.getElementById('super-ex-b-input').value.trim() || 'Übung B');
                     currentPhase = 'rest';
                     currentTimeLeft = restDuration;
                     playToneRest();
+                    setActiveSupersetCard('a');
                 }
-            } 
+            }
             else if (currentPhase === 'rest') {
                 if (currentTimeLeft <= 0) {
                     clearInterval(timerInterval);
@@ -1308,10 +1571,34 @@
         }, 1000);
     }
 
+    function setActiveSupersetCard(card) {
+        let cardA = document.getElementById('card-super-a');
+        let cardB = document.getElementById('card-super-b');
+        if (!cardA || !cardB) return;
+        if (card === 'a') {
+            cardA.classList.add('active-card');
+            cardA.querySelector('div').style.color = 'var(--accent-cyan)';
+            cardA.querySelector('div').innerText = 'Übung A (Aktiv)';
+
+            cardB.classList.remove('active-card');
+            cardB.querySelector('div').style.color = 'var(--text-secondary)';
+            cardB.querySelector('div').innerText = 'Übung B (Antagonist)';
+        } else {
+            cardB.classList.add('active-card');
+            cardB.querySelector('div').style.color = 'var(--accent-cyan)';
+            cardB.querySelector('div').innerText = 'Übung B (Aktiv)';
+
+            cardA.classList.remove('active-card');
+            cardA.querySelector('div').style.color = 'var(--text-secondary)';
+            cardA.querySelector('div').innerText = 'Übung A';
+        }
+    }
+
     function resetTimerWorkflow() {
         if (timerInterval) clearInterval(timerInterval);
         currentPhase = 'idle';
         currentTimeLeft = workDuration;
+        setActiveSupersetCard('a');
         updateDisplay();
     }
 
@@ -1331,8 +1618,15 @@
         } else if (currentPhase === 'ready') {
             statusEl.innerText = "⌛ Positionieren (" + currentTimeLeft + "s)";
             statusEl.style.color = "var(--ready-color)";
-        } else if (currentPhase === 'work') {
-            statusEl.innerText = "⚡ Muskelarbeit";
+        } else if (currentPhase === 'workA') {
+            statusEl.innerText = trainingMode === 'superset' ? "⚡ Übung A (Arbeit)" : "⚡ Muskelarbeit";
+            statusEl.style.color = "var(--work-color)";
+            bodyEl.classList.add('phase-work');
+        } else if (currentPhase === 'transition') {
+            statusEl.innerText = "⚙️ Umbau & Wechsel (" + currentTimeLeft + "s)";
+            statusEl.style.color = "var(--ready-color)";
+        } else if (currentPhase === 'workB') {
+            statusEl.innerText = "⚡ Übung B (Arbeit)";
             statusEl.style.color = "var(--work-color)";
             bodyEl.classList.add('phase-work');
         } else if (currentPhase === 'rest') {
@@ -1348,6 +1642,7 @@
     renderHistory();
     checkLastTimeWorkout();
     updateDisplay();
+    updateExerciseWeightBadge();
 </script>
 
 </body>
