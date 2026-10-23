@@ -250,12 +250,12 @@
         }
         .preset-btn.active { background: var(--accent-cyan); color: #080b11; border-color: var(--accent-cyan); font-weight: 900; }
 
-        /* SUPERSATZ DUAL CARDS (EXAKT NACH DEINEM BILD) */
+        /* SUPERSATZ DUAL CARDS */
         .superset-dual-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-bottom: 14px;
+            margin-bottom: 4px;
         }
         .superset-card-box {
             background: #0f172a;
@@ -282,11 +282,6 @@
         .log-set-wrapper:last-child { border-bottom: none; }
         .log-set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
         .rm-tag { font-size: 0.65rem; color: var(--accent-cyan); font-weight: 700; font-family: var(--font-mono); margin-top: 2px; }
-
-        .ds-details-box {
-            margin-top: 6px; background: #080b11; border: 1px solid rgba(34, 197, 94, 0.4); border-radius: 8px; padding: 6px 10px; display: flex; align-items: center; gap: 8px;
-        }
-        .ds-details-box label { font-size: 0.7rem; color: var(--accent-color); font-weight: 700; white-space: nowrap; }
 
         .small-box {
             width: 48px; background: #080b11; border: 1px solid rgba(255, 255, 255, 0.12); color: var(--text-primary); font-weight: 800; font-family: var(--font-mono); text-align: center; padding: 6px; border-radius: 8px; font-size: 0.9rem; outline: none;
@@ -317,7 +312,6 @@
         .delete-ex-btn { color: var(--work-color); font-size: 0.85rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
         .delete-ex-btn:hover { background: rgba(244, 63, 94, 0.25); }
 
-        /* BLITZSÄTZE STYLING */
         .drop-item-row {
             background: #0f172a; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
         }
@@ -335,6 +329,41 @@
         <button id="btn-mode-normal" class="mode-btn active" onclick="setTrainingMode('normal')">⚡ Standard</button>
         <button id="btn-mode-super" class="mode-btn" onclick="setTrainingMode('superset')">🔥 Supersatz</button>
         <button id="btn-mode-drop" class="mode-btn" onclick="setTrainingMode('dropset')">⚡ Blitzsätze</button>
+    </div>
+
+    <!-- SUPERSATZ ZWEI-KARTEN ANSICHT (Ganz oben im Supersatz-Modus) -->
+    <div class="card" id="view-superset-cards-card" style="display:none;">
+        <div class="card-title" style="cursor:default; margin-bottom:12px;">🔥 Supersatz-Konfiguration</div>
+        <div class="superset-dual-container">
+            <!-- Übung A -->
+            <div class="superset-card-box active-card" id="card-super-a" onclick="selectSuperCard('A')">
+                <div style="font-size:0.7rem; color:var(--accent-cyan); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung A</div>
+                <div class="dropdown-container">
+                    <div style="position:relative;">
+                        <input type="text" id="super-ex-a-input" class="input-text" value="Brustpresse" style="font-size:0.85rem; padding:6px 28px 6px 8px; margin-bottom:6px;" placeholder="Übung A" oninput="updateSuperCardData()">
+                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list-a')" style="position:absolute; right:8px; top:40%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.75rem; font-weight:800;">▼</span>
+                    </div>
+                    <div id="saved-dropdown-list-a" class="dropdown-list"></div>
+                </div>
+                <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-a">24.4 kg</div>
+                <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:700;" id="super-pos-a">w:1 | g:15</div>
+            </div>
+
+            <!-- Übung B -->
+            <div class="superset-card-box" id="card-super-b" onclick="selectSuperCard('B')">
+                <div style="font-size:0.7rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung B</div>
+                <div class="dropdown-container">
+                    <div style="position:relative;">
+                        <input type="text" id="super-ex-b-input" class="input-text" value="Low Row" style="font-size:0.85rem; padding:6px 28px 6px 8px; margin-bottom:6px;" placeholder="Übung B" oninput="updateSuperCardData()">
+                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list-b')" style="position:absolute; right:8px; top:40%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.75rem; font-weight:800;">▼</span>
+                    </div>
+                    <div id="saved-dropdown-list-b" class="dropdown-list"></div>
+                </div>
+                <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-b">38.8 kg</div>
+                <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:700;" id="super-pos-b">w:12 | g:17</div>
+            </div>
+        </div>
+        <p style="font-size:0.72rem; color:var(--text-secondary); text-align:center; margin:8px 0 0 0;">Tippe auf eine Karte, um deren Gewicht & Regler unten anzupassen.</p>
     </div>
 
     <!-- HAUPTANZEIGE (FÜR STANDARD & BLITZSÄTZE) -->
@@ -381,29 +410,6 @@
             <p style="font-size:0.8rem; color:var(--text-secondary); margin:0 0 4px 0;">Reale Stand-Optionen für das gewählte Gesamtgewicht:</p>
             <div class="suggestions-grid" id="target-weight-suggestions"></div>
         </div>
-    </div>
-
-    <!-- SUPERSATZ ZWEI-KARTEN ANSICHT (EXAKT WIE AUF DEM BILD) -->
-    <div class="card" id="view-superset-cards-card" style="display:none;">
-        <div class="card-title" style="cursor:default; margin-bottom:12px;">🔥 Supersatz-Konfiguration</div>
-        <div class="superset-dual-container">
-            <!-- Übung A -->
-            <div class="superset-card-box active-card" id="card-super-a" onclick="selectSuperCard('A')">
-                <div style="font-size:0.7rem; color:var(--accent-cyan); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung A</div>
-                <input type="text" id="super-ex-a-input" class="input-text" value="Brustpresse" style="font-size:0.85rem; padding:6px; margin-bottom:6px;" placeholder="Übung A">
-                <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-a">24.4 kg</div>
-                <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:700;" id="super-pos-a">w:1 | g:15</div>
-            </div>
-
-            <!-- Übung B -->
-            <div class="superset-card-box" id="card-super-b" onclick="selectSuperCard('B')">
-                <div style="font-size:0.7rem; color:var(--text-secondary); font-weight:800; text-transform:uppercase; margin-bottom:4px;">Übung B</div>
-                <input type="text" id="super-ex-b-input" class="input-text" value="Low Row" style="font-size:0.85rem; padding:6px; margin-bottom:6px;" placeholder="Übung B">
-                <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-b">38.8 kg</div>
-                <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:700;" id="super-pos-b">w:12 | g:17</div>
-            </div>
-        </div>
-        <p style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin:0;">Tippe auf eine Karte, um deren Gewicht & Regler oben anzupassen.</p>
     </div>
 
     <!-- BLITZSÄTZE MODUL -->
@@ -462,7 +468,7 @@
         </div>
     </div>
 
-    <!-- AKTUELLE ÜBUNG & LOGBUCH (FÜR ALLE MODI GEMEINSAM SYNCHRONISIERT) -->
+    <!-- AKTUELLE ÜBUNG & LOGBUCH (GEMEINSAM SYNCHRONISIERT) -->
     <div class="card">
         <div class="card-title" style="cursor:default; margin-bottom:12px;">📝 Aktuelle Übung & Training</div>
         <div class="card-content" style="gap:14px;">
@@ -496,7 +502,7 @@
                     </div>
                 </div>
 
-                <!-- Diskretes Notizfeld -->
+                <!-- Notizfeld -->
                 <div id="note-field-container" style="display:none; margin-top:8px;">
                     <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#080b11;" placeholder="Notiz (z. B. Sitzhöhe 3)...">
                 </div>
@@ -514,7 +520,7 @@
 
             <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 4px 0;"></div>
 
-            <!-- GEMEINSAMES AKTUELLES TAGES-LOGBUCH -->
+            <!-- GEMEINSAMES LOGBUCH -->
             <div>
                 <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text-secondary); margin-bottom:10px;">
                     Aktuelle Sätze (Gemeinsames Logbuch)
@@ -589,6 +595,7 @@
 
         if (mode === 'superset') {
             selectSuperCard('A');
+            updateSuperCardDisplays();
         }
     }
 
@@ -739,6 +746,12 @@
         onPositionSlidersChange();
     }
 
+    function updateSuperCardData() {
+        supersetData.A.name = document.getElementById('super-ex-a-input').value;
+        supersetData.B.name = document.getElementById('super-ex-b-input').value;
+        updateSuperCardDisplays();
+    }
+
     function updateSuperCardDisplays() {
         supersetData.A.name = document.getElementById('super-ex-a-input').value;
         supersetData.B.name = document.getElementById('super-ex-b-input').value;
@@ -877,8 +890,16 @@
             item.className = 'dropdown-item';
             item.innerHTML = `<span>${ex}</span><span class="delete-ex-btn" onclick="event.stopPropagation(); deleteSavedExercise('${ex}', '${listId}')">✕</span>`;
             item.firstChild.onclick = function() {
-                document.getElementById('exercise-name-input').value = ex;
-                confirmExerciseName();
+                if (listId.includes('a')) {
+                    document.getElementById('super-ex-a-input').value = ex;
+                    updateSuperCardData();
+                } else if (listId.includes('b')) {
+                    document.getElementById('super-ex-b-input').value = ex;
+                    updateSuperCardData();
+                } else {
+                    document.getElementById('exercise-name-input').value = ex;
+                    confirmExerciseName();
+                }
                 listEl.style.display = 'none';
             };
             listEl.appendChild(item);
@@ -896,6 +917,10 @@
     window.addEventListener('click', () => {
         let listEl = document.getElementById('saved-dropdown-list');
         if (listEl) listEl.style.display = 'none';
+        let listA = document.getElementById('saved-dropdown-list-a');
+        if (listA) listA.style.display = 'none';
+        let listB = document.getElementById('saved-dropdown-list-b');
+        if (listB) listB.style.display = 'none';
     });
 
     function checkLastTimeWorkout() {
@@ -1160,11 +1185,27 @@
         let bodyEl = document.body; bodyEl.className = '';
 
         if (currentPhase === 'idle') { statusEl.innerText = "Bereit für Satz"; statusEl.style.color = "var(--ready-color)"; }
-        else if (currentPhase === 'ready') { statusEl.innerText = `⌛ Positionieren (${currentTimeLeft}s)`; statusEl.style.color = "var(--ready-color)"; }
-        else if (currentPhase === 'workA') { statusEl.innerText = "⚡ Übung A (Arbeit)"; statusEl.style.color = "var(--work-color)"; bodyEl.classList.add('phase-work'); }
-        else if (currentPhase === 'transition') { statusEl.innerText = `⚙️ Wechsel (${currentTimeLeft}s)`; statusEl.style.color = "var(--ready-color)"; }
-        else if (currentPhase === 'workB') { statusEl.innerText = "⚡ Übung B (Arbeit)"; statusEl.style.color = "var(--work-color)"; bodyEl.classList.add('phase-work'); }
-        else if (currentPhase === 'rest') { statusEl.innerText = "☕ Pause"; statusEl.style.color = "var(--rest-color)"; bodyEl.classList.add('phase-rest'); }
+        else if (currentPhase === 'ready') {
+            let targetName = (trainingMode === 'superset') ? supersetData.A.name : (document.getElementById('prominent-exercise-name').innerText || 'Satz');
+            statusEl.innerText = `⌛ Bereit für ${targetName} (${currentTimeLeft}s)`;
+            statusEl.style.color = "var(--ready-color)";
+        }
+        else if (currentPhase === 'workA') {
+            let nameA = (trainingMode === 'superset') ? supersetData.A.name : (document.getElementById('prominent-exercise-name').innerText || 'Übung');
+            statusEl.innerText = `⚡ ${nameA} (Arbeit)`;
+            statusEl.style.color = "var(--work-color)"; bodyEl.classList.add('phase-work');
+        }
+        else if (currentPhase === 'transition') {
+            let nameB = (trainingMode === 'superset') ? supersetData.B.name : 'Übung B';
+            statusEl.innerText = `⚙️ Umbau auf ${nameB} (${currentTimeLeft}s)`;
+            statusEl.style.color = "var(--ready-color)";
+        }
+        else if (currentPhase === 'workB') {
+            let nameB = (trainingMode === 'superset') ? supersetData.B.name : 'Übung B';
+            statusEl.innerText = `⚡ ${nameB} (Arbeit)`;
+            statusEl.style.color = "var(--work-color)"; bodyEl.classList.add('phase-work');
+        }
+        else if (currentPhase === 'rest') { statusEl.innerText = "☕ Satzpause"; statusEl.style.color = "var(--rest-color)"; bodyEl.classList.add('phase-rest'); }
     }
 
     // Init
