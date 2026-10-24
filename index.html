@@ -241,7 +241,6 @@
         button.secondary { background: #1e293b; color: var(--text-primary); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.12); }
         button.action-btn { background: #0f172a; color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: none; }
         
-        /* Dezent roter Übung beenden Knopf */
         button.finish-exercise-btn {
             background: #85222b;
             color: #ffffff;
@@ -284,25 +283,18 @@
         .log-exercise-block {
             background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 12px;
         }
-        .log-exercise-block.is-superset {
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            background: rgba(56, 189, 248, 0.03);
+        
+        /* SUPER-SET UMRANDUNG IM LOGBUCH & IN DER HISTORIE */
+        .log-exercise-block.is-superset, .superset-border-group {
+            border: 1px solid rgba(56, 189, 248, 0.45) !important;
+            background: rgba(56, 189, 248, 0.05) !important;
+            border-radius: 12px;
+            padding: 8px 10px;
+            margin-bottom: 8px;
         }
 
         .log-exercise-title {
             font-size: 0.95rem; font-weight: 800; color: var(--accent-cyan); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .superset-tag {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent-cyan);
-            border: 1px solid rgba(56, 189, 248, 0.4);
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .log-set-wrapper { border-bottom: 1px dashed rgba(255, 255, 255, 0.08); padding: 8px 0; }
@@ -341,7 +333,6 @@
         }
         .kg-edit-box:focus { border-color: var(--accent-cyan); }
 
-        /* Drop-Set Button Styling: Grau wenn inaktiv, Grün wenn aktiv */
         .ds-checkbox {
             height: 32px; 
             padding: 0 8px;
@@ -388,16 +379,37 @@
             background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: 0.8rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px; font-weight: 600;
         }
 
-        /* Dropdown Styling */
+        /* Dropdown Styling - Hochpriorisiertes Touch Handling */
         .dropdown-container { position: relative; flex: 1; }
         .dropdown-list {
-            display: none; position: absolute; top: 100%; left: 0; right: 0; background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 12px; margin-top: 4px; max-height: 200px; overflow-y: auto; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            display: none; 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            right: 0; 
+            background: #0f172a; 
+            border: 1px solid rgba(56, 189, 248, 0.4); 
+            border-radius: 12px; 
+            margin-top: 4px; 
+            max-height: 220px; 
+            overflow-y: auto; 
+            z-index: 999; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
         .dropdown-item {
-            padding: 10px 12px; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center;
+            padding: 12px; 
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            color: var(--text-primary); 
+            cursor: pointer; 
+            border-bottom: 1px solid rgba(255,255,255,0.06); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            touch-action: manipulation;
         }
-        .dropdown-item:hover { background: rgba(34, 197, 94, 0.15); color: var(--accent-color); }
-        .delete-ex-btn { color: var(--work-color); font-size: 0.85rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
+        .dropdown-item:active, .dropdown-item:hover { background: rgba(56, 189, 248, 0.2); color: var(--accent-cyan); }
+        .delete-ex-btn { color: var(--work-color); font-size: 0.9rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
         .delete-ex-btn:hover { background: rgba(244, 63, 94, 0.25); }
 
         .drop-item-row {
@@ -415,7 +427,7 @@
     <!-- MODUS AUSWAHL -->
     <div class="mode-toggle-bar">
         <button id="btn-mode-normal" class="mode-btn active" onclick="setTrainingMode('normal')">⚡ Standard Training</button>
-        <button id="btn-mode-super" class="mode-btn" onclick="setTrainingMode('superset')">🔥 Super-Set</button>
+        <button id="btn-mode-super" class="mode-btn" onclick="setTrainingMode('superset')">Super-Set</button>
         <button id="btn-mode-drop" class="mode-btn" onclick="setTrainingMode('dropset')">⚡ Drop-Set</button>
     </div>
 
@@ -438,7 +450,7 @@
                 <div class="dropdown-container">
                     <div style="position:relative;">
                         <input type="text" id="exercise-name-input" class="input-text" placeholder="Übung eingeben oder wählen..." value="" onkeydown="handleExerciseInputKey(event)" oninput="onExerciseNameChange()" style="padding-right: 36px;">
-                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--text-secondary); font-size:0.85rem; font-weight:800;">▼</span>
+                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--accent-cyan); font-size:1rem; font-weight:900; padding:6px;">▼</span>
                     </div>
                     <div id="saved-dropdown-list" class="dropdown-list"></div>
                 </div>
@@ -461,7 +473,7 @@
 
     <!-- SUPER-SET ZWEI-KARTEN ANSICHT -->
     <div class="card" id="view-superset-cards-card" style="display:none;">
-        <div class="card-title" style="cursor:default; margin-bottom:12px;">🔥 Super-Set-Konfiguration</div>
+        <div class="card-title" style="cursor:default; margin-bottom:12px;">Super-Set-Konfiguration</div>
         <div class="superset-dual-container">
             <!-- Übung A -->
             <div class="superset-card-box active-card" id="card-super-a" onclick="selectSuperCard('A')">
@@ -656,7 +668,7 @@
     requestWakeLock();
 
     // --- MODUS STEUERUNG ---
-    let trainingMode = 'normal'; // 'normal', 'superset', 'dropset'
+    let trainingMode = 'normal';
     let activeSuperCard = 'A';
     let supersetData = {
         A: { w: 1, g: 15, name: "Brustpresse" },
@@ -718,23 +730,41 @@
         return w * (1 + r / 30);
     }
 
-    // --- KALIBRIERUNGS-ECKDATEN ---
-    const measuredPoints = {
-        "1_32": 6.2,
-        "1_15": 12.2,
-        "8_20": 15.0,
-        "32_32": 19.0,
-        "32_15": 37.0
-    };
+    // --- EXAKTE 12 MESSPUNKTE (INVERSE DISTANCE WEIGHTING INTERPOLATION) ---
+    const measuredDataPoints = [
+        { w: 1,  g: 15, kg: 12.2 },
+        { w: 1,  g: 32, kg: 6.2  },
+        { w: 8,  g: 20, kg: 15.0 },
+        { w: 10, g: 20, kg: 16.0 },
+        { w: 12, g: 17, kg: 19.4 },
+        { w: 16, g: 15, kg: 24.5 },
+        { w: 16, g: 32, kg: 13.4 },
+        { w: 24, g: 20, kg: 24.5 },
+        { w: 24, g: 27, kg: 19.2 },
+        { w: 24, g: 28, kg: 18.5 },
+        { w: 32, g: 15, kg: 37.0 },
+        { w: 32, g: 32, kg: 19.0 }
+    ];
 
     function getSingleSideKg(w, g) {
-        let key = `${w}_${g}`;
-        if (measuredPoints[key] !== undefined) return measuredPoints[key];
-        let w_norm = (w - 1) / 31;
-        let g_norm = (g - 15) / 17;
-        let r1 = 12.2 * (1 - g_norm) + 6.2 * g_norm;
-        let r2 = 37.0 * (1 - g_norm) + 19.0 * g_norm;
-        let interpolated = r1 * (1 - w_norm) + r2 * w_norm;
+        for (let pt of measuredDataPoints) {
+            if (pt.w === w && pt.g === g) return pt.kg;
+        }
+        let totalWeight = 0;
+        let weightedSum = 0;
+        const p = 2; // Distanz-Gewichtung Exponent
+
+        for (let pt of measuredDataPoints) {
+            let dw = (w - pt.w) / 31;
+            let dg = (g - pt.g) / 17;
+            let dist = Math.sqrt(dw * dw + dg * dg);
+            if (dist === 0) return pt.kg;
+            let weight = 1 / Math.pow(dist, p);
+            weightedSum += weight * pt.kg;
+            totalWeight += weight;
+        }
+
+        let interpolated = weightedSum / totalWeight;
         return Math.max(4.0, Math.min(45.0, interpolated));
     }
 
@@ -819,7 +849,7 @@
         }
     }
 
-    // --- SUPERSET LOGIK (ZWEI KARTEN) ---
+    // --- SUPERSET LOGIK ---
     function selectSuperCard(card) {
         activeSuperCard = card;
         document.getElementById('card-super-a').classList.toggle('active-card', card === 'A');
@@ -973,7 +1003,17 @@
 
     function toggleSavedDropdown(event, listId) {
         event.stopPropagation();
+        event.preventDefault();
         let listEl = document.getElementById(listId);
+        
+        // Alle anderen schließen
+        ['saved-dropdown-list', 'saved-dropdown-list-a', 'saved-dropdown-list-b'].forEach(id => {
+            if (id !== listId) {
+                let el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            }
+        });
+
         if (listEl.style.display === 'block') {
             listEl.style.display = 'none';
         } else {
@@ -982,28 +1022,35 @@
         }
     }
 
+    // EXAKTER TOUCH FIX FÜR MOBILE SMARTPHONES
     function renderSavedDropdownItems(listId) {
         let listEl = document.getElementById(listId);
         listEl.innerHTML = '';
         savedExerciseList.forEach(ex => {
             let item = document.createElement('div');
             item.className = 'dropdown-item';
-            item.innerHTML = `<span>${ex}</span><span class="delete-ex-btn" onclick="event.stopPropagation(); deleteSavedExercise('${ex}', '${listId}')">✕</span>`;
+            item.innerHTML = `<span>${ex}</span><span class="delete-ex-btn">✕</span>`;
             
-            item.onclick = function(e) {
+            let handleSelection = function(e) {
                 e.stopPropagation();
+                e.preventDefault();
+                if (e.target.classList.contains('delete-ex-btn')) {
+                    deleteSavedExercise(ex, listId);
+                    return;
+                }
                 if (listId.includes('a')) {
                     document.getElementById('super-ex-a-input').value = ex;
                     updateSuperCardData();
-                    listEl.style.display = 'none';
                 } else if (listId.includes('b')) {
                     document.getElementById('super-ex-b-input').value = ex;
                     updateSuperCardData();
-                    listEl.style.display = 'none';
                 } else {
                     selectExerciseFromSaved(ex);
                 }
+                listEl.style.display = 'none';
             };
+
+            item.addEventListener('pointerdown', handleSelection);
             listEl.appendChild(item);
         });
     }
@@ -1016,13 +1063,13 @@
         }
     }
 
-    window.addEventListener('click', () => {
-        let listEl = document.getElementById('saved-dropdown-list');
-        if (listEl) listEl.style.display = 'none';
-        let listA = document.getElementById('saved-dropdown-list-a');
-        if (listA) listA.style.display = 'none';
-        let listB = document.getElementById('saved-dropdown-list-b');
-        if (listB) listB.style.display = 'none';
+    document.addEventListener('pointerdown', (e) => {
+        if (!e.target.closest('.dropdown-container')) {
+            ['saved-dropdown-list', 'saved-dropdown-list-a', 'saved-dropdown-list-b'].forEach(id => {
+                let el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+        }
     });
 
     function checkLastTimeWorkout() {
@@ -1051,7 +1098,7 @@
             container.style.display = 'flex';
         } else { container.style.display = 'none'; }
 
-        if (badgeEl) badgeEl.innerText = max1RM > 0 ? `🔥 PR: ${max1RM.toFixed(1)} kg` : '';
+        if (badgeEl) badgeEl.innerText = max1RM > 0 ? `PR: ${max1RM.toFixed(1)} kg` : '';
     }
 
     function saveCurrentExerciseName() {
@@ -1199,10 +1246,9 @@
         order.forEach(exName => {
             let sets = grouped[exName];
             let isSuper = sets.some(s => s.isSuperSet);
-            let superBadge = isSuper ? `<span class="superset-tag">🔥 Super-Set</span>` : '';
             let blockClass = isSuper ? 'log-exercise-block is-superset' : 'log-exercise-block';
 
-            let blockHtml = `<div class="${blockClass}"><div class="log-exercise-title"><span>${exName}</span><span>${superBadge} <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:4px;">${sets.length} Sätze</span></span></div>`;
+            let blockHtml = `<div class="${blockClass}"><div class="log-exercise-title"><span>${exName}</span><span style="font-size:0.8rem; color:var(--text-secondary); margin-left:4px;">${sets.length} Sätze</span></div>`;
 
             sets.forEach((s, idx) => {
                 let est1RM = calculate1RM(s.kg, s.wdh);
@@ -1254,32 +1300,48 @@
         workoutHistory.forEach(session => {
             let cardId = `hist-card-${session.id}`;
             
-            // Kompakte Liste der Übungen für die Hauptansicht
             let grouped = {};
             session.sets.forEach(s => {
                 if (!grouped[s.exercise]) grouped[s.exercise] = [];
                 grouped[s.exercise].push(s);
             });
 
+            // Übungen Rendern mit Umrandung für Super-Sets (ohne Text "SUPER-SET")
             let exerciseSummaryHtml = '';
+            let superSetGroup = [];
+            let normalExercises = [];
+
             for (let ex in grouped) {
                 let isSuper = grouped[ex].some(s => s.isSuperSet);
-                let tag = isSuper ? ' <span class="superset-tag" style="font-size:0.65rem; padding:1px 4px;">🔥 SUPER-SET</span>' : '';
-                exerciseSummaryHtml += `<span style="display:inline-block; margin-right:8px; color:var(--accent-cyan); font-weight:700;">• ${ex}${tag}</span>`;
+                if (isSuper) {
+                    superSetGroup.push(ex);
+                } else {
+                    normalExercises.push(ex);
+                }
+            }
+
+            if (superSetGroup.length > 0) {
+                exerciseSummaryHtml += `<div class="superset-border-group" style="display:inline-block; margin-right:6px;"><span style="color:var(--accent-cyan); font-weight:800;">• ${superSetGroup.join(' • ')}</span></div>`;
+            }
+            if (normalExercises.length > 0) {
+                normalExercises.forEach(ex => {
+                    exerciseSummaryHtml += `<span style="display:inline-block; margin-right:8px; color:var(--accent-cyan); font-weight:700;">• ${ex}</span>`;
+                });
             }
 
             // Ausführliche Ansicht beim Aufklappen
             let detailedHtml = '';
             for (let ex in grouped) {
                 let isSuper = grouped[ex].some(s => s.isSuperSet);
-                let tag = isSuper ? ' <span class="superset-tag" style="font-size:0.65rem; padding:1px 4px;">🔥 SUPER-SET</span>' : '';
-                detailedHtml += `<div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan); margin-top:8px;">${ex}${tag}</div>`;
+                let blockStyle = isSuper ? 'border-left:2px solid var(--accent-cyan); padding-left:8px; margin-top:8px;' : 'margin-top:8px;';
+                detailedHtml += `<div style="${blockStyle}"><div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan);">${ex}</div>`;
                 grouped[ex].forEach((s, idx) => {
                     let wdhText = s.wdh ? s.wdh + ' WDH' : '';
                     let rpeText = s.rpe ? 'RPE ' + s.rpe : '';
                     let dsText = s.ds ? '[Drop-Set]' : '';
                     detailedHtml += `<div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">• Satz ${idx + 1}: ${s.kg} kg (S:${s.weightPos}/G:${s.gripPos}) ${wdhText} ${rpeText} ${dsText}</div>`;
                 });
+                detailedHtml += `</div>`;
             }
 
             let cardHtml = `
@@ -1287,7 +1349,7 @@
                     <div class="history-header" onclick="toggleHistoryCard('${cardId}')">
                         <div>
                             <div class="history-date">📅 ${session.date} (${session.time})</div>
-                            <div style="font-size:0.8rem; margin-top:4px; color:var(--text-primary);">${exerciseSummaryHtml}</div>
+                            <div style="font-size:0.8rem; margin-top:6px; color:var(--text-primary); flex-wrap:wrap; display:flex; align-items:center;">${exerciseSummaryHtml}</div>
                         </div>
                         <div style="display:flex; align-items:center; gap:8px;">
                             <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">Details ▼</span>
