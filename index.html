@@ -240,6 +240,15 @@
         }
         button.secondary { background: #1e293b; color: var(--text-primary); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.12); }
         button.action-btn { background: #0f172a; color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: none; }
+        
+        /* Dezent roter Übung beenden Knopf */
+        button.finish-exercise-btn {
+            background: #85222b;
+            color: #ffffff;
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            box-shadow: 0 4px 12px rgba(133, 34, 43, 0.4);
+        }
+        
         button.finish-workout { background: var(--ready-color); color: #080b11; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3); }
         button.danger { background: #381318; color: var(--work-color); border: 1px solid rgba(244, 63, 94, 0.4); box-shadow: none; font-size: 0.8rem; padding: 8px 12px; }
         button:active { transform: scale(0.97); }
@@ -317,30 +326,64 @@
         .small-box:focus { border-color: var(--accent-cyan); }
         .rpe-box { color: var(--ready-color); border-color: rgba(251, 191, 36, 0.4); }
 
+        .kg-edit-box {
+            width: 60px;
+            background: #080b11;
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: var(--accent-color);
+            font-weight: 900;
+            font-family: var(--font-mono);
+            text-align: right;
+            padding: 4px 6px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .kg-edit-box:focus { border-color: var(--accent-cyan); }
+
+        /* Drop-Set Button Styling: Grau wenn inaktiv, Grün wenn aktiv */
         .ds-checkbox {
             height: 32px; 
             padding: 0 8px;
             background: #080b11; 
-            border: 1px solid rgba(34, 197, 94, 0.4); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
             border-radius: 8px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             font-size: 0.75rem; 
-            font-weight: 800; 
-            color: var(--accent-color); 
+            font-weight: 700; 
+            color: var(--text-secondary); 
             cursor: pointer; 
             user-select: none;
             gap: 4px;
         }
         .ds-checkbox.active {
-            background: rgba(34, 197, 94, 0.2);
+            background: rgba(34, 197, 94, 0.18);
             border-color: var(--accent-color);
+            color: var(--accent-color);
+            font-weight: 900;
         }
 
-        .history-card { background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
-        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .history-date { font-size: 0.85rem; font-weight: 800; color: var(--accent-color); }
+        /* HISTORIE STYLING */
+        .history-card { 
+            background: #0f172a; 
+            border: 1px solid rgba(56, 189, 248, 0.2); 
+            border-radius: 12px; 
+            padding: 14px; 
+            margin-bottom: 12px; 
+        }
+        .history-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            cursor: pointer;
+            user-select: none;
+        }
+        .history-date { font-size: 0.9rem; font-weight: 800; color: var(--accent-color); }
+        .history-content { display: none; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px; }
+        .history-card.expanded .history-content { display: block; }
+
         .last-time-box {
             background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: 0.8rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px; font-weight: 600;
         }
@@ -557,7 +600,7 @@
     <div class="card">
         <div style="display:flex; gap:8px;">
             <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz hinzufügen</button>
-            <button class="secondary" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
+            <button class="finish-exercise-btn" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
         </div>
 
         <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 14px 0 10px 0;"></div>
@@ -574,7 +617,7 @@
             </div>
 
             <div style="margin-top:16px;">
-                <button class="finish-workout" onclick="finishWorkoutSession()">🏁 TRAINING BEENDEN & SPEICHERN</button>
+                <button class="finish-workout" onclick="finishWorkoutSession()">TRAINING BEENDEN & SPEICHERN</button>
             </div>
         </div>
     </div>
@@ -1108,6 +1151,11 @@
         }
     }
 
+    function toggleHistoryCard(cardId) {
+        let card = document.getElementById(cardId);
+        if (card) card.classList.toggle('expanded');
+    }
+
     // --- BACKUP EXPORT / IMPORT ---
     function exportBackup() {
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ history: workoutHistory, savedExercises: savedExerciseList }, null, 2));
@@ -1166,8 +1214,11 @@
                         <div class="log-set-row">
                             <div style="flex: 1;">
                                 <strong style="font-size:0.85rem;">Satz ${sets.length - idx}</strong><br>
-                                <span style="color:var(--accent-color); font-weight:800; font-family:var(--font-mono);">${s.kg} kg</span> 
-                                <span style="color:var(--text-secondary); font-size:0.7rem;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                                <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
+                                    <input type="number" class="kg-edit-box" value="${s.kg}" step="0.5" oninput="updateSetField(${s.id}, 'kg', this.value)">
+                                    <span style="color:var(--accent-color); font-weight:800; font-size:0.9rem;">kg</span>
+                                    <span style="color:var(--text-secondary); font-size:0.7rem; margin-left:2px;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                                </div>
                                 ${est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
@@ -1194,31 +1245,60 @@
 
     function renderHistory() {
         let container = document.getElementById('history-container');
-        if (workoutHistory.length === 0) { container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">Bisher keine Workouts.</div>'; return; }
+        if (workoutHistory.length === 0) { 
+            container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">Bisher keine Workouts.</div>'; 
+            return; 
+        }
         container.innerHTML = '';
+        
         workoutHistory.forEach(session => {
-            let itemHtml = `<div class="history-card"><div class="history-header"><div class="history-date">📅 ${session.date} (${session.time})</div><button class="danger" onclick="deleteWorkoutHistoryItem(${session.id})">✕</button></div>`;
+            let cardId = `hist-card-${session.id}`;
             
+            // Kompakte Liste der Übungen für die Hauptansicht
             let grouped = {};
             session.sets.forEach(s => {
                 if (!grouped[s.exercise]) grouped[s.exercise] = [];
                 grouped[s.exercise].push(s);
             });
 
+            let exerciseSummaryHtml = '';
             for (let ex in grouped) {
                 let isSuper = grouped[ex].some(s => s.isSuperSet);
                 let tag = isSuper ? ' <span class="superset-tag" style="font-size:0.65rem; padding:1px 4px;">🔥 SUPER-SET</span>' : '';
-                itemHtml += `<div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan); margin-top:6px;">${ex}${tag}</div>`;
+                exerciseSummaryHtml += `<span style="display:inline-block; margin-right:8px; color:var(--accent-cyan); font-weight:700;">• ${ex}${tag}</span>`;
+            }
+
+            // Ausführliche Ansicht beim Aufklappen
+            let detailedHtml = '';
+            for (let ex in grouped) {
+                let isSuper = grouped[ex].some(s => s.isSuperSet);
+                let tag = isSuper ? ' <span class="superset-tag" style="font-size:0.65rem; padding:1px 4px;">🔥 SUPER-SET</span>' : '';
+                detailedHtml += `<div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan); margin-top:8px;">${ex}${tag}</div>`;
                 grouped[ex].forEach((s, idx) => {
                     let wdhText = s.wdh ? s.wdh + ' WDH' : '';
                     let rpeText = s.rpe ? 'RPE ' + s.rpe : '';
                     let dsText = s.ds ? '[Drop-Set]' : '';
-                    itemHtml += `<div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">• Satz ${idx + 1}: ${s.kg} kg (S:${s.weightPos}/G:${s.gripPos}) ${wdhText} ${rpeText} ${dsText}</div>`;
+                    detailedHtml += `<div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">• Satz ${idx + 1}: ${s.kg} kg (S:${s.weightPos}/G:${s.gripPos}) ${wdhText} ${rpeText} ${dsText}</div>`;
                 });
             }
 
-            itemHtml += `</div>`;
-            container.innerHTML += itemHtml;
+            let cardHtml = `
+                <div class="history-card" id="${cardId}">
+                    <div class="history-header" onclick="toggleHistoryCard('${cardId}')">
+                        <div>
+                            <div class="history-date">📅 ${session.date} (${session.time})</div>
+                            <div style="font-size:0.8rem; margin-top:4px; color:var(--text-primary);">${exerciseSummaryHtml}</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">Details ▼</span>
+                            <button class="danger" onclick="event.stopPropagation(); deleteWorkoutHistoryItem(${session.id})">✕</button>
+                        </div>
+                    </div>
+                    <div class="history-content">
+                        ${detailedHtml}
+                    </div>
+                </div>`;
+            container.innerHTML += cardHtml;
         });
     }
 
