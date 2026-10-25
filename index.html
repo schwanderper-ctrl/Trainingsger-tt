@@ -31,23 +31,19 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            transition: background-color 0.8s ease;
+            transition: background-color 0.4s ease;
         }
 
-        @keyframes pulse-work {
+        /* HELLERE / STÄRKERE LICHTSIGNAL-ANIMATIONEN */
+        @keyframes pulse-work-bright {
             0% { background-color: #080b11; }
-            50% { background-color: #2b1117; }
+            50% { background-color: #5c0f1d; }
             100% { background-color: #080b11; }
         }
 
-        @keyframes pulse-rest {
-            0% { background-color: #080b11; }
-            50% { background-color: #10291f; }
-            100% { background-color: #080b11; }
-        }
-
-        body.phase-work { animation: pulse-work 2.5s infinite ease-in-out; }
-        body.phase-rest { animation: pulse-rest 3.5s infinite ease-in-out; }
+        body.phase-work { background-color: #5c0f1d; animation: pulse-work-bright 1.2s infinite ease-in-out; }
+        body.phase-rest { background-color: #0a3824; }
+        body.phase-ready { background-color: #4a3306; }
 
         .container {
             width: 100%;
@@ -241,6 +237,15 @@
         button.secondary { background: #1e293b; color: var(--text-primary); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.12); }
         button.action-btn { background: #0f172a; color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: none; }
         
+        /* Satz hinzufügen dezent grün hinterlegt */
+        button.add-set-btn {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-color);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            box-shadow: none;
+        }
+
+        /* Nächste Übung Knopf dezent rot */
         button.finish-exercise-btn {
             background: #85222b;
             color: #ffffff;
@@ -284,7 +289,6 @@
             background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 12px;
         }
         
-        /* SUPER-SET UMRANDUNG IM LOGBUCH & IN DER HISTORIE */
         .log-exercise-block.is-superset, .superset-border-group {
             border: 1px solid rgba(56, 189, 248, 0.45) !important;
             background: rgba(56, 189, 248, 0.05) !important;
@@ -303,7 +307,7 @@
         .rm-tag { font-size: 0.65rem; color: var(--accent-cyan); font-weight: 700; font-family: var(--font-mono); margin-top: 2px; }
 
         .small-box {
-            width: 48px; 
+            width: 42px; 
             background: #080b11; 
             border: 1px solid rgba(56, 189, 248, 0.4); 
             color: var(--text-primary); 
@@ -312,7 +316,7 @@
             text-align: center; 
             padding: 6px; 
             border-radius: 8px; 
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             outline: none;
         }
         .small-box:focus { border-color: var(--accent-cyan); }
@@ -379,7 +383,7 @@
             background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: 0.8rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px; font-weight: 600;
         }
 
-        /* Dropdown Styling - Hochpriorisiertes Touch Handling */
+        /* Dropdown Styling */
         .dropdown-container { position: relative; flex: 1; }
         .dropdown-list {
             display: none; 
@@ -604,6 +608,7 @@
 
         <div class="btn-group">
             <button id="btn-start" onclick="startSetWorkflow()">▶ SATZ STARTEN</button>
+            <button id="btn-pause-timer" class="secondary" onclick="togglePauseTimer()" style="display:none;">⏸ PAUSE</button>
             <button class="secondary" onclick="resetTimerWorkflow()">RESET</button>
         </div>
     </div>
@@ -611,8 +616,8 @@
     <!-- LOGBUCH STEUERUNG & BUTTONS -->
     <div class="card">
         <div style="display:flex; gap:8px;">
-            <button class="action-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz hinzufügen</button>
-            <button class="finish-exercise-btn" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Übung beenden</button>
+            <button class="action-btn add-set-btn" style="font-size:0.85rem; padding:10px;" onclick="addManualSet()">➕ Satz hinzufügen</button>
+            <button class="finish-exercise-btn" style="font-size:0.85rem; padding:10px;" onclick="finishCurrentExercise()">✓ Nächste Übung</button>
         </div>
 
         <div style="border-top: 1px solid rgba(255,255,255,0.1); margin: 14px 0 10px 0;"></div>
@@ -752,7 +757,7 @@
         }
         let totalWeight = 0;
         let weightedSum = 0;
-        const p = 2; // Distanz-Gewichtung Exponent
+        const p = 2;
 
         for (let pt of measuredDataPoints) {
             let dw = (w - pt.w) / 31;
@@ -766,6 +771,24 @@
 
         let interpolated = weightedSum / totalWeight;
         return Math.max(4.0, Math.min(45.0, interpolated));
+    }
+
+    // Hilfsfunktion: Finde die beste Position (w, g) für ein gegebenes Gesamtgewicht
+    function syncPositionFromTotalKg(totalKg) {
+        let targetSingleKg = totalKg / 2;
+        let bestMatch = { w: 1, g: 15 };
+        let minDiff = 999;
+
+        for (let w = 1; w <= 32; w++) {
+            for (let g = 15; g <= 32; g++) {
+                let diff = Math.abs(getSingleSideKg(w, g) - targetSingleKg);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestMatch = { w: w, g: g };
+                }
+            }
+        }
+        return bestMatch;
     }
 
     let weightPos = 1;
@@ -820,32 +843,21 @@
     }
 
     function syncPositionToKg(targetTotalKg) {
-        let targetSingleKg = targetTotalKg / 2;
-        let bestMatch = null, minDiff = 999;
+        let bestMatch = syncPositionFromTotalKg(targetTotalKg);
+        weightPos = bestMatch.w;
+        gripPos = bestMatch.g;
+        document.getElementById('slider-weight').value = weightPos;
+        document.getElementById('slider-grip').value = gripPos;
+        document.getElementById('val-weightPos').innerText = weightPos;
+        document.getElementById('val-gripPos').innerText = gripPos;
 
-        for (let w = 1; w <= 32; w++) {
-            for (let g = 15; g <= 32; g++) {
-                let diff = Math.abs(getSingleSideKg(w, g) - targetSingleKg);
-                if (diff < minDiff) { minDiff = diff; bestMatch = { weightPos: w, gripPos: g }; }
-            }
-        }
-
-        if (bestMatch) {
-            weightPos = bestMatch.weightPos;
-            gripPos = bestMatch.gripPos;
-            document.getElementById('slider-weight').value = weightPos;
-            document.getElementById('slider-grip').value = gripPos;
-            document.getElementById('val-weightPos').innerText = weightPos;
-            document.getElementById('val-gripPos').innerText = gripPos;
-
-            if (trainingMode === 'superset') {
-                supersetData[activeSuperCard].w = weightPos;
-                supersetData[activeSuperCard].g = gripPos;
-                updateSuperCardDisplays();
-            } else {
-                suggestTargetWeight(targetTotalKg);
-                updateExerciseWeightBadge();
-            }
+        if (trainingMode === 'superset') {
+            supersetData[activeSuperCard].w = weightPos;
+            supersetData[activeSuperCard].g = gripPos;
+            updateSuperCardDisplays();
+        } else {
+            suggestTargetWeight(targetTotalKg);
+            updateExerciseWeightBadge();
         }
     }
 
@@ -964,6 +976,7 @@
     function playToneStart() { playBeep(880.00, 0.4, 'triangle'); }
     function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
     function playToneTransition() { playBeep(660.00, 0.3, 'square'); }
+    function playToneCountdown() { playBeep(600.00, 0.12, 'sine'); }
 
     // --- GESPEICHERTE ÜBUNGEN & LOGBUCH ---
     let savedExerciseList = JSON.parse(localStorage.getItem('board_computer_saved_exercises') || '["Brustpresse", "Squats", "Deadlifts", "Latzug", "Low Row"]');
@@ -1006,7 +1019,6 @@
         event.preventDefault();
         let listEl = document.getElementById(listId);
         
-        // Alle anderen schließen
         ['saved-dropdown-list', 'saved-dropdown-list-a', 'saved-dropdown-list-b'].forEach(id => {
             if (id !== listId) {
                 let el = document.getElementById(id);
@@ -1022,7 +1034,6 @@
         }
     }
 
-    // EXAKTER TOUCH FIX FÜR MOBILE SMARTPHONES
     function renderSavedDropdownItems(listId) {
         let listEl = document.getElementById(listId);
         listEl.innerHTML = '';
@@ -1151,8 +1162,32 @@
         let item = activeSessionLog.find(s => s.id === setId);
         if (item) {
             item[field] = val;
+            if (field === 'kg') {
+                let best = syncPositionFromTotalKg(parseFloat(val) || 0);
+                item.weightPos = best.w;
+                item.gripPos = best.g;
+            }
             localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
-            if (field === 'wdh' || field === 'kg') { renderActiveLogbook(); checkLastTimeWorkout(); }
+            renderActiveLogbook();
+            checkLastTimeWorkout();
+        }
+    }
+
+    // NEU: Direkte Korrektur von Scheiben- und Griffposition im Logbuch
+    function updateSetPosition(setId, posType, val) {
+        let item = activeSessionLog.find(s => s.id === setId);
+        if (item) {
+            let num = parseInt(val) || 1;
+            if (posType === 'weight') item.weightPos = Math.max(1, Math.min(32, num));
+            if (posType === 'grip') item.gripPos = Math.max(15, Math.min(32, num));
+            
+            // Gesamtgewicht automatisch neu berechnen anhand der geänderten Positionen
+            let singleKg = getSingleSideKg(item.weightPos, item.gripPos);
+            item.kg = (singleKg * 2).toFixed(1);
+
+            localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+            renderActiveLogbook();
+            checkLastTimeWorkout();
         }
     }
 
@@ -1168,6 +1203,7 @@
     }
 
     function finishCurrentExercise() {
+        resetTimerWorkflow(); // Timer stoppen und resetten bei Übungsende
         if (trainingMode === 'normal') {
             document.getElementById('exercise-name-input').value = '';
             document.getElementById('prominent-exercise-name').innerText = 'Übung wählen';
@@ -1186,6 +1222,7 @@
 
         activeSessionLog = [];
         localStorage.removeItem('board_computer_active_session');
+        resetTimerWorkflow();
         renderActiveLogbook(); renderHistory(); checkLastTimeWorkout();
         alert("Training erfolgreich im Kalender abgespeichert!");
     }
@@ -1263,7 +1300,12 @@
                                 <div style="display:flex; align-items:center; gap:4px; margin-top:2px;">
                                     <input type="number" class="kg-edit-box" value="${s.kg}" step="0.5" oninput="updateSetField(${s.id}, 'kg', this.value)">
                                     <span style="color:var(--accent-color); font-weight:800; font-size:0.9rem;">kg</span>
-                                    <span style="color:var(--text-secondary); font-size:0.7rem; margin-left:2px;">(S:${s.weightPos}/G:${s.gripPos})</span>
+                                </div>
+                                <div style="display:flex; gap:6px; margin-top:4px; align-items:center;">
+                                    <span style="font-size:0.7rem; color:var(--text-secondary);">Scheibe:</span>
+                                    <input type="number" class="small-box" style="width:36px; height:24px; font-size:0.75rem;" min="1" max="32" value="${s.weightPos}" oninput="updateSetPosition(${s.id}, 'weight', this.value)">
+                                    <span style="font-size:0.7rem; color:var(--text-secondary);">Griff:</span>
+                                    <input type="number" class="small-box" style="width:36px; height:24px; font-size:0.75rem;" min="15" max="32" value="${s.gripPos}" oninput="updateSetPosition(${s.id}, 'grip', this.value)">
                                 </div>
                                 ${est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
                             </div>
@@ -1306,7 +1348,6 @@
                 grouped[s.exercise].push(s);
             });
 
-            // Übungen Rendern mit Umrandung für Super-Sets (ohne Text "SUPER-SET")
             let exerciseSummaryHtml = '';
             let superSetGroup = [];
             let normalExercises = [];
@@ -1329,7 +1370,6 @@
                 });
             }
 
-            // Ausführliche Ansicht beim Aufklappen
             let detailedHtml = '';
             for (let ex in grouped) {
                 let isSuper = grouped[ex].some(s => s.isSuperSet);
@@ -1367,6 +1407,7 @@
     // --- WORKFLOW TIMER ---
     let timerInterval = null, currentTimeLeft = 45, currentPhase = 'idle';
     let prepDuration = 10, workDuration = 45, transitionDuration = 15, restDuration = 120;
+    let isTimerPaused = false;
 
     function setWorkPreset(secs, btn) {
         workDuration = secs; document.getElementById('slider-work').value = secs; document.getElementById('val-workTime').innerText = secs + 's';
@@ -1386,10 +1427,25 @@
     function startSetWorkflow() {
         initAudio(); requestWakeLock();
         if (timerInterval) clearInterval(timerInterval);
-        currentPhase = 'ready'; currentTimeLeft = prepDuration; playToneReady(); updateDisplay();
+        isTimerPaused = false;
+        document.getElementById('btn-pause-timer').style.display = 'block';
+        document.getElementById('btn-pause-timer').innerText = "⏸ PAUSE";
+
+        currentPhase = 'ready'; 
+        currentTimeLeft = prepDuration; 
+        playToneReady(); 
+        updateDisplay();
 
         timerInterval = setInterval(() => {
+            if (isTimerPaused) return;
+
             currentTimeLeft--;
+
+            // Akustischer Countdown für die letzten 3 Sekunden von Prepare und Workout
+            if (currentTimeLeft > 0 && currentTimeLeft <= 3 && (currentPhase === 'ready' || currentPhase === 'workA' || currentPhase === 'workB')) {
+                playToneCountdown();
+            }
+
             if (currentPhase === 'ready' && currentTimeLeft <= 0) {
                 currentPhase = 'workA'; currentTimeLeft = workDuration; playToneStart();
             } else if (currentPhase === 'workA' && currentTimeLeft <= 0) {
@@ -1405,22 +1461,34 @@
                 addSetToActiveSession(supersetData.B.name, (getSingleSideKg(supersetData.B.w, supersetData.B.g)*2).toFixed(1), supersetData.B.w, supersetData.B.g, true);
                 currentPhase = 'rest'; currentTimeLeft = restDuration; playToneRest(); selectSuperCard('A');
             } else if (currentPhase === 'rest' && currentTimeLeft <= 0) {
-                clearInterval(timerInterval); currentPhase = 'idle'; currentTimeLeft = workDuration; playToneStart();
+                // NEU: Nach der Pause geht es direkt wieder mit Prepare (10s) los!
+                currentPhase = 'ready'; currentTimeLeft = prepDuration; playToneReady();
             }
             updateDisplay();
         }, 1000);
     }
 
+    function togglePauseTimer() {
+        isTimerPaused = !isTimerPaused;
+        let btn = document.getElementById('btn-pause-timer');
+        btn.innerText = isTimerPaused ? "▶ WEITER" : "⏸ PAUSE";
+    }
+
     function resetTimerWorkflow() {
         if (timerInterval) clearInterval(timerInterval);
-        currentPhase = 'idle'; currentTimeLeft = workDuration; updateDisplay();
+        isTimerPaused = false;
+        currentPhase = 'idle'; 
+        currentTimeLeft = workDuration; 
+        document.getElementById('btn-pause-timer').style.display = 'none';
+        updateDisplay();
     }
 
     function updateDisplay() {
         let mins = Math.floor(currentTimeLeft / 60), secs = currentTimeLeft % 60;
         document.getElementById('timer-display').innerText = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
         let statusEl = document.getElementById('timer-status');
-        let bodyEl = document.body; bodyEl.className = '';
+        let bodyEl = document.body; 
+        bodyEl.className = '';
 
         if (currentPhase === 'idle') {
             statusEl.innerText = "Bereit für Satz";
@@ -1429,13 +1497,13 @@
         else if (currentPhase === 'ready') {
             if (trainingMode === 'superset') {
                 let nameA = supersetData.A.name || 'Übung A';
-                let wA = supersetData.A.w, gA = supersetData.A.g;
-                statusEl.innerText = `⌛ Bereit für ${nameA} (w:${wA} | g:${gA}) – ${currentTimeLeft}s`;
+                statusEl.innerText = `⌛ Vorbereitung ${nameA} – ${currentTimeLeft}s`;
             } else {
                 let nameNormal = document.getElementById('prominent-exercise-name').innerText || 'Satz';
-                statusEl.innerText = `⌛ Bereit für ${nameNormal} (${currentTimeLeft}s)`;
+                statusEl.innerText = `⌛ Vorbereitung ${nameNormal} (${currentTimeLeft}s)`;
             }
             statusEl.style.color = "var(--ready-color)";
+            bodyEl.classList.add('phase-ready');
         }
         else if (currentPhase === 'workA') {
             let nameA = (trainingMode === 'superset') ? (supersetData.A.name || 'Übung A') : (document.getElementById('prominent-exercise-name').innerText || 'Übung');
@@ -1444,14 +1512,10 @@
             bodyEl.classList.add('phase-work');
         }
         else if (currentPhase === 'transition') {
-            if (trainingMode === 'superset') {
-                let nameB = supersetData.B.name || 'Übung B';
-                let wB = supersetData.B.w, gB = supersetData.B.g;
-                statusEl.innerText = `⚙️ Umbau auf ${nameB} (w:${wB} | g:${gB}) – ${currentTimeLeft}s`;
-            } else {
-                statusEl.innerText = `⚙️ Umbau & Wechsel (${currentTimeLeft}s)`;
-            }
+            let nameB = supersetData.B.name || 'Übung B';
+            statusEl.innerText = `⚙️ Umbau auf ${nameB} – ${currentTimeLeft}s`;
             statusEl.style.color = "var(--ready-color)";
+            bodyEl.classList.add('phase-ready');
         }
         else if (currentPhase === 'workB') {
             let nameB = (trainingMode === 'superset') ? (supersetData.B.name || 'Übung B') : 'Übung B';
@@ -1460,7 +1524,7 @@
             bodyEl.classList.add('phase-work');
         }
         else if (currentPhase === 'rest') {
-            statusEl.innerText = "☕ Satzpause";
+            statusEl.innerText = `☕ Satzpause (${currentTimeLeft}s)`;
             statusEl.style.color = "var(--rest-color)";
             bodyEl.classList.add('phase-rest');
         }
