@@ -237,7 +237,6 @@
         button.secondary { background: #1e293b; color: var(--text-primary); box-shadow: none; border: 1px solid rgba(255, 255, 255, 0.12); }
         button.action-btn { background: #0f172a; color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.4); box-shadow: none; }
         
-        /* Satz hinzufügen dezent grün hinterlegt */
         button.add-set-btn {
             background: rgba(34, 197, 94, 0.15);
             color: var(--accent-color);
@@ -245,7 +244,6 @@
             box-shadow: none;
         }
 
-        /* Nächste Übung Knopf dezent rot */
         button.finish-exercise-btn {
             background: #85222b;
             color: #ffffff;
@@ -263,7 +261,6 @@
         }
         .preset-btn.active { background: var(--accent-cyan); color: #080b11; border-color: var(--accent-cyan); font-weight: 900; }
 
-        /* SUPERSET DUAL CARDS */
         .superset-dual-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -360,7 +357,6 @@
             font-weight: 900;
         }
 
-        /* HISTORIE STYLING */
         .history-card { 
             background: #0f172a; 
             border: 1px solid rgba(56, 189, 248, 0.2); 
@@ -383,7 +379,6 @@
             background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: 0.8rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px; font-weight: 600;
         }
 
-        /* Dropdown Styling */
         .dropdown-container { position: relative; flex: 1; }
         .dropdown-list {
             display: none; 
@@ -435,7 +430,7 @@
         <button id="btn-mode-drop" class="mode-btn" onclick="setTrainingMode('dropset')">⚡ Drop-Set</button>
     </div>
 
-    <!-- ÜBUNGSAUSWAHL BLOCK (IM STANDARD TRAINING GANZ OBEN) -->
+    <!-- ÜBUNGSAUSWAHL BLOCK -->
     <div class="card" id="view-normal-exercise-card">
         <div class="card-title" style="cursor:default; margin-bottom:8px;">📝 Aktuelle Übung wählen</div>
         <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 12px 14px;">
@@ -735,42 +730,75 @@
         return w * (1 + r / 30);
     }
 
-    // --- EXAKTE 12 MESSPUNKTE (INVERSE DISTANCE WEIGHTING INTERPOLATION) ---
-    const measuredDataPoints = [
-        { w: 1,  g: 15, kg: 12.2 },
-        { w: 1,  g: 32, kg: 6.2  },
-        { w: 8,  g: 20, kg: 15.0 },
-        { w: 10, g: 20, kg: 16.0 },
-        { w: 12, g: 17, kg: 19.4 },
-        { w: 16, g: 15, kg: 24.5 },
-        { w: 16, g: 32, kg: 13.4 },
-        { w: 24, g: 20, kg: 24.5 },
-        { w: 24, g: 27, kg: 19.2 },
-        { w: 24, g: 28, kg: 18.5 },
-        { w: 32, g: 15, kg: 37.0 },
-        { w: 32, g: 32, kg: 19.0 }
-    ];
+    // --- AKTUALISIERTER ALGORITHMUS MIT VOLLSTÄNDIGER MASTER-STÜTZSTELLEN-TABELLE & IDW ---
+    function getSingleSideKg(Gewichtscheiben, Griffposition) {
+        // 1. Inputs auf Skalenbereich beschränken
+        Gewichtscheiben = Math.max(1, Math.min(32, Gewichtscheiben));
+        Griffposition = Math.max(15, Math.min(32, Griffposition));
 
-    function getSingleSideKg(w, g) {
-        for (let pt of measuredDataPoints) {
-            if (pt.w === w && pt.g === g) return pt.kg;
-        }
-        let totalWeight = 0;
-        let weightedSum = 0;
-        const p = 2;
+        // 2. Vollständige Master-Stützstellen-Tabelle (inklusive aller Ground-Truth-Messwerte)
+        const points = [
+            // Griffposition 15
+            { w: 1,  g: 15, kg: 13.2 },
+            { w: 8,  g: 15, kg: 18.5 },
+            { w: 16, g: 15, kg: 24.3 },
+            { w: 24, g: 15, kg: 30.7 },
+            { w: 32, g: 15, kg: 37.0 },
 
-        for (let pt of measuredDataPoints) {
-            let dw = (w - pt.w) / 31;
-            let dg = (g - pt.g) / 17;
-            let dist = Math.sqrt(dw * dw + dg * dg);
+            // Griffposition 32
+            { w: 1,  g: 32, kg: 7.3  },
+            { w: 8,  g: 32, kg: 10.1 },
+            { w: 16, g: 32, kg: 13.4 },
+            { w: 24, g: 32, kg: 16.1 },
+            { w: 29, g: 32, kg: 18.3 },
+            { w: 32, g: 32, kg: 19.2 },
+
+            // Gewichtscheiben 32
+            { w: 32, g: 19, kg: 30.0 },
+            { w: 32, g: 20, kg: 28.5 },
+            { w: 32, g: 24, kg: 24.6 },
+            { w: 32, g: 27, kg: 22.5 },
+            { w: 32, g: 28, kg: 21.5 },
+
+            // Weitere Messpunkte & Spalten
+            { w: 12, g: 17, kg: 19.4 },
+            { w: 16, g: 23, kg: 17.5 },
+            { w: 16, g: 30, kg: 14.2 },
+            { w: 21, g: 26, kg: 18.0 },
+            { w: 21, g: 30, kg: 15.8 },
+            { w: 21, g: 32, kg: 14.8 },
+            { w: 29, g: 17, kg: 30.5 },
+            { w: 29, g: 21, kg: 25.8 },
+            { w: 29, g: 25, kg: 22.0 }
+        ];
+
+        // 3. Exakter Treffer? Direct return
+        const exact = points.find(p => p.w === Gewichtscheiben && p.g === Griffposition);
+        if (exact) return exact.kg;
+
+        // 4. Anisotrope IDW-Interpolation über die echten Messpunkte
+        const scaleW = 1.0;
+        const scaleG = 1.45;
+        const pPower = 2.8;
+
+        let num = 0;
+        let den = 0;
+
+        for (let i = 0; i < points.length; i++) {
+            const pt = points[i];
+            const dw = (pt.w - Gewichtscheiben) * scaleW;
+            const dg = (pt.g - Griffposition) * scaleG;
+            const dist = Math.sqrt(dw * dw + dg * dg);
+
             if (dist === 0) return pt.kg;
-            let weight = 1 / Math.pow(dist, p);
-            weightedSum += weight * pt.kg;
-            totalWeight += weight;
+
+            const weight = 1.0 / Math.pow(dist, pPower);
+            num += weight * pt.kg;
+            den += weight;
         }
 
-        let interpolated = weightedSum / totalWeight;
-        return Math.max(4.0, Math.min(45.0, interpolated));
+        const rawKg = num / den;
+        return Math.round(rawKg * 10) / 10;
     }
 
     // Hilfsfunktion: Finde die beste Position (w, g) für ein gegebenes Gesamtgewicht
@@ -1173,7 +1201,6 @@
         }
     }
 
-    // NEU: Direkte Korrektur von Scheiben- und Griffposition im Logbuch
     function updateSetPosition(setId, posType, val) {
         let item = activeSessionLog.find(s => s.id === setId);
         if (item) {
@@ -1181,7 +1208,6 @@
             if (posType === 'weight') item.weightPos = Math.max(1, Math.min(32, num));
             if (posType === 'grip') item.gripPos = Math.max(15, Math.min(32, num));
             
-            // Gesamtgewicht automatisch neu berechnen anhand der geänderten Positionen
             let singleKg = getSingleSideKg(item.weightPos, item.gripPos);
             item.kg = (singleKg * 2).toFixed(1);
 
@@ -1203,7 +1229,7 @@
     }
 
     function finishCurrentExercise() {
-        resetTimerWorkflow(); // Timer stoppen und resetten bei Übungsende
+        resetTimerWorkflow();
         if (trainingMode === 'normal') {
             document.getElementById('exercise-name-input').value = '';
             document.getElementById('prominent-exercise-name').innerText = 'Übung wählen';
@@ -1441,7 +1467,6 @@
 
             currentTimeLeft--;
 
-            // Akustischer Countdown für die letzten 3 Sekunden von Prepare und Workout
             if (currentTimeLeft > 0 && currentTimeLeft <= 3 && (currentPhase === 'ready' || currentPhase === 'workA' || currentPhase === 'workB')) {
                 playToneCountdown();
             }
@@ -1461,7 +1486,6 @@
                 addSetToActiveSession(supersetData.B.name, (getSingleSideKg(supersetData.B.w, supersetData.B.g)*2).toFixed(1), supersetData.B.w, supersetData.B.g, true);
                 currentPhase = 'rest'; currentTimeLeft = restDuration; playToneRest(); selectSuperCard('A');
             } else if (currentPhase === 'rest' && currentTimeLeft <= 0) {
-                // NEU: Nach der Pause geht es direkt wieder mit Prepare (10s) los!
                 currentPhase = 'ready'; currentTimeLeft = prepDuration; playToneReady();
             }
             updateDisplay();
