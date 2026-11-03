@@ -349,23 +349,17 @@
             background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: 0.8rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px; font-weight: 600;
         }
 
-        /* --- POP-UP MODAL STYLING (VARIANTE 2: POP-UP KÄSTCHEN) --- */
+        /* --- POP-UP MODAL STYLING --- */
         .modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(4, 7, 13, 0.82);
+            background: rgba(4, 7, 13, 0.85);
             backdrop-filter: blur(6px);
-            z-index: 9999;
+            z-index: 99999;
             align-items: center;
             justify-content: center;
             padding: 16px;
-            animation: fadeIn 0.2s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .modal-container {
@@ -487,13 +481,13 @@
         <button id="btn-mode-drop" class="mode-btn" onclick="setTrainingMode('dropset')">⚡ Drop-Set</button>
     </div>
 
-    <!-- ÜBUNGSAUSWAHL BLOCK -->
+    <!-- ÜBUNGSAUSWAHL BLOCK (HIER WURDE DER KLICK DIREKT VERKNÜPFT) -->
     <div class="card" id="view-normal-exercise-card">
         <div class="card-title" style="cursor:default; margin-bottom:8px;">📝 Aktuelle Übung wählen</div>
         <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 14px; cursor: pointer;" onclick="openExerciseModal('main')">
             <div style="font-size: 1.45rem; font-weight: 900; color: var(--accent-cyan); display: flex; align-items: center; justify-content: space-between;">
                 <span id="prominent-exercise-name">Brustpresse</span>
-                <span style="font-size:1.1rem; color:var(--accent-cyan);">✏️ Pop-up Wahl</span>
+                <span style="font-size:0.9rem; color:var(--accent-cyan); font-weight:700;">✏️ Ändern</span>
             </div>
             <div style="font-size: 0.82rem; font-weight: 700; color: var(--accent-color); margin-top: 6px; font-family: var(--font-mono); display: flex; justify-content: space-between;">
                 <span id="exercise-weight-info">⚡ Aktuell: 24.4 kg (Griff 1)</span>
@@ -533,7 +527,7 @@
             <!-- Übung A -->
             <div class="superset-card-box active-card" id="card-super-a" onclick="selectSuperCard('A')">
                 <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:900; text-transform:uppercase; margin-bottom:4px;">Übung A</div>
-                <div style="font-size:1.05rem; font-weight:800; color:var(--accent-cyan); margin-bottom:4px; border:1px solid rgba(56,189,248,0.3); padding:6px; border-radius:8px; background:#080b11;" onclick="openExerciseModal('superA')">
+                <div style="font-size:1.05rem; font-weight:800; color:var(--accent-cyan); margin-bottom:4px; border:1px solid rgba(56,189,248,0.3); padding:6px; border-radius:8px; background:#080b11;" onclick="event.stopPropagation(); openExerciseModal('superA')">
                     <span id="super-name-a">Brustpresse</span> ✏️
                 </div>
                 <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-a">24.4 kg</div>
@@ -543,7 +537,7 @@
             <!-- Übung B -->
             <div class="superset-card-box" id="card-super-b" onclick="selectSuperCard('B')">
                 <div style="font-size:0.75rem; color:var(--text-secondary); font-weight:900; text-transform:uppercase; margin-bottom:4px;">Übung B</div>
-                <div style="font-size:1.05rem; font-weight:800; color:var(--accent-cyan); margin-bottom:4px; border:1px solid rgba(56,189,248,0.3); padding:6px; border-radius:8px; background:#080b11;" onclick="openExerciseModal('superB')">
+                <div style="font-size:1.05rem; font-weight:800; color:var(--accent-cyan); margin-bottom:4px; border:1px solid rgba(56,189,248,0.3); padding:6px; border-radius:8px; background:#080b11;" onclick="event.stopPropagation(); openExerciseModal('superB')">
                     <span id="super-name-b">Low Row</span> ✏️
                 </div>
                 <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-b">17.8 kg</div>
@@ -662,7 +656,7 @@
 </div>
 
 <!-- ========================================== -->
-<!-- POP-UP MODAL (VARIANTE 2: POP-UP KÄSTCHEN) -->
+<!-- POP-UP MODAL (KÄSTCHEN-AUSWAHL) -->
 <!-- ========================================== -->
 <div class="modal-overlay" id="exercise-modal-overlay">
     <div class="modal-container">
@@ -751,7 +745,7 @@
         B: { grip: 4, disc: 1, name: "Low Row" }
     };
 
-    let activeModalTarget = 'main'; // 'main', 'superA', 'superB'
+    let activeModalTarget = 'main';
 
     function setTrainingMode(mode) {
         trainingMode = mode;
@@ -785,7 +779,43 @@
 
     function updateGripButtonsUI() {
         for (let i = 1; i <= 4; i++) {
-            let btn = document.getElementById(`grip-btn-${i}`); btn.classList.toggle('active', i === selectedGrip); } }  // --- BERECHNUNG & SMART FILTER --- function recalculateWorkflow() { let fixedGrip = parseInt(document.getElementById('fixed-exercise-grip').value) \vert{}\vert{} 0; let warningBox = document.getElementById('grip-warning-box'); warningBox.style.display = 'none';  if (fixedGrip > 0) { selectedGrip = fixedGrip; updateGripButtonsUI(); }  let targetTotal = currentTotalKg; let targetSingle = targetTotal / 2;  let availableGrips = []; let gripBestMatches = {};  for (let g = 1; g <= 4; g++) { let data = getDataForGriff(g); let bestD = 1, minD = 999; for (let disc in data.values) { let dNum = parseInt(disc); if (data.blocked.includes(dNum)) continue; let total = data.values[dNum] * 2; let diff = Math.abs(total - targetTotal); if (diff < minD) { minD = diff; bestD = dNum; } } gripBestMatches[g] = { disc: bestD, diff: minD, total: data.values[bestD] * 2 }; if (minD <= 3.0) availableGrips.push(g); }  for (let i = 1; i <= 4; i++) { let btn = document.getElementById(`grip-btn-${i}`);
+            let btn = document.getElementById(`grip-btn-${i}`);
+            btn.classList.toggle('active', i === selectedGrip);
+        }
+    }
+
+    function recalculateWorkflow() {
+        let fixedGrip = parseInt(document.getElementById('fixed-exercise-grip').value) || 0;
+        let warningBox = document.getElementById('grip-warning-box');
+        warningBox.style.display = 'none';
+
+        if (fixedGrip > 0) {
+            selectedGrip = fixedGrip;
+            updateGripButtonsUI();
+        }
+
+        let targetTotal = currentTotalKg;
+        let targetSingle = targetTotal / 2;
+
+        let availableGrips = [];
+        let gripBestMatches = {};
+
+        for (let g = 1; g <= 4; g++) {
+            let data = getDataForGriff(g);
+            let bestD = 1, minD = 999;
+            for (let disc in data.values) {
+                let dNum = parseInt(disc);
+                if (data.blocked.includes(dNum)) continue;
+                let total = data.values[dNum] * 2;
+                let diff = Math.abs(total - targetTotal);
+                if (diff < minD) { minD = diff; bestD = dNum; }
+            }
+            gripBestMatches[g] = { disc: bestD, diff: minD, total: data.values[bestD] * 2 };
+            if (minD <= 3.0) availableGrips.push(g);
+        }
+
+        for (let i = 1; i <= 4; i++) {
+            let btn = document.getElementById(`grip-btn-${i}`);
             if (!availableGrips.includes(i)) {
                 btn.classList.add('blocked');
             } else {
@@ -809,7 +839,7 @@
     function updateResultsForSelection(discNum, singleKg) {
         let total = singleKg * 2;
         document.getElementById('result-disc-display').innerText = `Scheibe ${discNum}`;
-        document.getElementById('result-exact-kg').innerText = `Exakt: ${total.toFixed(1)} kg (Griff${selectedGrip})`;
+        document.getElementById('result-exact-kg').innerText = `Exakt: ${total.toFixed(1)} kg (Griff ${selectedGrip})`;
     }
 
     function onKgSliderChange() {
@@ -834,27 +864,33 @@
     function updateExerciseWeightBadge() {
         let el = document.getElementById('exercise-weight-info');
         if (el) {
-            el.innerText = `⚡ Aktuell: ${currentTotalKg.toFixed(1)} kg (Griff${selectedGrip})`;
+            el.innerText = `⚡ Aktuell: ${currentTotalKg.toFixed(1)} kg (Griff ${selectedGrip})`;
         }
     }
 
-    // --- POP-UP MODAL LOGIK (VARIANTE 2) ---
+    // --- POP-UP MODAL LOGIK ---
     let savedExerciseList = JSON.parse(localStorage.getItem('board_computer_saved_exercises') || '["Brustpresse", "Squats", "Deadlifts", "Latzug", "Low Row", "Schulterpresse", "Beinstrecker"]');
 
     function openExerciseModal(target = 'main') {
         activeModalTarget = target;
         renderModalExerciseGrid();
         let overlay = document.getElementById('exercise-modal-overlay');
-        overlay.style.display = 'flex';
+        if (overlay) {
+            overlay.style.display = 'flex';
+        }
     }
 
     function closeExerciseModal() {
-        document.getElementById('exercise-modal-overlay').style.display = 'none';
+        let overlay = document.getElementById('exercise-modal-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
         document.getElementById('modal-new-ex-input').value = '';
     }
 
     function renderModalExerciseGrid() {
         let grid = document.getElementById('modal-exercise-grid');
+        if (!grid) return;
         grid.innerHTML = '';
 
         savedExerciseList.forEach(ex => {
@@ -961,7 +997,11 @@
         }
 
         if (lastSet) {
-            textEl.innerText = `Letztes Mal (${lastDate}): ${lastSet.kg} kg (Griff${lastSet.gripPos}/Scheibe ${lastSet.weightPos})`; container.style.display = 'flex'; } else { container.style.display = 'none'; }  if (badgeEl) badgeEl.innerText = max1RM > 0 ? `PR: ${max1RM.toFixed(1)} kg` : '';
+            textEl.innerText = `Letztes Mal (${lastDate}): ${lastSet.kg} kg (Griff ${lastSet.gripPos}/Scheibe ${lastSet.weightPos})`;
+            container.style.display = 'flex';
+        } else { container.style.display = 'none'; }
+
+        if (badgeEl) badgeEl.innerText = max1RM > 0 ? `PR: ${max1RM.toFixed(1)} kg` : '';
     }
 
     function addSetToActiveSession(customExercise = null, customKg = null, customGrip = null, customDisc = null, isSuperSet = false) {
@@ -1062,43 +1102,6 @@
         alert("Training erfolgreich im Kalender abgespeichert!");
     }
 
-    function deleteWorkoutHistoryItem(workoutId) {
-        if (confirm("Workout wirklich aus der Historie löschen?")) {
-            workoutHistory = workoutHistory.filter(w => w.id !== workoutId);
-            localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
-            renderHistory(); checkLastTimeWorkout();
-        }
-    }
-
-    function toggleHistoryCard(cardId) {
-        let card = document.getElementById(cardId);
-        if (card) card.classList.toggle('expanded');
-    }
-
-    // --- BACKUP ---
-    function exportBackup() {
-        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ history: workoutHistory, savedExercises: savedExerciseList }, null, 2));
-        let anchor = document.createElement('a'); anchor.setAttribute("href", dataStr); anchor.setAttribute("download", "board_computer_backup.json");
-        document.body.appendChild(anchor); anchor.click(); anchor.remove();
-    }
-
-    function importBackup(event) {
-        let file = event.target.files[0]; if (!file) return;
-        let reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                let imported = JSON.parse(e.target.result);
-                if (imported.history && imported.savedExercises) {
-                    workoutHistory = imported.history; savedExerciseList = imported.savedExercises;
-                    localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
-                    localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
-                    renderHistory(); alert("Backup erfolgreich wiederhergestellt!");
-                }
-            } catch (err) { alert("Fehler beim Lesen."); }
-        };
-        reader.readAsText(file);
-    }
-
     function renderActiveLogbook() {
         let container = document.getElementById('logbook-container');
         if (activeSessionLog.length === 0) {
@@ -1140,4 +1143,157 @@
                                 </div>
                                 ${!isNaN(est1RM) && est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
                             </div>
-                            <div style="display:flex; align-
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
+                                    <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
+                                    <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
+                                </div>
+                                <button class="danger" style="margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            container.innerHTML += blockHtml + `</div>`;
+        });
+    }
+
+    function renderHistory() {
+        let container = document.getElementById('history-container');
+        if (workoutHistory.length === 0) { container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">Bisher keine Workouts.</div>'; return; }
+        container.innerHTML = '';
+        
+        workoutHistory.forEach(session => {
+            let cardId = `hist-card-${session.id}`;
+            let grouped = {};
+            session.sets.forEach(s => { if (!grouped[s.exercise]) grouped[s.exercise] = []; grouped[s.exercise].push(s); });
+
+            let summaryHtml = '';
+            for (let ex in grouped) {
+                summaryHtml += `<span style="display:inline-block; margin-right:8px; color:var(--accent-cyan); font-weight:700;">• ${ex}</span>`;
+            }
+
+            let detailedHtml = '';
+            for (let ex in grouped) {
+                detailedHtml += `<div style="margin-top:8px;"><div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan);">${ex}</div>`;
+                grouped[ex].forEach((s, idx) => {
+                    detailedHtml += `<div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">• Satz ${idx + 1}: ${s.kg} kg (Griff ${s.gripPos}/Scheibe ${s.weightPos})</div>`;
+                });
+                detailedHtml += `</div>`;
+            }
+
+            container.innerHTML += `
+                <div class="history-card" id="${cardId}">
+                    <div class="history-header" onclick="toggleHistoryCard('${cardId}')">
+                        <div>
+                            <div class="history-date">📅 ${session.date} (${session.time})</div>
+                            <div style="font-size:0.8rem; margin-top:6px; color:var(--text-primary); display:flex;">${summaryHtml}</div>
+                        </div>
+                        <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">Details ▼</span>
+                    </div>
+                    <div class="history-content">${detailedHtml}</div>
+                </div>`;
+        });
+    }
+
+    function toggleHistoryCard(cardId) {
+        let card = document.getElementById(cardId);
+        if (card) card.classList.toggle('expanded');
+    }
+
+    // --- BACKUP ---
+    function exportBackup() {
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ history: workoutHistory, savedExercises: savedExerciseList }, null, 2));
+        let anchor = document.createElement('a'); anchor.setAttribute("href", dataStr); anchor.setAttribute("download", "board_computer_backup.json");
+        document.body.appendChild(anchor); anchor.click(); anchor.remove();
+    }
+
+    function importBackup(event) {
+        let file = event.target.files[0]; if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let imported = JSON.parse(e.target.result);
+                if (imported.history && imported.savedExercises) {
+                    workoutHistory = imported.history; savedExerciseList = imported.savedExercises;
+                    localStorage.setItem('board_computer_history', JSON.stringify(workoutHistory));
+                    localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+                    renderHistory(); alert("Backup erfolgreich wiederhergestellt!");
+                }
+            } catch (err) { alert("Fehler beim Lesen."); }
+        };
+        reader.readAsText(file);
+    }
+
+    // --- TIMER ---
+    let timerInterval = null, currentTimeLeft = 45, currentPhase = 'idle';
+    let workDuration = 45, restDuration = 120, prepDuration = 10;
+    let isTimerPaused = false;
+
+    function setWorkPreset(secs, btn) { workDuration = secs; document.querySelectorAll('.work-preset').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+    function setRestPreset(secs, btn) { restDuration = secs; document.querySelectorAll('.rest-preset').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+
+    function startSetWorkflow() {
+        initAudio(); requestWakeLock();
+        if (timerInterval) clearInterval(timerInterval);
+        isTimerPaused = false;
+        document.getElementById('btn-pause-timer').style.display = 'block';
+        document.getElementById('btn-pause-timer').innerText = "⏸ PAUSE";
+
+        currentPhase = 'ready'; currentTimeLeft = prepDuration; playToneReady(); updateDisplay();
+
+        timerInterval = setInterval(() => {
+            if (isTimerPaused) return;
+            currentTimeLeft--;
+            if (currentTimeLeft > 0 && currentTimeLeft <= 3 && (currentPhase === 'ready' || currentPhase === 'work')) {
+                playToneCountdown();
+            }
+
+            if (currentPhase === 'ready' && currentTimeLeft <= 0) {
+                currentPhase = 'work'; currentTimeLeft = workDuration; playToneStart();
+            } else if (currentPhase === 'work' && currentTimeLeft <= 0) {
+                addSetToActiveSession(); currentPhase = 'rest'; currentTimeLeft = restDuration; playToneRest();
+            } else if (currentPhase === 'rest' && currentTimeLeft <= 0) {
+                currentPhase = 'ready'; currentTimeLeft = prepDuration; playToneReady();
+            }
+            updateDisplay();
+        }, 1000);
+    }
+
+    function togglePauseTimer() {
+        isTimerPaused = !isTimerPaused;
+        document.getElementById('btn-pause-timer').innerText = isTimerPaused ? "▶ WEITER" : "⏸ PAUSE";
+    }
+
+    function resetTimerWorkflow() {
+        if (timerInterval) clearInterval(timerInterval);
+        isTimerPaused = false; currentPhase = 'idle'; currentTimeLeft = workDuration;
+        document.getElementById('btn-pause-timer').style.display = 'none';
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        let mins = Math.floor(currentTimeLeft / 60), secs = currentTimeLeft % 60;
+        document.getElementById('timer-display').innerText = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+        let statusEl = document.getElementById('timer-status');
+        let bodyEl = document.body; bodyEl.className = '';
+
+        if (currentPhase === 'idle') { statusEl.innerText = "Bereit für Satz"; statusEl.style.color = "var(--ready-color)"; }
+        else if (currentPhase === 'ready') { statusEl.innerText = `⌛ Vorbereitung (${currentTimeLeft}s)`; statusEl.style.color = "var(--ready-color)"; bodyEl.classList.add('phase-ready'); }
+        else if (currentPhase === 'work') { statusEl.innerText = "⚡ Muskelarbeit"; statusEl.style.color = "var(--work-color)"; bodyEl.classList.add('phase-work'); }
+        else if (currentPhase === 'rest') { statusEl.innerText = `☕ Satzpause (${currentTimeLeft}s)`; statusEl.style.color = "var(--rest-color)"; bodyEl.classList.add('phase-rest'); }
+    }
+
+    // Init
+    recalculateWorkflow();
+    renderActiveLogbook();
+    renderHistory();
+    checkLastTimeWorkout();
+    updateDisplay();
+</script>
+
+</body>
+</html>
