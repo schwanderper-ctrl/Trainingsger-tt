@@ -86,15 +86,6 @@
             user-select: none;
         }
 
-        .card-title span.collapse-icon {
-            font-size: 0.75rem;
-            color: var(--accent-cyan);
-            font-weight: 600;
-        }
-
-        .card-content { display: flex; flex-direction: column; gap: 12px; }
-        .collapsed .card-content { display: none; }
-
         /* MODUS TOGGLE LEISTE */
         .mode-toggle-bar {
             display: flex;
@@ -194,17 +185,6 @@
             font-family: var(--font-mono);
         }
 
-        .control-group { margin-top: 4px; }
-        .control-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-secondary);
-        }
-        .control-header span:last-child { color: var(--text-primary); font-weight: 800; font-family: var(--font-mono); }
-
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
@@ -236,21 +216,6 @@
             transition: border-color 0.2s;
         }
         .input-text:focus, .input-number:focus { border-color: var(--accent-cyan); }
-
-        .suggestions-grid { display: flex; flex-direction: column; gap: 8px; }
-        .suggestion-item {
-            background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 12px 16px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .suggestion-tag {
-            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; background: rgba(255, 255, 255, 0.1); color: var(--text-secondary);
-        }
-        .suggestion-details { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
 
         .timer-card { text-align: center; border: 1px solid rgba(251, 191, 36, 0.3); }
         .timer-status {
@@ -285,7 +250,6 @@
         button.danger { background: #381318; color: var(--work-color); border: 1px solid rgba(244, 63, 94, 0.4); box-shadow: none; font-size: 0.8rem; padding: 8px 12px; }
         button:active { transform: scale(0.97); }
 
-        .icon-btn-compact { width: 42px; height: 44px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex: none; }
         .preset-btn {
             background: #1e293b; color: var(--text-secondary); border: 1px solid rgba(255, 255, 255, 0.1); padding: 8px; font-size: 0.8rem; font-weight: 700; border-radius: 8px; box-shadow: none; flex: 1;
         }
@@ -316,7 +280,7 @@
             background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px; margin-bottom: 12px;
         }
         
-        .log-exercise-block.is-superset, .superset-border-group {
+        .log-exercise-block.is-superset {
             border: 1px solid rgba(56, 189, 248, 0.45) !important;
             background: rgba(56, 189, 248, 0.05) !important;
             border-radius: 12px;
@@ -362,30 +326,6 @@
             font-size: 0.95rem;
             outline: none;
         }
-        .kg-edit-box:focus { border-color: var(--accent-cyan); }
-
-        .ds-checkbox {
-            height: 32px; 
-            padding: 0 8px;
-            background: #080b11; 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-            border-radius: 8px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 0.75rem; 
-            font-weight: 700; 
-            color: var(--text-secondary); 
-            cursor: pointer; 
-            user-select: none;
-            gap: 4px;
-        }
-        .ds-checkbox.active {
-            background: rgba(34, 197, 94, 0.18);
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-            font-weight: 900;
-        }
 
         .history-card { 
             background: #0f172a; 
@@ -409,40 +349,127 @@
             background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 8px 12px; margin-top: 8px; font-size: 0.8rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 6px; font-weight: 600;
         }
 
-        .dropdown-container { position: relative; flex: 1; }
-        .dropdown-list {
-            display: none; 
-            position: absolute; 
-            top: 100%; 
-            left: 0; 
-            right: 0; 
-            background: #0f172a; 
-            border: 1px solid rgba(56, 189, 248, 0.4); 
-            border-radius: 12px; 
-            margin-top: 4px; 
-            max-height: 220px; 
-            overflow-y: auto; 
-            z-index: 999; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-        .dropdown-item {
-            padding: 12px; 
-            font-size: 0.95rem; 
-            font-weight: 700; 
-            color: var(--text-primary); 
-            cursor: pointer; 
-            border-bottom: 1px solid rgba(255,255,255,0.06); 
-            display: flex; 
-            justify-content: space-between; 
+        /* --- POP-UP MODAL STYLING (VARIANTE 2: POP-UP KÄSTCHEN) --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(4, 7, 13, 0.82);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
             align-items: center;
-            touch-action: manipulation;
+            justify-content: center;
+            padding: 16px;
+            animation: fadeIn 0.2s ease-out;
         }
-        .dropdown-item:active, .dropdown-item:hover { background: rgba(56, 189, 248, 0.2); color: var(--accent-cyan); }
-        .delete-ex-btn { color: var(--work-color); font-size: 0.9rem; font-weight: 800; padding: 4px 8px; border-radius: 6px; }
-        .delete-ex-btn:hover { background: rgba(244, 63, 94, 0.25); }
 
-        .drop-item-row {
-            background: #0f172a; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-container {
+            background: #141c2c;
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            background: #0f172a;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.4rem;
+            font-weight: 800;
+            cursor: pointer;
+            padding: 0 6px;
+            box-shadow: none;
+            flex: none;
+        }
+
+        .modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .modal-add-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .exercise-tile {
+            background: #0f172a;
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 14px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            user-select: none;
+        }
+
+        .exercise-tile:active {
+            transform: scale(0.96);
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--accent-cyan);
+        }
+
+        .exercise-tile-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .exercise-tile-del {
+            color: var(--work-color);
+            font-size: 0.95rem;
+            font-weight: 900;
+            padding: 4px 8px;
+            border-radius: 6px;
+            opacity: 0.7;
+        }
+
+        .exercise-tile-del:hover {
+            opacity: 1;
+            background: rgba(244, 63, 94, 0.2);
         }
     </style>
 </head>
@@ -463,35 +490,22 @@
     <!-- ÜBUNGSAUSWAHL BLOCK -->
     <div class="card" id="view-normal-exercise-card">
         <div class="card-title" style="cursor:default; margin-bottom:8px;">📝 Aktuelle Übung wählen</div>
-        <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 12px 14px;">
+        <div style="background: rgba(56, 189, 248, 0.06); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 14px; padding: 14px; cursor: pointer;" onclick="openExerciseModal('main')">
             <div style="font-size: 1.45rem; font-weight: 900; color: var(--accent-cyan); display: flex; align-items: center; justify-content: space-between;">
-                <span id="prominent-exercise-name">Übung wählen</span>
-                <span style="font-size:1.1rem; cursor:pointer;" onclick="enableExerciseEditMode()">✏️</span>
+                <span id="prominent-exercise-name">Brustpresse</span>
+                <span style="font-size:1.1rem; color:var(--accent-cyan);">✏️ Pop-up Wahl</span>
             </div>
             <div style="font-size: 0.82rem; font-weight: 700; color: var(--accent-color); margin-top: 6px; font-family: var(--font-mono); display: flex; justify-content: space-between;">
-                <span id="exercise-weight-info">⚡ Aktuell: 24.4 kg (Griff 1 / Scheibe 1)</span>
+                <span id="exercise-weight-info">⚡ Aktuell: 24.4 kg (Griff 1)</span>
                 <span id="exercise-1rm-badge" style="color:var(--ready-color); font-size:0.75rem;"></span>
             </div>
         </div>
 
-        <div id="exercise-edit-container" style="display:none; margin-top:10px;">
-            <div style="display:flex; gap:6px; align-items:center;">
-                <div class="dropdown-container">
-                    <div style="position:relative;">
-                        <input type="text" id="exercise-name-input" class="input-text" placeholder="Übung eingeben oder wählen..." value="" onkeydown="handleExerciseInputKey(event)" oninput="onExerciseNameChange()" style="padding-right: 36px;">
-                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list')" style="position:absolute; right:12px; top:50%; transform:translateY(-50%); cursor:pointer; color:var(--accent-cyan); font-size:1rem; font-weight:900; padding:6px;">▼</span>
-                    </div>
-                    <div id="saved-dropdown-list" class="dropdown-list"></div>
-                </div>
-                <button class="secondary icon-btn-compact" title="Als Vorlage speichern" onclick="saveCurrentExerciseName()">💾</button>
-                <button class="secondary icon-btn-compact" title="Notiz hinzufügen" onclick="toggleNoteField()">📝</button>
-                <button class="action-btn icon-btn-compact" style="width: auto; padding: 0 12px; font-size: 0.85rem;" onclick="confirmExerciseName()">OK</button>
-            </div>
-
-            <!-- Fixer Griff für Übungen wie Bankdrücken -->
-            <div style="margin-top: 10px; display:flex; align-items:center; justify-content:space-between; background:#080b11; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
-                <span style="font-size:0.8rem; font-weight:700; color:var(--text-secondary);">Fixer Griff für diese Übung:</span>
-                <select id="fixed-exercise-grip" class="input-text" style="width:110px; padding:6px; font-size:0.8rem;" onchange="onFixedGripChange()">
+        <!-- Fixer Griff & Notiz -->
+        <div style="margin-top: 10px; display:flex; gap:8px;">
+            <div style="flex:1; display:flex; align-items:center; justify-content:space-between; background:#080b11; padding:8px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.08);">
+                <span style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Fixer Griff:</span>
+                <select id="fixed-exercise-grip" class="input-text" style="width:100px; padding:4px 6px; font-size:0.78rem;" onchange="onFixedGripChange()">
                     <option value="0">Flexibel</option>
                     <option value="1">Griff 1</option>
                     <option value="2">Griff 2</option>
@@ -499,9 +513,9 @@
                     <option value="4">Griff 4</option>
                 </select>
             </div>
+            <button class="secondary" style="width: auto; padding:0 12px; font-size:0.8rem;" onclick="toggleNoteField()">📝 Notiz</button>
         </div>
 
-        <!-- Notizfeld -->
         <div id="note-field-container" style="display:none; margin-top:8px;">
             <input type="text" id="exercise-note-input" class="input-text" style="font-size:0.85rem; padding:8px 12px; background:#080b11;" placeholder="Notiz (z. B. Sitzhöhe 3)...">
         </div>
@@ -519,29 +533,21 @@
             <!-- Übung A -->
             <div class="superset-card-box active-card" id="card-super-a" onclick="selectSuperCard('A')">
                 <div style="font-size:0.75rem; color:var(--accent-cyan); font-weight:900; text-transform:uppercase; margin-bottom:4px;">Übung A</div>
-                <div class="dropdown-container">
-                    <div style="position:relative;">
-                        <input type="text" id="super-ex-a-input" class="input-text" value="Brustpresse" style="font-size:1rem; font-weight:800; color:var(--accent-cyan); padding:8px 30px 8px 10px; margin-bottom:6px; background:#080b11; border-color:rgba(56,189,248,0.4);" placeholder="Übung A">
-                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list-a')" style="position:absolute; right:10px; top:42%; transform:translateY(-50%); cursor:pointer; color:var(--accent-cyan); font-size:0.85rem; font-weight:900; padding:4px;">▼</span>
-                    </div>
-                    <div id="saved-dropdown-list-a" class="dropdown-list"></div>
+                <div style="font-size:1.05rem; font-weight:800; color:var(--accent-cyan); margin-bottom:4px; border:1px solid rgba(56,189,248,0.3); padding:6px; border-radius:8px; background:#080b11;" onclick="openExerciseModal('superA')">
+                    <span id="super-name-a">Brustpresse</span> ✏️
                 </div>
-                <div style="font-size:1.4rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:6px 0;" id="super-weight-a">24.4 kg</div>
-                <div style="font-size:0.8rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:800;" id="super-pos-a">Griff 1 | Scheibe 1</div>
+                <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-a">24.4 kg</div>
+                <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:800;" id="super-pos-a">Griff 1 | Scheibe 1</div>
             </div>
 
             <!-- Übung B -->
             <div class="superset-card-box" id="card-super-b" onclick="selectSuperCard('B')">
                 <div style="font-size:0.75rem; color:var(--text-secondary); font-weight:900; text-transform:uppercase; margin-bottom:4px;">Übung B</div>
-                <div class="dropdown-container">
-                    <div style="position:relative;">
-                        <input type="text" id="super-ex-b-input" class="input-text" value="Low Row" style="font-size:1rem; font-weight:800; color:var(--accent-cyan); padding:8px 30px 8px 10px; margin-bottom:6px; background:#080b11; border-color:rgba(56,189,248,0.4);" placeholder="Übung B">
-                        <span onclick="toggleSavedDropdown(event, 'saved-dropdown-list-b')" style="position:absolute; right:10px; top:42%; transform:translateY(-50%); cursor:pointer; color:var(--accent-cyan); font-size:0.85rem; font-weight:900; padding:4px;">▼</span>
-                    </div>
-                    <div id="saved-dropdown-list-b" class="dropdown-list"></div>
+                <div style="font-size:1.05rem; font-weight:800; color:var(--accent-cyan); margin-bottom:4px; border:1px solid rgba(56,189,248,0.3); padding:6px; border-radius:8px; background:#080b11;" onclick="openExerciseModal('superB')">
+                    <span id="super-name-b">Low Row</span> ✏️
                 </div>
-                <div style="font-size:1.4rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:6px 0;" id="super-weight-b">17.8 kg</div>
-                <div style="font-size:0.8rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:800;" id="super-pos-b">Griff 4 | Scheibe 1</div>
+                <div style="font-size:1.3rem; font-weight:900; font-family:var(--font-mono); color:var(--text-primary); margin:4px 0;" id="super-weight-b">17.8 kg</div>
+                <div style="font-size:0.75rem; color:var(--accent-cyan); font-family:var(--font-mono); font-weight:800;" id="super-pos-b">Griff 4 | Scheibe 1</div>
             </div>
         </div>
         <p style="font-size:0.75rem; color:var(--text-secondary); text-align:center; margin:10px 0 0 0;">👉 Tippe auf eine Karte, um sie zu konfigurieren.</p>
@@ -655,6 +661,32 @@
     </div>
 </div>
 
+<!-- ========================================== -->
+<!-- POP-UP MODAL (VARIANTE 2: POP-UP KÄSTCHEN) -->
+<!-- ========================================== -->
+<div class="modal-overlay" id="exercise-modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3>Übung auswählen</h3>
+            <button class="modal-close-btn" onclick="closeExerciseModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <!-- Neue Übung schnell tippen & hinzufügen -->
+            <div class="modal-add-row">
+                <input type="text" id="modal-new-ex-input" class="input-text" placeholder="Neue Übung tippen..." style="padding:10px 12px; font-size:0.88rem;">
+                <button class="action-btn" style="width:auto; padding:0 14px; font-size:0.85rem;" onclick="addNewExerciseFromModal()">+ Hinzufügen</button>
+            </div>
+
+            <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary); text-transform:uppercase; margin-top:4px;">
+                Gespeicherte Übungen (Tippen zum Wählen):
+            </div>
+
+            <!-- Raster aus Kacheln/Kästchen -->
+            <div class="exercise-grid" id="modal-exercise-grid"></div>
+        </div>
+    </div>
+</div>
+
 <script>
     // --- WAKE LOCK ---
     let wakeLock = null;
@@ -664,7 +696,7 @@
     document.addEventListener('visibilitychange', () => { if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock(); });
     requestWakeLock();
 
-    // --- ECHTE DATENBASIS FÜR DIE 4 GRIFFE (EINZELNE SEITE IN KG) ---
+    // --- DATENBASIS DIE 4 GRIFFE (KG PRO SEITE) ---
     const rawDataGriff1 = {
         blocked: [14, 15, 16],
         values: {
@@ -719,6 +751,8 @@
         B: { grip: 4, disc: 1, name: "Low Row" }
     };
 
+    let activeModalTarget = 'main'; // 'main', 'superA', 'superB'
+
     function setTrainingMode(mode) {
         trainingMode = mode;
         document.getElementById('btn-mode-normal').classList.toggle('active', mode === 'normal');
@@ -732,11 +766,9 @@
     }
 
     function selectGrip(gripNum) {
-        // Prüfen ob Griff für aktuellen Zielwert blockiert
         let data = getDataForGriff(gripNum);
         let targetSingle = currentTotalKg / 2;
         
-        // Finde nähesten Wert
         let bestDisc = 1, minDiff = 999;
         for (let disc in data.values) {
             let dNum = parseInt(disc);
@@ -753,46 +785,7 @@
 
     function updateGripButtonsUI() {
         for (let i = 1; i <= 4; i++) {
-            let btn = document.getElementById(`grip-btn-${i}`);
-            btn.classList.toggle('active', i === selectedGrip);
-        }
-    }
-
-    // --- BERECHNUNG & SMART FILTER ---
-    function recalculateWorkflow() {
-        let fixedGrip = parseInt(document.getElementById('fixed-exercise-grip').value) || 0;
-        let warningBox = document.getElementById('grip-warning-box');
-        warningBox.style.display = 'none';
-
-        if (fixedGrip > 0) {
-            selectedGrip = fixedGrip;
-            updateGripButtonsUI();
-        }
-
-        let targetTotal = currentTotalKg;
-        let targetSingle = targetTotal / 2;
-
-        // Smart Filter: Welche Griffe sind für das Gewicht verfügbar?
-        let availableGrips = [];
-        let gripBestMatches = {};
-
-        for (let g = 1; g <= 4; g++) {
-            let data = getDataForGriff(g);
-            let bestD = 1, minD = 999;
-            for (let disc in data.values) {
-                let dNum = parseInt(disc);
-                if (data.blocked.includes(dNum)) continue;
-                let total = data.values[dNum] * 2;
-                let diff = Math.abs(total - targetTotal);
-                if (diff < minD) { minD = diff; bestD = dNum; }
-            }
-            gripBestMatches[g] = { disc: bestD, diff: minD, total: data.values[bestD] * 2 };
-            if (minD <= 3.0) availableGrips.push(g); // Erlaubter Toleranzbereich
-        }
-
-        // UI-Aktualisierung der Griff-Buttons (Sperren wenn nicht machbar)
-        for (let i = 1; i <= 4; i++) {
-            let btn = document.getElementById(`grip-btn-${i}`);
+            let btn = document.getElementById(`grip-btn-${i}`); btn.classList.toggle('active', i === selectedGrip); } }  // --- BERECHNUNG & SMART FILTER --- function recalculateWorkflow() { let fixedGrip = parseInt(document.getElementById('fixed-exercise-grip').value) \vert{}\vert{} 0; let warningBox = document.getElementById('grip-warning-box'); warningBox.style.display = 'none';  if (fixedGrip > 0) { selectedGrip = fixedGrip; updateGripButtonsUI(); }  let targetTotal = currentTotalKg; let targetSingle = targetTotal / 2;  let availableGrips = []; let gripBestMatches = {};  for (let g = 1; g <= 4; g++) { let data = getDataForGriff(g); let bestD = 1, minD = 999; for (let disc in data.values) { let dNum = parseInt(disc); if (data.blocked.includes(dNum)) continue; let total = data.values[dNum] * 2; let diff = Math.abs(total - targetTotal); if (diff < minD) { minD = diff; bestD = dNum; } } gripBestMatches[g] = { disc: bestD, diff: minD, total: data.values[bestD] * 2 }; if (minD <= 3.0) availableGrips.push(g); }  for (let i = 1; i <= 4; i++) { let btn = document.getElementById(`grip-btn-${i}`);
             if (!availableGrips.includes(i)) {
                 btn.classList.add('blocked');
             } else {
@@ -800,12 +793,11 @@
             }
         }
 
-        // Wenn der aktuell gewählte Griff durch eine feste Übung blockiert ist -> Fehlermeldung
         if (fixedGrip > 0 && !availableGrips.includes(fixedGrip)) {
             warningBox.style.display = 'block';
             warningBox.innerText = `⚠️ Mit Griff ${fixedGrip} (fix für diese Übung) sind ${targetTotal} kg leider nicht verfügbar. Bitte Gewicht anpassen.`;
         } else if (!availableGrips.includes(selectedGrip) && availableGrips.length > 0) {
-            selectedGrip = availableGrips[0]; // Automatisch auf ersten gültigen wechseln
+            selectedGrip = availableGrips[0];
             updateGripButtonsUI();
         }
 
@@ -817,7 +809,7 @@
     function updateResultsForSelection(discNum, singleKg) {
         let total = singleKg * 2;
         document.getElementById('result-disc-display').innerText = `Scheibe ${discNum}`;
-        document.getElementById('result-exact-kg').innerText = `Exakt: ${total.toFixed(1)} kg (Griff ${selectedGrip})`;
+        document.getElementById('result-exact-kg').innerText = `Exakt: ${total.toFixed(1)} kg (Griff${selectedGrip})`;
     }
 
     function onKgSliderChange() {
@@ -842,10 +834,86 @@
     function updateExerciseWeightBadge() {
         let el = document.getElementById('exercise-weight-info');
         if (el) {
-            let data = getDataForGriff(selectedGrip);
-            // Finde aktuelle Scheibe aus Text
-            el.innerText = `⚡ Aktuell: ${currentTotalKg.toFixed(1)} kg (Griff ${selectedGrip})`;
+            el.innerText = `⚡ Aktuell: ${currentTotalKg.toFixed(1)} kg (Griff${selectedGrip})`;
         }
+    }
+
+    // --- POP-UP MODAL LOGIK (VARIANTE 2) ---
+    let savedExerciseList = JSON.parse(localStorage.getItem('board_computer_saved_exercises') || '["Brustpresse", "Squats", "Deadlifts", "Latzug", "Low Row", "Schulterpresse", "Beinstrecker"]');
+
+    function openExerciseModal(target = 'main') {
+        activeModalTarget = target;
+        renderModalExerciseGrid();
+        let overlay = document.getElementById('exercise-modal-overlay');
+        overlay.style.display = 'flex';
+    }
+
+    function closeExerciseModal() {
+        document.getElementById('exercise-modal-overlay').style.display = 'none';
+        document.getElementById('modal-new-ex-input').value = '';
+    }
+
+    function renderModalExerciseGrid() {
+        let grid = document.getElementById('modal-exercise-grid');
+        grid.innerHTML = '';
+
+        savedExerciseList.forEach(ex => {
+            let tile = document.createElement('div');
+            tile.className = 'exercise-tile';
+            tile.innerHTML = `
+                <span class="exercise-tile-title">${ex}</span>
+                <span class="exercise-tile-del" title="Löschen">✕</span>
+            `;
+
+            tile.addEventListener('click', (e) => {
+                if (e.target.classList.contains('exercise-tile-del')) {
+                    e.stopPropagation();
+                    deleteSavedExerciseFromModal(ex);
+                    return;
+                }
+                selectExerciseFromModal(ex);
+            });
+
+            grid.appendChild(tile);
+        });
+    }
+
+    function selectExerciseFromModal(exName) {
+        if (activeModalTarget === 'main') {
+            document.getElementById('prominent-exercise-name').innerText = exName;
+            checkLastTimeWorkout();
+        } else if (activeModalTarget === 'superA') {
+            supersetData.A.name = exName;
+            document.getElementById('super-name-a').innerText = exName;
+        } else if (activeModalTarget === 'superB') {
+            supersetData.B.name = exName;
+            document.getElementById('super-name-b').innerText = exName;
+        }
+        closeExerciseModal();
+    }
+
+    function addNewExerciseFromModal() {
+        let val = document.getElementById('modal-new-ex-input').value.trim();
+        if (!val) return;
+        if (!savedExerciseList.includes(val)) {
+            savedExerciseList.push(val);
+            localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+            document.getElementById('modal-new-ex-input').value = '';
+            renderModalExerciseGrid();
+        }
+    }
+
+    function deleteSavedExerciseFromModal(exName) {
+        if (confirm(`Übung "${exName}" aus der Auswahlliste löschen?`)) {
+            savedExerciseList = savedExerciseList.filter(item => item !== exName);
+            localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
+            renderModalExerciseGrid();
+        }
+    }
+
+    function toggleNoteField() {
+        let container = document.getElementById('note-field-container');
+        container.style.display = (container.style.display === 'none') ? 'block' : 'none';
     }
 
     // --- AUDIO SYSTEM ---
@@ -869,84 +937,9 @@
     function playToneRest() { playBeep(440.00, 0.5, 'sine'); }
     function playToneCountdown() { playBeep(600.00, 0.12, 'sine'); }
 
-    // --- GESPEICHERTE ÜBUNGEN & LOGBUCH ---
-    let savedExerciseList = JSON.parse(localStorage.getItem('board_computer_saved_exercises') || '["Brustpresse", "Squats", "Deadlifts", "Latzug", "Low Row"]');
+    // --- LOGBUCH & HISTORIE ---
     let activeSessionLog = JSON.parse(localStorage.getItem('board_computer_active_session') || '[]');
     let workoutHistory = JSON.parse(localStorage.getItem('board_computer_history') || '[]');
-
-    function enableExerciseEditMode() {
-        document.getElementById('exercise-edit-container').style.display = 'block';
-        document.getElementById('exercise-name-input').focus();
-    }
-
-    function confirmExerciseName() {
-        let val = document.getElementById('exercise-name-input').value.trim();
-        if (val) {
-            document.getElementById('prominent-exercise-name').innerText = val;
-            document.getElementById('exercise-edit-container').style.display = 'none';
-            checkLastTimeWorkout();
-        }
-    }
-
-    function selectExerciseFromSaved(exName) {
-        document.getElementById('exercise-name-input').value = exName;
-        document.getElementById('prominent-exercise-name').innerText = exName;
-        document.getElementById('exercise-edit-container').style.display = 'none';
-        let listEl = document.getElementById('saved-dropdown-list');
-        if (listEl) listEl.style.display = 'none';
-        checkLastTimeWorkout();
-    }
-
-    function onExerciseNameChange() {
-        let val = document.getElementById('exercise-name-input').value.trim();
-        document.getElementById('prominent-exercise-name').innerText = val || "Übung wählen";
-        checkLastTimeWorkout();
-    }
-
-    function handleExerciseInputKey(e) { if (e.key === 'Enter') confirmExerciseName(); }
-
-    function toggleSavedDropdown(event, listId) {
-        event.stopPropagation();
-        event.preventDefault();
-        let listEl = document.getElementById(listId);
-        ['saved-dropdown-list', 'saved-dropdown-list-a', 'saved-dropdown-list-b'].forEach(id => {
-            if (id !== listId) { let el = document.getElementById(id); if (el) el.style.display = 'none'; }
-        });
-        listEl.style.display = (listEl.style.display === 'block') ? 'none' : 'block';
-        if (listEl.style.display === 'block') renderSavedDropdownItems(listId);
-    }
-
-    function renderSavedDropdownItems(listId) {
-        let listEl = document.getElementById(listId);
-        listEl.innerHTML = '';
-        savedExerciseList.forEach(ex => {
-            let item = document.createElement('div');
-            item.className = 'dropdown-item';
-            item.innerHTML = `<span>${ex}</span><span class="delete-ex-btn">✕</span>`;
-            item.addEventListener('pointerdown', (e) => {
-                e.stopPropagation(); e.preventDefault();
-                if (e.target.classList.contains('delete-ex-btn')) {
-                    savedExerciseList = savedExerciseList.filter(item => item !== ex);
-                    localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
-                    renderSavedDropdownItems(listId);
-                    return;
-                }
-                if (listId.includes('a')) { document.getElementById('super-ex-a-input').value = ex; }
-                else if (listId.includes('b')) { document.getElementById('super-ex-b-input').value = ex; }
-                else { selectExerciseFromSaved(ex); }
-                listEl.style.display = 'none';
-            });
-            listEl.appendChild(item);
-        });
-    }
-
-    document.addEventListener('pointerdown', (e) => {
-        if (!e.target.closest('.dropdown-container')) {
-            ['saved-dropdown-list', 'saved-dropdown-list-a', 'saved-dropdown-list-b'].forEach(id => {
-                let el = document.getElementById(id); if (el) el.style.display = 'none';
-            });
-        }
-    });
 
     function checkLastTimeWorkout() {
         let name = document.getElementById('prominent-exercise-name').innerText.trim();
@@ -968,21 +961,7 @@
         }
 
         if (lastSet) {
-            textEl.innerText = `Letztes Mal (${lastDate}): ${lastSet.kg} kg (Griff ${lastSet.gripPos}/Scheibe ${lastSet.weightPos})`;
-            container.style.display = 'flex';
-        } else { container.style.display = 'none'; }
-
-        if (badgeEl) badgeEl.innerText = max1RM > 0 ? `PR: ${max1RM.toFixed(1)} kg` : '';
-    }
-
-    function saveCurrentExerciseName() {
-        let val = document.getElementById('exercise-name-input').value.trim();
-        if (!val) return;
-        if (!savedExerciseList.includes(val)) {
-            savedExerciseList.push(val);
-            localStorage.setItem('board_computer_saved_exercises', JSON.stringify(savedExerciseList));
-            alert(`Übung "${val}" gespeichert!`);
-        }
+            textEl.innerText = `Letztes Mal (${lastDate}): ${lastSet.kg} kg (Griff${lastSet.gripPos}/Scheibe ${lastSet.weightPos})`; container.style.display = 'flex'; } else { container.style.display = 'none'; }  if (badgeEl) badgeEl.innerText = max1RM > 0 ? `PR: ${max1RM.toFixed(1)} kg` : '';
     }
 
     function addSetToActiveSession(customExercise = null, customKg = null, customGrip = null, customDisc = null, isSuperSet = false) {
@@ -990,7 +969,6 @@
         let kgVal = customKg !== null ? customKg : currentTotalKg.toFixed(1);
         let gripVal = customGrip !== null ? customGrip : selectedGrip;
         
-        // Finde Scheibe aus UI
         let data = getDataForGriff(gripVal);
         let bestDisc = 1, minD = 999;
         for (let disc in data.values) {
@@ -1024,7 +1002,7 @@
 
     function addManualSet() {
         if (trainingMode === 'superset') {
-            addSetToActiveSession(document.getElementById('super-ex-a-input').value, "24.4", 1, 1, true);
+            addSetToActiveSession(supersetData.A.name, "24.4", 1, 1, true);
         } else {
             addSetToActiveSession();
         }
@@ -1058,11 +1036,6 @@
         }
     }
 
-    function toggleDropSet(setId) {
-        let item = activeSessionLog.find(s => s.id === setId);
-        if (item) { item.ds = !item.ds; localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog)); renderActiveLogbook(); }
-    }
-
     function deleteSet(setId) {
         activeSessionLog = activeSessionLog.filter(s => s.id !== setId);
         localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
@@ -1071,11 +1044,7 @@
 
     function finishCurrentExercise() {
         resetTimerWorkflow();
-        if (trainingMode === 'normal') {
-            document.getElementById('exercise-name-input').value = '';
-            document.getElementById('prominent-exercise-name').innerText = 'Übung wählen';
-            enableExerciseEditMode();
-        }
+        openExerciseModal('main');
     }
 
     function finishWorkoutSession() {
@@ -1153,7 +1122,6 @@
 
             sets.forEach((s, idx) => {
                 let est1RM = parseFloat(s.kg) * (1 + (parseInt(s.wdh) || 0) / 30);
-                let dsClass = s.ds ? 'ds-checkbox active' : 'ds-checkbox';
 
                 blockHtml += `
                     <div class="log-set-wrapper">
@@ -1172,128 +1140,4 @@
                                 </div>
                                 ${!isNaN(est1RM) && est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
                             </div>
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <div style="text-align:center;">
-                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
-                                    <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
-                                </div>
-                                <div style="text-align:center;">
-                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
-                                    <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
-                                </div>
-                                <button class="danger" style="margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
-                            </div>
-                        </div>
-                    </div>`;
-            });
-            container.innerHTML += blockHtml + `</div>`;
-        });
-    }
-
-    function renderHistory() {
-        let container = document.getElementById('history-container');
-        if (workoutHistory.length === 0) { container.innerHTML = '<div style="font-size:0.85rem; color:var(--text-secondary); text-align:center; padding:10px 0;">Bisher keine Workouts.</div>'; return; }
-        container.innerHTML = '';
-        
-        workoutHistory.forEach(session => {
-            let cardId = `hist-card-${session.id}`;
-            let grouped = {};
-            session.sets.forEach(s => { if (!grouped[s.exercise]) grouped[s.exercise] = []; grouped[s.exercise].push(s); });
-
-            let summaryHtml = '';
-            for (let ex in grouped) {
-                summaryHtml += `<span style="display:inline-block; margin-right:8px; color:var(--accent-cyan); font-weight:700;">• ${ex}</span>`;
-            }
-
-            let detailedHtml = '';
-            for (let ex in grouped) {
-                detailedHtml += `<div style="margin-top:8px;"><div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan);">${ex}</div>`;
-                grouped[ex].forEach((s, idx) => {
-                    detailedHtml += `<div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">• Satz ${idx + 1}: ${s.kg} kg (Griff ${s.gripPos}/Scheibe ${s.weightPos})</div>`;
-                });
-                detailedHtml += `</div>`;
-            }
-
-            container.innerHTML += `
-                <div class="history-card" id="${cardId}">
-                    <div class="history-header" onclick="toggleHistoryCard('${cardId}')">
-                        <div>
-                            <div class="history-date">📅 ${session.date} (${session.time})</div>
-                            <div style="font-size:0.8rem; margin-top:6px; color:var(--text-primary); display:flex;">${summaryHtml}</div>
-                        </div>
-                        <span style="font-size:0.75rem; color:var(--accent-cyan); font-weight:700;">Details ▼</span>
-                    </div>
-                    <div class="history-content">${detailedHtml}</div>
-                </div>`;
-        });
-    }
-
-    // --- TIMER ---
-    let timerInterval = null, currentTimeLeft = 45, currentPhase = 'idle';
-    let workDuration = 45, restDuration = 120, prepDuration = 10;
-    let isTimerPaused = false;
-
-    function setWorkPreset(secs, btn) { workDuration = secs; document.querySelectorAll('.work-preset').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-    function setRestPreset(secs, btn) { restDuration = secs; document.querySelectorAll('.rest-preset').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-
-    function startSetWorkflow() {
-        initAudio(); requestWakeLock();
-        if (timerInterval) clearInterval(timerInterval);
-        isTimerPaused = false;
-        document.getElementById('btn-pause-timer').style.display = 'block';
-        document.getElementById('btn-pause-timer').innerText = "⏸ PAUSE";
-
-        currentPhase = 'ready'; currentTimeLeft = prepDuration; playToneReady(); updateDisplay();
-
-        timerInterval = setInterval(() => {
-            if (isTimerPaused) return;
-            currentTimeLeft--;
-            if (currentTimeLeft > 0 && currentTimeLeft <= 3 && (currentPhase === 'ready' || currentPhase === 'work')) {
-                playToneCountdown();
-            }
-
-            if (currentPhase === 'ready' && currentTimeLeft <= 0) {
-                currentPhase = 'work'; currentTimeLeft = workDuration; playToneStart();
-            } else if (currentPhase === 'work' && currentTimeLeft <= 0) {
-                addSetToActiveSession(); currentPhase = 'rest'; currentTimeLeft = restDuration; playToneRest();
-            } else if (currentPhase === 'rest' && currentTimeLeft <= 0) {
-                currentPhase = 'ready'; currentTimeLeft = prepDuration; playToneReady();
-            }
-            updateDisplay();
-        }, 1000);
-    }
-
-    function togglePauseTimer() {
-        isTimerPaused = !isTimerPaused;
-        document.getElementById('btn-pause-timer').innerText = isTimerPaused ? "▶ WEITER" : "⏸ PAUSE";
-    }
-
-    function resetTimerWorkflow() {
-        if (timerInterval) clearInterval(timerInterval);
-        isTimerPaused = false; currentPhase = 'idle'; currentTimeLeft = workDuration;
-        document.getElementById('btn-pause-timer').style.display = 'none';
-        updateDisplay();
-    }
-
-    function updateDisplay() {
-        let mins = Math.floor(currentTimeLeft / 60), secs = currentTimeLeft % 60;
-        document.getElementById('timer-display').innerText = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-        let statusEl = document.getElementById('timer-status');
-        let bodyEl = document.body; bodyEl.className = '';
-
-        if (currentPhase === 'idle') { statusEl.innerText = "Bereit für Satz"; statusEl.style.color = "var(--ready-color)"; }
-        else if (currentPhase === 'ready') { statusEl.innerText = `⌛ Vorbereitung (${currentTimeLeft}s)`; statusEl.style.color = "var(--ready-color)"; bodyEl.classList.add('phase-ready'); }
-        else if (currentPhase === 'work') { statusEl.innerText = "⚡ Muskelarbeit"; statusEl.style.color = "var(--work-color)"; bodyEl.classList.add('phase-work'); }
-        else if (currentPhase === 'rest') { statusEl.innerText = `☕ Satzpause (${currentTimeLeft}s)`; statusEl.style.color = "var(--rest-color)"; bodyEl.classList.add('phase-rest'); }
-    }
-
-    // Init
-    recalculateWorkflow();
-    renderActiveLogbook();
-    renderHistory();
-    checkLastTimeWorkout();
-    updateDisplay();
-</script>
-
-</body>
-</html>
+                            <div style="display:flex; align-
