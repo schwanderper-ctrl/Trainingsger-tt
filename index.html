@@ -144,7 +144,7 @@
             font-family: var(--font-mono);
         }
 
-        /* HAUPT-KOMBIBOX (ÜBUNG, GEWICHT, GRIFF, SCHEIBE) */
+        /* HAUPT-KOMBIBOX */
         .master-console-card {
             background: linear-gradient(135deg, #141c2c 0%, #0f172a 100%);
             border: 1px solid rgba(56, 189, 248, 0.25);
@@ -183,23 +183,36 @@
             font-family: var(--font-mono);
         }
 
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 10px;
-            border-radius: 5px;
-            background: #1e293b;
-            outline: none;
+        /* GEWICHTS-SCHNELLWAHL BUTTONS */
+        .weight-adjust-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+            margin-top: 8px;
         }
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: var(--accent-color);
-            box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+        .weight-adj-btn {
+            padding: 8px 2px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            border-radius: 8px;
+            border: none;
             cursor: pointer;
+            font-family: var(--font-mono);
+            transition: transform 0.1s;
         }
+        .weight-adj-btn.minus {
+            background: rgba(244, 63, 94, 0.2);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            box-shadow: none;
+        }
+        .weight-adj-btn.plus {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            box-shadow: none;
+        }
+        .weight-adj-btn:active { transform: scale(0.95); }
 
         .input-text, .input-number {
             width: 100%;
@@ -288,17 +301,37 @@
 
         .log-set-wrapper { border-bottom: 1px dashed rgba(255, 255, 255, 0.08); padding: 8px 0; }
         .log-set-wrapper:last-child { border-bottom: none; }
-        .log-set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+        .log-set-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
         .rm-tag { font-size: 0.65rem; color: var(--accent-cyan); font-weight: 700; font-family: var(--font-mono); margin-top: 2px; }
 
         .small-box {
-            width: 42px; background: #080b11; border: 1px solid rgba(56, 189, 248, 0.4); color: var(--text-primary); font-weight: 800; font-family: var(--font-mono); text-align: center; padding: 6px; border-radius: 8px; font-size: 0.85rem; outline: none;
+            width: 38px; background: #080b11; border: 1px solid rgba(56, 189, 248, 0.4); color: var(--text-primary); font-weight: 800; font-family: var(--font-mono); text-align: center; padding: 6px 2px; border-radius: 8px; font-size: 0.8rem; outline: none;
         }
         .small-box:focus { border-color: var(--accent-cyan); }
         .rpe-box { color: var(--ready-color); border-color: rgba(251, 191, 36, 0.4); }
 
         .kg-edit-box {
-            width: 60px; background: #080b11; border: 1px solid rgba(34, 197, 94, 0.5); color: var(--accent-color); font-weight: 900; font-family: var(--font-mono); text-align: right; padding: 4px 6px; border-radius: 8px; font-size: 0.95rem; outline: none;
+            width: 58px; background: #080b11; border: 1px solid rgba(34, 197, 94, 0.5); color: var(--accent-color); font-weight: 900; font-family: var(--font-mono); text-align: right; padding: 4px 6px; border-radius: 8px; font-size: 0.95rem; outline: none;
+        }
+
+        .ds-checkbox-btn {
+            background: #080b11;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 6px 4px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            width: 32px;
+            box-shadow: none;
+            flex: none;
+        }
+        .ds-checkbox-btn.active {
+            background: rgba(244, 63, 94, 0.2);
+            border-color: var(--work-color);
+            color: var(--work-color);
         }
 
         .history-card { 
@@ -384,13 +417,22 @@
             </div>
         </div>
 
-        <!-- Gewicht Einstellen -->
+        <!-- Gewicht Einstellen & Schnellwahl-Knöpfe -->
         <div style="text-align: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
             <div class="result-display-row">
-                <input type="number" id="calc-result-input" class="result-input-field" value="24.0" step="0.5" min="10.0" max="66.0" oninput="onManualKgInput()">
+                <input type="number" id="calc-result-input" class="result-input-field" value="24.0" step="0.5" min="5.0" max="75.0" oninput="onManualKgInput()">
                 <span class="result-kg-label">kg</span>
             </div>
-            <input type="range" id="slider-target-kg" min="10.0" max="66.0" step="0.5" value="24.0" oninput="onKgSliderChange()">
+            
+            <!-- 6 Schnellwahl-Knöpfe statt Schieberegler -->
+            <div class="weight-adjust-grid">
+                <button class="weight-adj-btn minus" onclick="adjustWeight(-5.0)">-5</button>
+                <button class="weight-adj-btn minus" onclick="adjustWeight(-2.5)">-2.5</button>
+                <button class="weight-adj-btn minus" onclick="adjustWeight(-0.5)">-0.5</button>
+                <button class="weight-adj-btn plus" onclick="adjustWeight(0.5)">+0.5</button>
+                <button class="weight-adj-btn plus" onclick="adjustWeight(2.5)">+2.5</button>
+                <button class="weight-adj-btn plus" onclick="adjustWeight(5.0)">+5</button>
+            </div>
         </div>
 
         <!-- Griffposition wählen + Min/Max Anzeige -->
@@ -425,7 +467,7 @@
         </div>
     </div>
 
-    <!-- SUPER-SET ZWEI-KARTEN ANSICHT (falls Super-Set Modus aktiv) -->
+    <!-- SUPER-SET ZWEI-KARTEN ANSICHT -->
     <div class="card" id="view-superset-cards-card" style="display:none;">
         <div class="card-title" style="cursor:default; margin-bottom:12px; font-size:0.85rem; font-weight:700; color:var(--text-secondary);">Super-Set-Konfiguration</div>
         <div class="superset-dual-container">
@@ -548,9 +590,9 @@
     document.addEventListener('visibilitychange', () => { if (wakeLock !== null && document.visibilityState === 'visible') requestWakeLock(); });
     requestWakeLock();
 
-    // --- GERUNDETE DATENBASIS (AUF HALBE/GANZE ZAHLEN) ---
+    // --- GERUNDETE DATENBASIS ---
     function roundKg(val) {
-        return Math.round(val * 2) / 2; // Rundet auf nächste 0.5 Schritte
+        return Math.round(val * 2) / 2;
     }
 
     const rawDataGriff1 = {
@@ -590,7 +632,6 @@
         }
     };
 
-    // Werte bereinigen und runden
     function sanitizeData(dataObj) {
         let cleanVals = {};
         let minKg = 999, maxKg = 0;
@@ -617,7 +658,6 @@
         return dataGriff4;
     }
 
-    // Min/Max Labels direkt beim Start einfügen
     document.getElementById('grip-mm-1').innerText = `${dataGriff1.min} - ${dataGriff1.max} kg`;
     document.getElementById('grip-mm-2').innerText = `${dataGriff2.min} - ${dataGriff2.max} kg`;
     document.getElementById('grip-mm-3').innerText = `${dataGriff3.min} - ${dataGriff3.max} kg`;
@@ -680,16 +720,6 @@
             updateGripButtonsUI();
         }
 
-        // Dynamisches Max-Limit anhand des aktuellen Griffs anpassen
-        let currentData = getDataForGriff(selectedGrip);
-        let slider = document.getElementById('slider-target-kg');
-        slider.max = currentData.max;
-        if (currentTotalKg > currentData.max) {
-            currentTotalKg = currentData.max;
-            document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
-            slider.value = currentTotalKg;
-        }
-
         let targetTotal = currentTotalKg;
         let availableGrips = [];
         let gripBestMatches = {};
@@ -717,6 +747,7 @@
             }
         }
 
+        let currentData = getDataForGriff(selectedGrip);
         if (fixedGrip > 0 && (targetTotal < currentData.min || targetTotal > currentData.max)) {
             warningBox.style.display = 'block';
             warningBox.innerText = `⚠️ Griff ${fixedGrip}: ${targetTotal} kg nicht verfügbar (${currentData.min}-${currentData.max} kg).`;
@@ -734,18 +765,18 @@
         document.getElementById('result-exact-kg').innerText = `Exakt: ${totalKg.toFixed(1)} kg (Griff ${selectedGrip})`;
     }
 
-    function onKgSliderChange() {
-        currentTotalKg = parseFloat(document.getElementById('slider-target-kg').value);
+    // Gewicht über die 6 Schnellwahl-Knöpfe anpassen
+    function adjustWeight(amount) {
+        currentTotalKg = Math.max(5.0, Math.min(75.0, currentTotalKg + amount));
+        currentTotalKg = Math.round(currentTotalKg * 2) / 2;
         document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
         recalculateWorkflow();
     }
 
     function onManualKgInput() {
         let val = parseFloat(document.getElementById('calc-result-input').value);
-        let currentData = getDataForGriff(selectedGrip);
         if (!isNaN(val)) {
-            currentTotalKg = Math.max(5.0, Math.min(currentData.max, val));
-            document.getElementById('slider-target-kg').value = currentTotalKg;
+            currentTotalKg = Math.max(5.0, Math.min(75.0, val));
             recalculateWorkflow();
         }
     }
@@ -806,7 +837,6 @@
         closeExerciseModal();
     }
 
-    // Lädt die Einstellungen vom letzten Mal direkt in die App!
     function applyLastWorkoutSettings(exName) {
         let lastSet = null;
         for (let session of workoutHistory) {
@@ -819,7 +849,6 @@
             currentTotalKg = parseFloat(lastSet.kg);
             selectedGrip = parseInt(lastSet.gripPos) || 1;
             document.getElementById('calc-result-input').value = currentTotalKg.toFixed(1);
-            document.getElementById('slider-target-kg').value = currentTotalKg;
             updateGripButtonsUI();
             recalculateWorkflow();
 
@@ -940,6 +969,15 @@
         }
     }
 
+    function toggleDropSetLog(setId) {
+        let item = activeSessionLog.find(s => s.id === setId);
+        if (item) {
+            item.ds = !item.ds;
+            localStorage.setItem('board_computer_active_session', JSON.stringify(activeSessionLog));
+            renderActiveLogbook();
+        }
+    }
+
     function updateSetPosition(setId, posType, val) {
         let item = activeSessionLog.find(s => s.id === setId);
         if (item) {
@@ -1006,6 +1044,8 @@
 
             sets.forEach((s, idx) => {
                 let est1RM = parseFloat(s.kg) * (1 + (parseInt(s.wdh) || 0) / 30);
+                let dsActiveClass = s.ds ? 'ds-checkbox-btn active' : 'ds-checkbox-btn';
+
                 blockHtml += `
                     <div class="log-set-wrapper">
                         <div class="log-set-row">
@@ -1017,22 +1057,26 @@
                                 </div>
                                 <div style="display:flex; gap:6px; margin-top:4px; align-items:center;">
                                     <span style="font-size:0.7rem; color:var(--text-secondary);">Griff:</span>
-                                    <input type="number" class="small-box" style="width:36px; height:24px; font-size:0.75rem;" min="1" max="4" value="${s.gripPos}" oninput="updateSetPosition(${s.id}, 'grip', this.value)">
+                                    <input type="number" class="small-box" style="width:34px; height:24px; font-size:0.75rem;" min="1" max="4" value="${s.gripPos}" oninput="updateSetPosition(${s.id}, 'grip', this.value)">
                                     <span style="font-size:0.7rem; color:var(--text-secondary);">Scheibe:</span>
-                                    <input type="number" class="small-box" style="width:36px; height:24px; font-size:0.75rem;" min="1" max="33" value="${s.weightPos}" oninput="updateSetPosition(${s.id}, 'disc', this.value)">
+                                    <input type="number" class="small-box" style="width:34px; height:24px; font-size:0.75rem;" min="1" max="33" value="${s.weightPos}" oninput="updateSetPosition(${s.id}, 'disc', this.value)">
                                 </div>
                                 ${!isNaN(est1RM) && est1RM > 0 ? `<div class="rm-tag">est. 1RM: ${est1RM.toFixed(1)} kg</div>` : ''}
                             </div>
-                            <div style="display:flex; align-items:center; gap:6px;">
+                            <div style="display:flex; align-items:center; gap:5px;">
                                 <div style="text-align:center;">
-                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
+                                    <span style="font-size:0.55rem; color:var(--text-secondary); display:block; margin-bottom:2px;">DS</span>
+                                    <button class="${dsActiveClass}" onclick="toggleDropSetLog(${s.id})" title="Drop-Set">${s.ds ? '✓' : '—'}</button>
+                                </div>
+                                <div style="text-align:center;">
+                                    <span style="font-size:0.55rem; color:var(--text-secondary); display:block; margin-bottom:2px;">WDH</span>
                                     <input type="number" class="small-box" placeholder="-" value="${s.wdh}" oninput="updateSetField(${s.id}, 'wdh', this.value)">
                                 </div>
                                 <div style="text-align:center;">
-                                    <span style="font-size:0.6rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
+                                    <span style="font-size:0.55rem; color:var(--text-secondary); display:block; margin-bottom:2px;">RPE</span>
                                     <input type="number" class="small-box rpe-box" min="1" max="10" placeholder="-" value="${s.rpe}" oninput="updateSetField(${s.id}, 'rpe', this.value)">
                                 </div>
-                                <button class="danger" style="margin-top:14px;" onclick="deleteSet(${s.id})">✕</button>
+                                <button class="danger" style="margin-top:12px; padding:6px 8px;" onclick="deleteSet(${s.id})">✕</button>
                             </div>
                         </div>
                     </div>`;
@@ -1060,7 +1104,8 @@
             for (let ex in grouped) {
                 detailedHtml += `<div style="margin-top:8px;"><div style="font-size:0.85rem; font-weight:800; color:var(--accent-cyan);">${ex}</div>`;
                 grouped[ex].forEach((s, idx) => {
-                    detailedHtml += `<div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">• Satz ${idx + 1}: ${s.kg} kg (Griff ${s.gripPos}/Scheibe ${s.weightPos})</div>`;
+                    let dsTag = s.ds ? ' [Drop-Set]' : '';
+                    detailedHtml += `<div style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px; font-family:var(--font-mono);">• Satz ${idx + 1}: ${s.kg} kg (Griff ${s.gripPos}/Scheibe ${s.weightPos})${dsTag}</div>`;
                 });
                 detailedHtml += `</div>`;
             }
